@@ -1,5 +1,5 @@
 #include <pthread.h>
-#include <SDL.h>
+#include "SDL/SDL.h"
 
 static pthread_t win_thread;
 static SDL_Surface *screen;
@@ -8,8 +8,8 @@ static SDL_Event event;
 /* creates the main window for this application */
 static void * iptvx_create_window(void* arg){
     SDL_Init(SDL_INIT_VIDEO);
-    screen = SDL_SetVideoMode(640, 480, 16, SDL_SWSURFACE);
-    SDL_WM_SetCaption(“Simple Window”, “Simple Window”);
+    screen = SDL_SetVideoMode(1280, 720, 16, SDL_SWSURFACE);
+    SDL_WM_SetCaption("iptvx", "iptvx");
 
     bool done = false;
 
@@ -17,17 +17,14 @@ static void * iptvx_create_window(void* arg){
         while(SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 done=true;
+            }
         }
-    }
 
-    // fill the screen with black color
-    SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0, 0, 0));
+        // fill the screen with black color
+        SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0, 0, 0));
 
-    // update the screen buffer
-    SDL_Flip(screen);
-
-    while(1){
-        // nothing here
+        // update the screen buffer
+        SDL_Flip(screen);
     }
 
     SDL_Quit();

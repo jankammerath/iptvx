@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -lSDL -lpthread src/main.c -o bin/iptvx
+gcc -lpthread -lSDL src/main.c -o bin/iptvx
