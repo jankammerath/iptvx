@@ -1,59 +1,41 @@
 #include <pthread.h>
-#include <X11/Xlib.h>
+#include <SDL.h>
 
 static pthread_t win_thread;
+static SDL_Surface *screen;
+static SDL_Event event;
 
 /* creates the main window for this application */
-static void * xiptv_create_window(void* arg){
-    Display                 *display;
-    Visual                  *visual;
-    int                     depth;
-    int                     text_x;
-    int                     text_y;
-    XSetWindowAttributes    frame_attributes;
-    Window                  frame_window;
-    XFontStruct             *fontinfo;
-    XGCValues               gr_values;
-    GC                      graphical_context;
-    XKeyEvent               event;
+static void * iptvx_create_window(void* arg){
+    SDL_Init(SDL_INIT_VIDEO);
+    screen = SDL_SetVideoMode(640, 480, 16, SDL_SWSURFACE);
+    SDL_WM_SetCaption(“Simple Window”, “Simple Window”);
 
-    display = XOpenDisplay(NULL);
-    visual = DefaultVisual(display, 0);
-    depth  = DefaultDepth(display, 0);
-    
-    frame_attributes.background_pixel = XBlackPixel(display, 0);
-    frame_window = XCreateWindow(display, XRootWindow(display, 0),
-                                 0, 0, 1280, 720, 5, depth,
-                                 InputOutput, visual, CWBackPixel,
-                                 &frame_attributes);
-    XStoreName(display, frame_window, "xiptv");
-    XSelectInput(display, frame_window, ExposureMask | StructureNotifyMask);
+    bool done = false;
 
-    fontinfo = XLoadQueryFont(display, "10x20");
-    gr_values.font = fontinfo->fid;
-    gr_values.foreground = XWhitePixel(display, 0);
-    graphical_context = XCreateGC(display, frame_window, 
-                                  GCFont+GCForeground, &gr_values);
-    XMapWindow(display, frame_window);
-
-    while ( 1 ) {
-        XNextEvent(display, (XEvent *)&event);
-        switch ( event.type ) {
-            case Expose:
-            {
-                XWindowAttributes window_attributes;
-                XGetWindowAttributes(display, frame_window, &window_attributes);
-                break;
-            }
-            default:
-                break;
+    while(!done) {
+        while(SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                done=true;
         }
     }
+
+    // fill the screen with black color
+    SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0, 0, 0));
+
+    // update the screen buffer
+    SDL_Flip(screen);
+
+    while(1){
+        // nothing here
+    }
+
+    SDL_Quit();
 }
 
 /* create and process the window in separate thread */
-void xiptv_create_window_thread(){
-	if(pthread_create(&win_thread,NULL,xiptv_create_window,NULL) != 0) {
+void iptvx_create_window_thread(){
+	if(pthread_create(&win_thread,NULL,iptvx_create_window,NULL) != 0) {
 		fprintf (stderr, "Failed to launch thread for main window.\n");
         exit (EXIT_FAILURE);
 	}	

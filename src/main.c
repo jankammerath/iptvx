@@ -6,7 +6,7 @@
 
 int main (int argc, char *argv[])
 {
-	xiptv_create_window_thread();
+	iptvx_create_window_thread();
 	
 	while(1){
 		printf("I am still here!\n");
