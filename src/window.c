@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include "SDL/SDL.h"
+#include "SDL/SDL_thread.h"
 
 static pthread_t win_thread;
 static SDL_Surface *screen;

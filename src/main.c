@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "args.c"
 #include "window.c"
+#include "video.c"
 
 /* main application code */
 int main (int argc, char *argv[]){
