@@ -15,11 +15,7 @@ int main (int argc, char *argv[]){
 	/* ensure sufficient parameters where provided */
 	if(arguments.sufficient == true){
 		iptvx_create_window_thread();
-	
-		while(1){
-			printf("I am still here!\n");
-			usleep(5000000);
-		}
+		iptvx_video_play(arguments.input_video_file,arguments.input_html_file);
 	}
 
 	return 0;
