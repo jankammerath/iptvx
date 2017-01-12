@@ -12,9 +12,7 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
     printf("An error happened generating the snapshot: %s\n",err->message);
   }
 
-  printf("Trying to write the png file.\n");
   cairo_surface_write_to_png (surface, "/home/jan/Bilder/iptvx-webkit.png");
-  printf("png file should be present now.\n");
 }
 
 static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoadEvent status, char *destfile) {
@@ -23,7 +21,6 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
     return;
   }
 
-  printf("WebKit finished loading\n");
   iptvx_webkit_ready = true;
 
   webkit_web_view_get_snapshot(webview,
@@ -49,10 +46,7 @@ void iptvx_webkit_start(char *file){
 	                                       WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 
 	char *url = str_concat("file://",file);
-	printf("Letting WebKit open '%s'\n",url);
 	webkit_web_view_load_uri (WEBKIT_WEB_VIEW (iptvx_gtk_webview),url);
 	gtk_widget_show_all (iptvx_gtk_window);
 	gtk_main ();
-
-	printf("WebKit started.\n");
 }
