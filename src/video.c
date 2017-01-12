@@ -4,8 +4,12 @@ libvlc_instance_t * inst;
 libvlc_media_player_t *mp;
 libvlc_media_t *m;
 
-void iptvx_video_play(char *videofile, char *htmlfile){
-	inst = libvlc_new (0, NULL);
+void iptvx_video_play(char *videofile){
+	const char * const vlc_args[] = {
+    	"--sout '#transcode{scale=0.5}'"
+    };
+
+	inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 	printf("Playback of %s\n",videofile);
 	
 	/* open the defined media file */
