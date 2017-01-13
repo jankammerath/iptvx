@@ -1,74 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <assert.h>
 #include <math.h>
-#include <X11/Xlib.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
 static pthread_t win_thread;
-static int iptvx_window_id;
+
+GtkWidget *window;
+GtkApplication *app;
+
+int iptvx_window_xid;
+
+static void iptvx_window_activate (GtkApplication* app, gpointer user_data){
+  window = gtk_application_window_new (app);
+  gtk_window_set_title (GTK_WINDOW (window), "iptvx");
+  gtk_window_set_default_size (GTK_WINDOW (window), 1280, 720);
+  gtk_widget_show_all (window);
+  iptvx_window_xid = GDK_WINDOW_XID(gtk_widget_get_window(window));
+}
 
 /* creates the main window for this application */
 static void * iptvx_create_window(void* window_argument){
-    Display                 *display;
-    Visual                  *visual;
-    int                     depth;
-    int                     text_x;
-    int                     text_y;
-    XSetWindowAttributes    frame_attributes;
-    Window                  frame_window;
-    XFontStruct             *fontinfo;
-    XGCValues               gr_values;
-    GC                      graphical_context;
-    XKeyEvent               event;
+    app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect (app, "activate", G_CALLBACK (iptvx_window_activate), NULL);
+    g_application_run (G_APPLICATION (app),0,NULL);
+    g_object_unref (app);
+}
 
-    display = XOpenDisplay(NULL);
-    visual = DefaultVisual(display, 0);
-    depth  = DefaultDepth(display, 0);
-    
-    frame_attributes.background_pixel = XBlackPixel(display, 0);
-    /* create the application window */
-    frame_window = XCreateWindow(display, XRootWindow(display, 0),
-                                 0, 0, 1280, 720, 5, depth,
-                                 InputOutput, visual, CWBackPixel,
-                                 &frame_attributes);
-    
-    /* set the window id */
-    iptvx_window_id = frame_window;
+void iptvx_create_window_thread(){
+    iptvx_window_xid = -1;
 
-    XStoreName(display, frame_window, "iptvx");
-    XSelectInput(display, frame_window, ExposureMask | StructureNotifyMask);
-
-    fontinfo = XLoadQueryFont(display, "10x20");
-    gr_values.font = fontinfo->fid;
-    gr_values.foreground = XBlackPixel(display, 0);
-    graphical_context = XCreateGC(display, frame_window, 
-                                  GCFont+GCForeground, &gr_values);
-    XMapWindow(display, frame_window);
-
-    while ( 1 ) {
-        XNextEvent(display, (XEvent *)&event);
-        switch ( event.type ) {
-            case Expose:
-            {
-                break;
-            }
-            default:
-                break;
-        }
-    }
+    if(pthread_create(&win_thread,NULL,iptvx_create_window,NULL) != 0) {
+        fprintf (stderr, "Failed to launch thread for main window.\n");
+        exit (EXIT_FAILURE);
+    }   
 }
 
 int iptvx_get_window_xid(){
-    return iptvx_window_id;
-}
-
-/* create and process the window in separate thread */
-void iptvx_create_window_thread(){
-    iptvx_window_id = -1;
-
-	if(pthread_create(&win_thread,NULL,iptvx_create_window,NULL) != 0) {
-		fprintf (stderr, "Failed to launch thread for main window.\n");
-        exit (EXIT_FAILURE);
-	}	
+    return iptvx_window_xid;
 }

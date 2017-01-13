@@ -19,12 +19,15 @@ int main (int argc, char *argv[]){
 
 		iptvx_create_window_thread();
 
+		printf("getting xid\n");
 		int window_xid = -1;
 		while(window_xid == -1){
 			window_xid = iptvx_get_window_xid();
 		}
 
+		printf("setting xid\n");
 		iptvx_video_set_window_xid(window_xid);
+		printf("starting video playback\n");
 		iptvx_video_play(arguments.input_video_file);
 	}
 
