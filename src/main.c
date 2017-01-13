@@ -6,7 +6,7 @@
 #include "args.h"
 #include "window.h"
 #include "video.h"
-#include "webkit.c"
+#include "webkit.h"
 
 /* main application code */
 int main (int argc, char *argv[]){
