@@ -1,4 +1,5 @@
 #include <argp.h>
+#include <stdbool.h>
 
 const char *argp_program_version = "iptvx 0.1 alpha";
 const char *argp_program_bug_address = "<dev@iptvx.org>";

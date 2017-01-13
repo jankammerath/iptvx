@@ -1,10 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <assert.h>
 #include <math.h>
 #include <X11/Xlib.h>
 
 static pthread_t win_thread;
-static int xiptv_window_id;
+static int iptvx_window_id;
 
 /* creates the main window for this application */
 static void * iptvx_create_window(void* window_argument){
@@ -32,7 +34,7 @@ static void * iptvx_create_window(void* window_argument){
                                  &frame_attributes);
     
     /* set the window id */
-    xiptv_window_id = frame_window;
+    iptvx_window_id = frame_window;
 
     XStoreName(display, frame_window, "iptvx");
     XSelectInput(display, frame_window, ExposureMask | StructureNotifyMask);
@@ -57,8 +59,14 @@ static void * iptvx_create_window(void* window_argument){
     }
 }
 
+int iptvx_get_window_xid(){
+    return iptvx_window_id;
+}
+
 /* create and process the window in separate thread */
 void iptvx_create_window_thread(){
+    iptvx_window_id = -1;
+
 	if(pthread_create(&win_thread,NULL,iptvx_create_window,NULL) != 0) {
 		fprintf (stderr, "Failed to launch thread for main window.\n");
         exit (EXIT_FAILURE);
