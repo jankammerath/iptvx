@@ -1,4 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <webkit2/webkit2.h>
+
+static pthread_t webkit_thread;
 
 static GtkWidget *iptvx_gtk_window;
 static GtkWidget *iptvx_gtk_webview;
@@ -12,7 +16,7 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
     printf("An error happened generating the snapshot: %s\n",err->message);
   }
 
-  cairo_surface_write_to_png (surface, "/home/jan/Bilder/iptvx-webkit.png");
+  // cairo_surface_write_to_png (surface, "/home/jan/Bilder/iptvx-webkit.png");
 }
 
 static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoadEvent status, char *destfile) {
@@ -30,7 +34,7 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
-void iptvx_webkit_start(char *file){
+static void * iptvx_webkit_start(void* file){
 	iptvx_webkit_ready = false;
 
 	gtk_init(NULL,NULL);
@@ -45,8 +49,16 @@ void iptvx_webkit_start(char *file){
 	webkit_web_context_set_tls_errors_policy(webkit_web_view_get_context(WEBKIT_WEB_VIEW (iptvx_gtk_webview)),
 	                                       WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 
-	char *url = g_strjoin("","file://",file,NULL);
+  char *filename = (char*)file;
+	char *url = g_strjoin("","file://",filename,NULL);
 	webkit_web_view_load_uri (WEBKIT_WEB_VIEW (iptvx_gtk_webview),url);
 	gtk_widget_show_all (iptvx_gtk_window);
 	gtk_main ();
+}
+
+void iptvx_webkit_start_thread(char *file){
+  if(pthread_create(&webkit_thread,NULL,iptvx_webkit_start,(void *)file) != 0) {
+    fprintf (stderr, "Failed to launch thread for WebKit.\n");
+    exit (EXIT_FAILURE);
+  } 
 }
