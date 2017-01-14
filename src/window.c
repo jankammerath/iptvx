@@ -13,6 +13,14 @@ int iptvx_window_xid;
 static void iptvx_window_activate (GtkApplication* app, gpointer user_data){
   window = gtk_application_window_new (app);
   gtk_window_set_title (GTK_WINDOW (window), "iptvx");
+
+  GtkCssProvider* style_provider = gtk_css_provider_new();
+  gtk_style_context_add_provider(gtk_widget_get_style_context(window),
+                        (GtkStyleProvider*)style_provider,GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+  gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(style_provider),
+          "GtkWindow{background-color:#000000;}", -1, NULL);
+
   gtk_window_set_default_size (GTK_WINDOW (window), 1280, 720);
   gtk_widget_show_all (window);
   iptvx_window_xid = GDK_WINDOW_XID(gtk_widget_get_window(window));
