@@ -11,9 +11,7 @@ void iptvx_video_set_window_xid(int xid){
 }
 
 void iptvx_video_play(char *videofile){
-	const char * const vlc_args[] = { 
-		/* "--sub-filter logo" */
-	};
+	const char * const vlc_args[] = { };
 
 	inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 	
@@ -35,6 +33,15 @@ void iptvx_video_play(char *videofile){
 	usleep(1000000);
 	while(libvlc_media_player_is_playing(mp)){
 		/* wait until finished */
+		libvlc_video_set_logo_string(mp,libvlc_logo_file,"/tmp/iptvxoverlay.png");
+		libvlc_video_set_logo_int(mp, libvlc_logo_x, 0);
+		libvlc_video_set_logo_int(mp, libvlc_logo_y, 0);
+		libvlc_video_set_logo_int(mp, libvlc_logo_opacity, 255);
+		libvlc_video_set_logo_int(mp, libvlc_logo_enable, 1);
+
+		/* wait 40ms and create a new one
+    	which should result in 25fps */
+  		usleep(1000000);
 	}	
 	
 	/* terminate the whole thing */

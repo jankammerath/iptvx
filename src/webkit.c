@@ -16,7 +16,17 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
     printf("An error happened generating the snapshot: %s\n",err->message);
   }
 
-  // cairo_surface_write_to_png (surface, "/home/jan/Bilder/iptvx-webkit.png");
+  cairo_surface_write_to_png (surface, "/tmp/iptvxoverlay.png");
+
+  /* wait 40ms and create a new one
+    which should result in 25fps */
+  usleep(1200000);
+
+  webkit_web_view_get_snapshot(webview,
+         WEBKIT_SNAPSHOT_REGION_FULL_DOCUMENT,
+         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,
+         NULL,
+         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
 static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoadEvent status, char *destfile) {

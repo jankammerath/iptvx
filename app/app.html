@@ -1,1 +1,22 @@
-<span style="font-size:45px"><b>This</b> is <i style="color: #f50000;">probably</i> <span style="color:#ddd">it</span>!</span>
+<html>
+<head>
+	<style type="text/css">
+		.anim {
+			animation: fadeicon 1s steps(5, start) infinite;
+		  	-webkit-animation: fadeicon 1s steps(5, start) infinite;
+		}
+
+		@keyframes fadeicon {
+		  0%,100% { margin-left:100px; }
+		  50% { margin-left:0px; }
+		}
+	</style>	
+</head>
+<body>
+	<div class="anim">
+		<span style="font-size:45px"><b>This</b> is 
+		<i style="color: #f50000;">probably</i> <span style="color:#ddd">it</span>
+		!</span>
+	</div>
+</body>
+</html>
