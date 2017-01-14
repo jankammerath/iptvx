@@ -15,9 +15,9 @@ int main (int argc, char *argv[]){
 
 	/* ensure sufficient parameters where provided */
 	if(arguments.sufficient == true){
-		//iptvx_webkit_start(arguments.input_html_file);
+		iptvx_webkit_start(arguments.input_html_file);
 
-		iptvx_create_window_thread();
+		/*iptvx_create_window_thread();
 
 		printf("getting xid\n");
 		int window_xid = -1;
@@ -28,7 +28,7 @@ int main (int argc, char *argv[]){
 		printf("setting xid\n");
 		iptvx_video_set_window_xid(window_xid);
 		printf("starting video playback\n");
-		iptvx_video_play(arguments.input_video_file);
+		iptvx_video_play(arguments.input_video_file);*/
 	}
 
 	return 0;

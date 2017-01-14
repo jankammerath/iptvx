@@ -45,7 +45,7 @@ void iptvx_webkit_start(char *file){
 	webkit_web_context_set_tls_errors_policy(webkit_web_view_get_context(WEBKIT_WEB_VIEW (iptvx_gtk_webview)),
 	                                       WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 
-	gchar *url = g_strjoin(NULL,"file://",file);
+	char *url = g_strjoin("","file://",file,NULL);
 	webkit_web_view_load_uri (WEBKIT_WEB_VIEW (iptvx_gtk_webview),url);
 	gtk_widget_show_all (iptvx_gtk_window);
 	gtk_main ();
