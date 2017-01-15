@@ -11,7 +11,7 @@ void iptvx_video_set_window_xid(int xid){
 }
 
 void iptvx_video_play(char *videofile){
-	const char * const vlc_args[] = { };
+	const char * const vlc_args[] = {  };
 
 	inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 	
