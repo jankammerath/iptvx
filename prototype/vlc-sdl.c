@@ -25,17 +25,17 @@ struct ctx
     SDL_mutex *mutex;
 };
 
-typedef struct
-{
-    unsigned char *pos;
-    unsigned char *end;
-} closure_t;
-
 pthread_t webkit_thread;
 
 GtkWidget *gtk_window;
 GtkWidget *gtk_webview;
-unsigned char overlay_png_data[5000];
+struct png_data{
+    unsigned char* data;
+    unsigned int length;
+} typedef png_data;
+
+png_data overlay_data;
+
 bool webkit_is_writing;
 
 static void *lock(void *data, void **p_pixels)
@@ -65,10 +65,9 @@ static void display(void *data, void *id)
     assert(id == NULL);
 }
 
-static cairo_status_t webkit_write_png_array(GString * string, const unsigned char *data, unsigned int length)
-{
-    //g_string_append_len(string, (const gchar *) data, length);
-    return CAIRO_STATUS_SUCCESS;
+static cairo_status_t webkit_snapshot_write_png (void *closure, const unsigned char *data, unsigned int length){
+  g_byte_array_append (closure, data, length);
+  return CAIRO_STATUS_SUCCESS;
 }
 
 static void webkit_snapshotfinished_callback(WebKitWebView *webview,GAsyncResult *res,char *destfile)
@@ -76,14 +75,17 @@ static void webkit_snapshotfinished_callback(WebKitWebView *webview,GAsyncResult
     GError *err = NULL;
     cairo_surface_t *surface = webkit_web_view_get_snapshot_finish(WEBKIT_WEB_VIEW(webview),res,&err);
     if (err) {
-    printf("An error happened generating the snapshot: %s\n",err->message);
+        printf("An error happened generating the snapshot: %s\n",err->message);
     }
 
     webkit_is_writing = true;
-    GString * imgStr = g_string_sized_new(102400);
-    cairo_surface_write_to_png(surface,"/tmp/vlcoverlay.png");
+
+    GByteArray* png_byte_data = g_byte_array_new();
+    cairo_surface_write_to_png_stream(surface,webkit_snapshot_write_png,png_byte_data);
+    overlay_data.data = png_byte_data->data;
+    overlay_data.length = png_byte_data->len;
+
     webkit_is_writing = false;
-    //cairo_surface_write_to_png_stream(surface,(cairo_write_func_t)webkit_write_png_array,&imgStr);
 
     usleep(20000);
 
@@ -120,11 +122,15 @@ static void * webkit_start(void* file){
     webkit_web_context_set_tls_errors_policy(webkit_web_view_get_context(WEBKIT_WEB_VIEW (gtk_webview)),
                                            WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 
-  char *filename = (char*)file;
+    char *filename = (char*)file;
     char *url = g_strjoin("","file://",filename,NULL);
     webkit_web_view_load_uri (WEBKIT_WEB_VIEW (gtk_webview),url);
     gtk_widget_show_all (gtk_window);
     gtk_main ();
+
+    while(1){
+        sleep(500);
+    }
 }
 
 void webkit_start_thread(char *file){
@@ -136,7 +142,7 @@ void webkit_start_thread(char *file){
 
 int main(int argc, char *argv[])
 {
-    webkit_start_thread("/home/jan/Development/VLC/overlay.html");
+    webkit_start_thread("/home/jan/Development/VLC/overlaywave.html");
 
     libvlc_instance_t *libvlc;
     libvlc_media_t *m;
@@ -245,11 +251,11 @@ int main(int argc, char *argv[])
             n++;
 
         while(webkit_is_writing){
-            usleep(1000);
+            usleep(100);
         }
 
-        SDL_RWops *overlay_rwops = SDL_RWFromFile("/tmp/vlcoverlay.png","rb");
-        //SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_data,sizeof(overlay_png_data));
+        //SDL_RWops *overlay_rwops = SDL_RWFromFile("/tmp/vlcoverlay.png","rb");
+        SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_data.data,overlay_data.length);
         overlay = IMG_LoadPNG_RW(overlay_rwops);
 
         /* Blitting the surface does not prevent it from being locked and
