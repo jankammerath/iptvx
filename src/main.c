@@ -29,11 +29,16 @@ int main (int argc, char *argv[]){
 		/* initialise the video playback */
 		iptvx_video_init(arguments.input_video_file,1280,720);
 
-		/* create the thread for the main window */
-		iptvx_create_window(1280,720,keydown,startplay);
+		/* get the pointers to the webkit png data and status */
+		void* overlay_data = iptvx_get_overlay_ptr();
+		void* overlay_ready = iptvx_get_overlay_ready_ptr();
+		iptvx_window_set_overlay(overlay_data,overlay_ready);
 
 		/* start the webkit thread */
-		//iptvx_webkit_start_thread(arguments.input_html_file);
+		iptvx_webkit_start_thread(arguments.input_html_file);
+
+		/* create the thread for the main window */
+		iptvx_create_window(1280,720,keydown,startplay);
 	}
 
 	return 0;

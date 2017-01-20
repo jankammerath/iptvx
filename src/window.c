@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <glib.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mutex.h>
@@ -11,6 +12,12 @@ struct create_window_args{
     int width;
     int height;
 } typedef create_window_args;
+
+/* png data type */
+struct png_data{
+    unsigned char* data;
+    unsigned int length;
+} typedef png_data;
 
 /* SDL context type */
 struct sdl_context{
@@ -23,12 +30,24 @@ SDL_Thread *window_thread;
 bool window_terminate;
 sdl_context ctx;
 
+/* ptr to rendered data */
+void* overlay_data;
+bool* overlay_ready;
+
+void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr){
+    overlay_data = overlay_ptr;
+    overlay_ready = ready_ptr;
+}
+
 /* creates the main window for this application */
 int iptvx_create_window(int width, int height, 
                     void (*keyDownCallback)(int),
                     void (*startPlayCallback)(void*) ){
     SDL_Surface *screen, *overlay;
     SDL_Event event;
+
+    /* create empty overlay byte array */
+    GByteArray* overlay_png_data = g_byte_array_new();
 
     /* set window terminate to false */
     window_terminate = false;
@@ -79,8 +98,21 @@ int iptvx_create_window(int width, int height,
         /* Blitting the surface does not prevent it from being locked and
         * written to by another thread, so we use this additional mutex. */
         SDL_LockMutex(ctx.mutex);
+
+        /* blit the video surface */
         SDL_BlitSurface(ctx.surf, NULL, screen, NULL);
-        //SDL_BlitSurface(overlay, NULL, screen, NULL);
+
+        /* blit overlay surface when available */
+        if(overlay_ready){
+            png_data* overlay_png_ref = (png_data*)overlay_data;
+            overlay_png_data = g_byte_array_new_take(overlay_png_ref->data,overlay_png_ref->length);         
+        }
+
+        SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_data->data,overlay_png_data->len);
+        overlay = IMG_LoadPNG_RW(overlay_rwops);
+        SDL_BlitSurface(overlay, NULL, screen, NULL);
+
+        /* unlock mutex */
         SDL_UnlockMutex(ctx.mutex);
 
         /* flush to screen */

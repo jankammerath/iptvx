@@ -10,6 +10,7 @@ struct sdl_context
     SDL_mutex *mutex;
 } typedef sdl_context;
 
+void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr);
 int iptvx_create_window(int width, int height,void (*keyDownCallback)(int),void (*startPlayCallback)(void*));
 extern void *iptvx_window_lock(void *data, void **p_pixels);
 extern void iptvx_window_unlock(void *data, void *id, void *const *p_pixels);

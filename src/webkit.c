@@ -1,12 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL/SDL.h>
 #include <webkit2/webkit2.h>
 
-static pthread_t webkit_thread;
+SDL_Thread *webkit_thread;
 
 static GtkWidget *iptvx_gtk_window;
 static GtkWidget *iptvx_gtk_webview;
 static bool iptvx_webkit_ready;
+
+struct png_data{
+    unsigned char* data;
+    unsigned int length;
+} typedef png_data;
+
+static png_data overlay_data;
+
+/* returns overlay png data link */
+void* iptvx_get_overlay_ptr(){
+  return &overlay_data;
+}
+
+/* returns ptr to bool indicating if busy */
+bool* iptvx_get_overlay_ready_ptr(){
+  return &iptvx_webkit_ready;
+}
+
+static cairo_status_t iptvx_webkit_snapshot_write_png (void *closure, const unsigned char *data, unsigned int length){
+  g_byte_array_append (closure, data, length);
+  return CAIRO_STATUS_SUCCESS;
+}
 
 static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsyncResult *res,char *destfile)
 {
@@ -16,11 +39,16 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
     printf("An error happened generating the snapshot: %s\n",err->message);
   }
 
-  cairo_surface_write_to_png (surface, "/tmp/iptvxoverlay.png");
+  iptvx_webkit_ready = false;
 
-  /* wait 40ms and create a new one
-    which should result in 25fps */
-  usleep(1200000);
+  GByteArray* png_byte_data = g_byte_array_new();
+  cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
+  overlay_data.data = png_byte_data->data;
+  overlay_data.length = png_byte_data->len;
+
+  iptvx_webkit_ready = true;
+
+  usleep(1000);
 
   webkit_web_view_get_snapshot(webview,
          WEBKIT_SNAPSHOT_REGION_FULL_DOCUMENT,
@@ -35,8 +63,6 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
     return;
   }
 
-  iptvx_webkit_ready = true;
-
   webkit_web_view_get_snapshot(webview,
          WEBKIT_SNAPSHOT_REGION_FULL_DOCUMENT,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,
@@ -44,7 +70,7 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
-static void * iptvx_webkit_start(void* file){
+int iptvx_webkit_start(void* file){
 	iptvx_webkit_ready = false;
 
 	gtk_init(NULL,NULL);
@@ -67,8 +93,6 @@ static void * iptvx_webkit_start(void* file){
 }
 
 void iptvx_webkit_start_thread(char *file){
-  if(pthread_create(&webkit_thread,NULL,iptvx_webkit_start,(void *)file) != 0) {
-    fprintf (stderr, "Failed to launch thread for WebKit.\n");
-    exit (EXIT_FAILURE);
-  } 
+  iptvx_webkit_ready = false;
+  webkit_thread = SDL_CreateThread(iptvx_webkit_start,file);
 }
