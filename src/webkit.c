@@ -42,6 +42,7 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
 
   iptvx_webkit_ready = false;
   
+  g_byte_array_free(png_byte_data,false);
   png_byte_data = g_byte_array_new();
   cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
   overlay_data.data = png_byte_data->data;
@@ -51,11 +52,11 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
 
   usleep(1000);
 
-  webkit_web_view_get_snapshot(webview,
+  /* webkit_web_view_get_snapshot(webview,
          WEBKIT_SNAPSHOT_REGION_FULL_DOCUMENT,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,
          NULL,
-         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
+         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile); */
 }
 
 static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoadEvent status, char *destfile) {

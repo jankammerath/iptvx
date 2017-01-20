@@ -46,9 +46,6 @@ int iptvx_create_window(int width, int height,
     SDL_Surface *screen, *overlay;
     SDL_Event event;
 
-    /* create empty overlay byte array */
-    GByteArray* overlay_png_data = g_byte_array_new();
-
     /* set window terminate to false */
     window_terminate = false;
 
@@ -102,15 +99,11 @@ int iptvx_create_window(int width, int height,
         /* blit the video surface */
         SDL_BlitSurface(ctx.surf, NULL, screen, NULL);
 
-        /* blit overlay surface when available */
-        if(overlay_ready){
-            png_data* overlay_png_ref = (png_data*)overlay_data;
-            overlay_png_data = g_byte_array_new_take(overlay_png_ref->data,overlay_png_ref->length);         
-        }
-
-        SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_data->data,overlay_png_data->len);
+        png_data* overlay_png_ref = (png_data*)overlay_data;
+        SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,overlay_png_ref->length);
         overlay = IMG_LoadPNG_RW(overlay_rwops);
         SDL_BlitSurface(overlay, NULL, screen, NULL);
+        SDL_FreeRW(overlay_rwops);
 
         /* unlock mutex */
         SDL_UnlockMutex(ctx.mutex);
