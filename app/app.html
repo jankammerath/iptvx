@@ -1,22 +1,174 @@
+
+
+<!DOCTYPE html>
 <html>
 <head>
-	<style type="text/css">
-		.anim {
-			animation: fadeicon 1s steps(5, start) infinite;
-		  	-webkit-animation: fadeicon 1s steps(5, start) infinite;
-		}
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Oscillators</title>
 
-		@keyframes fadeicon {
-		  0%,100% { margin-left:100px; }
-		  50% { margin-left:0px; }
-		}
-	</style>	
+  <style type='text/css'>
+    body {
+        margin:0;
+        padding:0;
+        overflow:hidden;
+        background:transparent;
+    }
+
+    #canvas{
+        position: fixed;
+        bottom: 0px;
+    }
+  </style>
+
+
+
+<script type='text/javascript'>
+
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
+
+//<![CDATA[
+window.onload=function(){
+/**
+ *    Wave oscillators by Ken Fyrstenberg Nilsen
+ *    http://abdiassoftware.com/
+ *
+ *    CC-Attribute 3.0 License
+*/
+var ctx = canvas.getContext('2d'),
+    w, h;
+
+canvas.width = w = window.innerWidth * 1.1;
+canvas.height = h = window.innerHeight * 0.3;
+
+var osc1 = new osc(),
+    osc2 = new osc(),
+    osc3 = new osc(),
+    horizon = h * 0.5;
+    count = 40,
+    step = Math.ceil(w / count),
+    //points = new Array(count);
+    buffer = new ArrayBuffer(count * 4),
+    points = new Float32Array(buffer);
+
+osc1.max = 15;//h * 0.7;
+
+osc2.max = 5;
+osc2.speed = 0.03;
+
+osc2.max = 5;
+osc2.speed = 0.015;
+
+function fill() {
+    for(var i = 0; i < count; i++) {
+        points[i] = mixer(osc1, osc2, osc3);
+    }
+}
+fill();
+
+ctx.lineWidth = 20;
+ctx.strokeStyle = '#1d96d3';
+ctx.fillStyle = '#1d96d3';
+
+function loop() {
+
+    var i;
+
+    /// move points to the left
+    for(i = 0; i < count - 1; i++) {
+        points[i] = points[i + 1];
+    }
+
+    /// get a new point
+    points[count - 1] = mixer(osc1, osc2, osc3);
+
+    ctx.clearRect(0, 0, w, h);
+    //ctx.fillRect(0, 0, w, h);
+
+    /// render wave
+    ctx.beginPath();
+    ctx.moveTo(-5, points[0]);
+
+    for(i = 1; i < count; i++) {
+        ctx.lineTo(i * step, points[i]);
+    }
+
+    ctx.lineTo(w, h);
+    ctx.lineTo(-5, h);
+    ctx.lineTo(-5, points[1]);
+
+    ctx.stroke();
+    ctx.fill();
+}
+
+/// oscillator object
+function osc() {
+
+    this.variation = 0.4;
+    this.max = 150;
+    this.speed = 0.02;
+
+    var me = this,
+        a = 0,
+        max = getMax();
+
+    this.getAmp = function() {
+
+        a += this.speed;
+
+        if (a >= 2.0) {
+            a = 0;
+            max = getMax();
+        }
+
+        return max * Math.sin(a * Math.PI);
+    }
+
+    function getMax() {
+        return Math.random() * me.max * me.variation +
+            me.max * (1 - me.variation);
+    }
+
+    return this;
+}
+
+function mixer() {
+
+    var d = arguments.length,
+        i = d,
+        sum = 0;
+
+    if (d < 1) return 0;
+
+    while(i--) sum += arguments[i].getAmp();
+
+    return sum / d + horizon;
+}
+
+(function animloop(){
+  requestAnimFrame(animloop);
+  loop();
+})();
+
+}//]]>
+
+
+</script>
+
+
 </head>
 <body>
-	<div class="anim">
-		<span style="font-size:45px"><b>This</b> is 
-		<i style="color: #f50000;">probably</i> <span style="color:#ddd">it</span>
-		!</span>
-	</div>
+  <canvas id="canvas"></canvas>
+
 </body>
+
+
 </html>

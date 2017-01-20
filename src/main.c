@@ -10,6 +10,10 @@
 
 /* handles any key down event */
 void keydown(int keyCode){
+	if(keyCode == 27){
+		// termination of application
+		iptvx_video_free();
+	}
 	printf("key %d\n",keyCode);
 }
 
