@@ -6,32 +6,29 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mutex.h>
 
-/* SDL context type */
-struct sdl_context
-{
-    SDL_Surface *surf;
-    SDL_mutex *mutex;
-} typedef sdl_context;
-
 /* window args type */
 struct create_window_args{
     int width;
     int height;
 } typedef create_window_args;
 
+/* SDL context type */
+struct sdl_context{
+    SDL_Surface *surf;
+    SDL_mutex *mutex;
+} typedef sdl_context;
+
 /* window variables */
 SDL_Thread *window_thread;
-int window_terminate;
+bool window_terminate;
+sdl_context ctx;
 
 /* creates the main window for this application */
-int iptvx_create_window(void* window_arguments){
+int iptvx_create_window(int width, int height, 
+                    void (*keyDownCallback)(int),
+                    void (*startPlayCallback)(void*) ){
     SDL_Surface *screen, *overlay;
     SDL_Event event;
-    SDL_Rect rect;
-    sdl_context ctx;
-
-    /* cast window argument to proper struct */
-    create_window_args* args = (create_window_args*)window_arguments;
 
     /* set window terminate to false */
     window_terminate = false;
@@ -42,24 +39,53 @@ int iptvx_create_window(void* window_arguments){
     }
 
     /* create the SDL surface */
-    ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, args->width, args->height,
-                                    16, 0x001f, 0x07e0, 0xf800, 0);
+    ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
     ctx.mutex = SDL_CreateMutex();
 
-    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF;
-    screen = SDL_SetVideoMode(args->width, args->height, 32, options);
-    if(!screen)
-    {
+    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN;
+    screen = SDL_SetVideoMode(width, height, 32, options);
+    if(!screen){
         printf("Unable to set video mode for SDL\n");
     }
 
+    /* exec callback to call for player */
+    (*startPlayCallback)(&ctx);
+
     while(!window_terminate){
-      /* Blitting the surface does not prevent it from being locked and
-       * written to by another thread, so we use this additional mutex. */
-      SDL_LockMutex(ctx.mutex);
-      SDL_BlitSurface(ctx.surf, NULL, screen, NULL);
-      SDL_BlitSurface(overlay, NULL, screen, NULL);
-      SDL_UnlockMutex(ctx.mutex);
+        int keyPressed;
+
+        /* poll SDL events and act accordingly */
+        while(SDL_PollEvent(&event)){ 
+            /* handle the SDL events */
+            switch(event.type){
+                /* kill the application */
+                case SDL_QUIT:
+                    window_terminate = true;
+                    break;
+                case SDL_KEYDOWN:
+                    keyPressed = event.key.keysym.sym;
+                    (*keyDownCallback)(keyPressed);
+                    break;
+            }
+
+            /* handle pressed keys */
+            switch(keyPressed){
+                case SDLK_ESCAPE:
+                    window_terminate = true;
+                    break;
+            }
+        }
+
+        /* Blitting the surface does not prevent it from being locked and
+        * written to by another thread, so we use this additional mutex. */
+        SDL_LockMutex(ctx.mutex);
+        SDL_BlitSurface(ctx.surf, NULL, screen, NULL);
+        //SDL_BlitSurface(overlay, NULL, screen, NULL);
+        SDL_UnlockMutex(ctx.mutex);
+
+        /* flush to screen */
+        SDL_Flip(screen);
+        SDL_Delay(10);
     }
 
     /* Close window and clean up SDL */
@@ -69,7 +95,7 @@ int iptvx_create_window(void* window_arguments){
     SDL_Quit();
 }
 
-static void *iptvx_window_lock(void *data, void **p_pixels){
+extern void *iptvx_window_lock(void *data, void **p_pixels){
     sdl_context *ctx = data;
 
     SDL_LockMutex(ctx->mutex);
@@ -78,7 +104,7 @@ static void *iptvx_window_lock(void *data, void **p_pixels){
     return NULL; /* picture identifier, not needed here */
 }
 
-static void iptvx_window_unlock(void *data, void *id, void *const *p_pixels){
+extern void iptvx_window_unlock(void *data, void *id, void *const *p_pixels){
     sdl_context *ctx = data;
 
     SDL_UnlockSurface(ctx->surf);
@@ -87,15 +113,8 @@ static void iptvx_window_unlock(void *data, void *id, void *const *p_pixels){
     assert(id == NULL); /* picture identifier, not needed here */
 }
 
-static void iptvx_window_display(void *data, void *id){
+extern void iptvx_window_display(void *data, void *id){
     /* LibVLC wants to display the video */
     (void) data;
     assert(id == NULL);
-}
-
-void iptvx_create_window_thread(int width,int height){
-  create_window_args args;
-  args.width = width;
-  args.height = height;
-  window_thread = SDL_CreateThread(iptvx_create_window,&args);
 }

@@ -3,12 +3,9 @@
 
 #include <vlc/vlc.h>
 
-extern libvlc_instance_t * inst;
-extern libvlc_media_player_t *mp;
-extern libvlc_media_t *m;
-
-extern void iptvx_video_play(char*);
-extern void iptvx_video_set_window_xid(int);
-
+void iptvx_video_init(char *videofile, int width, int height);
+void iptvx_video_play(libvlc_video_lock_cb lock, libvlc_video_unlock_cb unlock, 
+						libvlc_video_display_cb display, void* context);
+void iptvx_video_free();
 
 #endif
