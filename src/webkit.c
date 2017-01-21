@@ -16,6 +16,7 @@ struct png_data{
 
 static png_data overlay_data;
 GByteArray* png_byte_data;
+GByteArray* old_png_byte_data;
 
 /* returns overlay png data link */
 void* iptvx_get_overlay_ptr(){
@@ -41,8 +42,8 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
   }
 
   iptvx_webkit_ready = false;
-  
-  g_byte_array_free(png_byte_data,true);
+
+  old_png_byte_data = png_byte_data;  
   png_byte_data = g_byte_array_new();
   cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
   overlay_data.data = png_byte_data->data;
@@ -54,6 +55,8 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
   iptvx_webkit_ready = true;
 
   usleep(1000);
+
+  g_byte_array_free(old_png_byte_data,true);
 
   webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
