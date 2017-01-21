@@ -22,11 +22,4 @@ body{
 	height:100px;
 	position:fixed;
 	bottom:30px;
-  	animation: fadeinout 1s steps(5, start) infinite;
-  	/* -webkit-animation: fadeicon 1s steps(5, start) infinite; */
-}
-
-@keyframes fadeinout {
-  0%,100% { opacity: 0.5 }
-  50% { opacity: 1 }
 }

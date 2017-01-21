@@ -28,6 +28,22 @@ bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
 }
 
+/* sends a key to the widget */
+extern void iptvx_webkit_sendkey(int keyCode){
+  printf("WebKit should fire key %d\n",keyCode);
+
+  char scriptKeyEvent[512];
+
+  sprintf(scriptKeyEvent,"var e = new Event(\"keydown\");"
+        "e.key=\"\";e.keyCode=%d;"
+        "e.which=%d;e.altKey=false;e.ctrlKey=true;"
+        "e.shiftKey=false;e.metaKey=false;e.bubbles=true;"
+        "window.dispatchEvent(e);",keyCode,keyCode);
+
+  webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(iptvx_gtk_webview),
+                    scriptKeyEvent,NULL,NULL,NULL);
+}
+
 static cairo_status_t iptvx_webkit_snapshot_write_png (void *closure, const unsigned char *data, unsigned int length){
   g_byte_array_append (closure, data, length);
   return CAIRO_STATUS_SUCCESS;

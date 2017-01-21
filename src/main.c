@@ -14,8 +14,10 @@ void keydown(int keyCode){
 	if(keyCode == 27){
 		// termination of application
 		iptvx_video_free();
+	}else{
+		// forward key input to webkit
+		iptvx_webkit_sendkey(keyCode);		
 	}
-	printf("key %d\n",keyCode);
 }
 
 /* starts playback when SDL window is ready */
