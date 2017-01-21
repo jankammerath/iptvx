@@ -41,7 +41,7 @@ int main (int argc, char *argv[]){
 
 		/* start the webkit thread */
 		char* overlayApp = iptvx_config_get_overlay_app();
-		iptvx_webkit_start_thread("/home/jan/Development/iptvx/app/app.html");
+		iptvx_webkit_start_thread(overlayApp);
 
 		/* create the thread for the main window */
 		iptvx_create_window(1280,720,keydown,startplay);

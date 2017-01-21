@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <libconfig.h>
 #include <unistd.h>
+#include <glib.h>
 
 config_t cfg;
 
@@ -67,8 +68,19 @@ char* iptvx_config_get_overlay_app(){
 
 	const char* appFile = "";
 	if (config_lookup_string(&cfg, "app", &appFile)){
-		/* we have the app file */
-		printf("App file: %s",appFile);
+		/* we have the app file and check if the defined 
+			path is relative which means that we need to
+			actually get the full dir */
+		if(appFile[0] != '/'){
+			/* we need to create the full file path */
+			char* appDir;
+			char buff[PATH_MAX+1];
+
+    		appDir = getcwd(buff,PATH_MAX+1);
+    		if(appDir != NULL) {
+        		result = g_strjoin("/",appDir,appFile,NULL);
+    		}
+		}
 	}
 
 	return result;
