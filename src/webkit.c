@@ -42,21 +42,22 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
 
   iptvx_webkit_ready = false;
   
-  g_byte_array_free(png_byte_data,false);
+  g_byte_array_free(png_byte_data,true);
   png_byte_data = g_byte_array_new();
   cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
   overlay_data.data = png_byte_data->data;
   overlay_data.length = png_byte_data->len;
 
+  /* free the surface */
+  cairo_surface_destroy(surface);
+
   iptvx_webkit_ready = true;
 
   usleep(1000);
 
-  /* webkit_web_view_get_snapshot(webview,
-         WEBKIT_SNAPSHOT_REGION_FULL_DOCUMENT,
-         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,
-         NULL,
-         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile); */
+  webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
+         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
+         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
 static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoadEvent status, char *destfile) {
@@ -65,10 +66,8 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
     return;
   }
 
-  webkit_web_view_get_snapshot(webview,
-         WEBKIT_SNAPSHOT_REGION_FULL_DOCUMENT,
-         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,
-         NULL,
+  webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
+         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 

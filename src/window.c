@@ -99,11 +99,16 @@ int iptvx_create_window(int width, int height,
         /* blit the video surface */
         SDL_BlitSurface(ctx.surf, NULL, screen, NULL);
 
+        while(!overlay_ready){
+            SDL_Delay(1);
+        }
+
         png_data* overlay_png_ref = (png_data*)overlay_data;
         SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,overlay_png_ref->length);
         overlay = IMG_LoadPNG_RW(overlay_rwops);
         SDL_BlitSurface(overlay, NULL, screen, NULL);
         SDL_FreeRW(overlay_rwops);
+        SDL_FreeSurface(overlay);
 
         /* unlock mutex */
         SDL_UnlockMutex(ctx.mutex);
