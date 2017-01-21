@@ -121,7 +121,6 @@ int iptvx_create_window(int width, int height,
     /* Close window and clean up SDL */
     SDL_DestroyMutex(ctx.mutex);
     SDL_FreeSurface(ctx.surf);
-    SDL_FreeSurface(overlay);
     SDL_Quit();
 }
 
