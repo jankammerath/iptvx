@@ -39,6 +39,7 @@ body{
 	width:100%;
 	height:30px;
 	background-color: #131152;
+	background: linear-gradient(to right, #15135a 0%,#0c0b35 100%);
 }
 
 #progressbar{
