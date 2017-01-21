@@ -61,7 +61,7 @@ int iptvx_create_window(int width, int height,
     ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
     ctx.mutex = SDL_CreateMutex();
 
-    int options = SDL_ANYFORMAT | SDL_SWSURFACE | SDL_DOUBLEBUF /* | SDL_FULLSCREEN | SDL_HWSURFACE */;
+    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF /* | SDL_FULLSCREEN | SDL_SWSURFACE */;
     screen = SDL_SetVideoMode(width, height, 32, options);
     if(!screen){
         printf("Unable to set video mode for SDL\n");

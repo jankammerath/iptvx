@@ -9,10 +9,30 @@
     <link rel="stylesheet" type="text/css" media="all" href="css/style.css" />
 </head>
 <body>
-    <div id="control">
-        Currently running on TV
+    <div id="ui">
+        <div id="control">
+            <div id="progress">
+                <div id="progressbar">
+                    <div id="progressbarvalue"></div>
+                </div>
+                
+                <div id="showstart">21:39</div>
+                <div id="showend">22:15</div>
+                <div id="progresstime">21:57</div>
+            </div>
+            <div id="info">
+                <div id="channelname">National History Channel (HD)</div>
+                <div id="showtitle">The Great Adventures - No Mountain High Enough</div>
+                <div id="showtype">Documentary (2017)</div>
+                <div id="showtext">
+                    The great mountains of Alaska have long been a mystery to scientists 
+                    and this documentary explores their origins, history and mysteries.
+                </div>
+            </div>
+        </div>
     </div>
 
+    <div id="debuginfo">Debug info</div>
     <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
 </body>

@@ -13,13 +13,101 @@ body{
 	margin:0px;
 }
 
+#debuginfo{
+    font-size: 13px;
+    position: fixed;
+    bottom: 5px;
+    right: 10px;
+    color: #ddd;	
+}
+
 #control{
 	background-color:#0e0d40;
 	color:#ffffff;
 	opacity:0.8;
-	padding:20px;
 	width:600px;
-	height:100px;
 	position:fixed;
 	bottom:30px;
+    border-top: 2px solid #5c5b92;
+    box-shadow: 0px 0px 18px -1px rgba(0,0,0,0.75);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background: linear-gradient(to bottom, #0e0d40 0%,#171563 100%);
+}
+
+#progress{
+	width:100%;
+	height:30px;
+	background-color: #131152;
+}
+
+#progressbar{
+	height:2px;
+	width:100%;
+}
+
+#progressbarvalue{
+	height:2px;
+	width:67%;
+	background-color:#ffffff;
+	opacity: 0.7;
+}
+
+#progresstime{
+	font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+    position: absolute;
+    left: 67%;
+    padding-top: 5px;
+    margin-left: -16px;
+}
+
+#showstart, #showend{
+	font-size: 13px;
+    padding: 5px 10px 5px 10px;
+    position:absolute;
+}
+
+#showstart{
+	left:0px;
+}
+
+#showend{
+	right:0px;
+}
+
+#info{
+	padding: 5px 20px 20px 20px;
+}
+
+#channelname{
+	float: right;
+    font-size: 15px;
+    margin-top: 5px;
+    opacity: 0.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 5px;
+    max-width: 150px;
+}
+
+#showtitle{
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 20px;	
+}
+
+#showtype{
+    font-size: 15px;	
+}
+
+#showtext{
+    font-size: 15px;
+    margin-top: 10px;
+    width: 500px;
+    overflow-y: hidden;
+    height: 40px;	
 }

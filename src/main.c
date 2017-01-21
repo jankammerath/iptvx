@@ -37,7 +37,7 @@ int main (int argc, char *argv[]){
 		int height = iptvx_config_get_setting_int("height",720);
 
 		/* initialise the video playback */
-		iptvx_video_init("http://live-lh.daserste.de/i/daserste_de@91204/master.m3u8",width,height);
+		iptvx_video_init("http://daserste_live-lh.akamaihd.net/i/daserste_de@91204/index_2692_av-b.m3u8?sd=10&rebase=on",width,height);
 
 		/* get the pointers to the webkit png data and status */
 		void* overlay_data = iptvx_get_overlay_ptr();

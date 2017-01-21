@@ -28,17 +28,19 @@ bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
 }
 
-/* sends a key to the widget */
+/* sends a key to the browser */
 extern void iptvx_webkit_sendkey(int keyCode){
-  printf("WebKit should fire key %d\n",keyCode);
-
   char scriptKeyEvent[512];
 
+  char keyName[2];
+  keyName[0] = (char)keyCode;
+  keyName[1] = '\0';
+  char* xkeyName = "a";
   sprintf(scriptKeyEvent,"var e = new Event(\"keydown\");"
-        "e.key=\"\";e.keyCode=%d;"
-        "e.which=%d;e.altKey=false;e.ctrlKey=true;"
+        "e.key=\"%s\";e.keyCode=%d;"
+        "e.which=%d;e.altKey=false;e.ctrlKey=false;"
         "e.shiftKey=false;e.metaKey=false;e.bubbles=true;"
-        "window.dispatchEvent(e);",keyCode,keyCode);
+        "window.dispatchEvent(e);",keyName,keyCode,keyCode);
 
   webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(iptvx_gtk_webview),
                     scriptKeyEvent,NULL,NULL,NULL);
