@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "args.h"
+#include "config.h"
 #include "window.h"
 #include "video.h"
 #include "webkit.h"
@@ -26,12 +27,12 @@ void startplay(void* context){
 /* main application code */
 int main (int argc, char *argv[]){
 	/* parse input arguments first */
-	struct arguments arguments = iptvx_parse_args(argc,argv);
+	//struct arguments arguments = iptvx_parse_args(argc,argv);
 
-	/* ensure sufficient parameters where provided */
-	if(arguments.sufficient == true){
+	/* ensure that there is a config file */
+	if(iptvx_config_init() == true){
 		/* initialise the video playback */
-		iptvx_video_init(arguments.input_video_file,1280,720);
+		iptvx_video_init("http://live-lh.daserste.de/i/daserste_de@91204/master.m3u8",1280,720);
 
 		/* get the pointers to the webkit png data and status */
 		void* overlay_data = iptvx_get_overlay_ptr();
@@ -39,11 +40,13 @@ int main (int argc, char *argv[]){
 		iptvx_window_set_overlay(overlay_data,overlay_ready);
 
 		/* start the webkit thread */
-		iptvx_webkit_start_thread(arguments.input_html_file);
+		char* overlayApp = iptvx_config_get_overlay_app();
+		iptvx_webkit_start_thread("/home/jan/Development/iptvx/app/app.html");
 
 		/* create the thread for the main window */
 		iptvx_create_window(1280,720,keydown,startplay);
 	}
+
 
 	return 0;
 }

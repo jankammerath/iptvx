@@ -17,7 +17,7 @@ void iptvx_video_init(char *videofile, int width, int height){
 	inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 
 	/* open the defined media file */
-	m = libvlc_media_new_path(inst,videofile);
+	m = libvlc_media_new_location(inst,videofile);
 	mp = libvlc_media_player_new_from_media(m);
 
 	/* configure width and height of the video */

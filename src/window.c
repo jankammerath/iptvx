@@ -34,6 +34,9 @@ sdl_context ctx;
 void* overlay_data;
 bool* overlay_ready;
 
+/* local storage */
+GByteArray* current_overlay;
+
 void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr){
     overlay_data = overlay_ptr;
     overlay_ready = ready_ptr;
@@ -63,6 +66,9 @@ int iptvx_create_window(int width, int height,
     if(!screen){
         printf("Unable to set video mode for SDL\n");
     }
+
+    /* set window caption */
+    SDL_WM_SetCaption("iptvx",0);
 
     /* exec callback to call for player */
     (*startPlayCallback)(&ctx);
@@ -99,12 +105,14 @@ int iptvx_create_window(int width, int height,
         /* blit the video surface */
         SDL_BlitSurface(ctx.surf, NULL, screen, NULL);
 
-        while(!overlay_ready){
-            SDL_Delay(1);
+        /* take the data from the new overlay */
+        if(overlay_ready){
+            png_data* overlay_png_ref = (png_data*)overlay_data;
+            g_byte_array_free(current_overlay,false);
+            current_overlay = g_byte_array_new_take(overlay_png_ref->data,overlay_png_ref->length);
         }
 
-        png_data* overlay_png_ref = (png_data*)overlay_data;
-        SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,overlay_png_ref->length);
+        SDL_RWops *overlay_rwops = SDL_RWFromMem(current_overlay->data,current_overlay->len);
         overlay = IMG_LoadPNG_RW(overlay_rwops);
         SDL_BlitSurface(overlay, NULL, screen, NULL);
         SDL_FreeRW(overlay_rwops);
@@ -115,7 +123,7 @@ int iptvx_create_window(int width, int height,
 
         /* flush to screen */
         SDL_Flip(screen);
-        SDL_Delay(10);
+        SDL_Delay(5);
     }
 
     /* Close window and clean up SDL */

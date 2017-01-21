@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <libconfig.h>
+#include <unistd.h>
+
+config_t cfg;
+
+/* gets the configuration file and also 
+	checks if the configuration file exists */
+char* iptvx_get_config_filename(){
+	char* result = "";
+
+	/* check if file is in app directory */
+	char* localconfig = "cfg/iptvx.conf";
+	if(access(localconfig, F_OK) != -1) {
+		/* there is a local config file */
+		result = localconfig;
+	}else{
+		printf("No local config file found ('cfg/iptvx.conf')\n");
+	}
+
+	return result;
+}
+
+/* checks if a local config file is present */
+bool iptvx_config_file_exists(){
+	bool result = false;
+
+	char* configFile = iptvx_get_config_filename();
+	if(configFile[0] != '\0'){
+		result = true;
+	}
+
+	return result;
+}
+
+/* initialises and loads config file */
+bool iptvx_config_init(){
+	bool result = false;
+
+	if(iptvx_config_file_exists() == true){
+		/* init config lib */
+		config_init(&cfg);
+
+		/* define config file */
+		char* configFile = iptvx_get_config_filename();
+
+		if (!config_read_file(&cfg,configFile)) {
+			fprintf(stderr, "Bad configuration file.\n"
+							"%s:%d - %s\n",
+				config_error_file(&cfg),
+				config_error_line(&cfg),
+				config_error_text(&cfg));
+			config_destroy(&cfg);
+		}else{
+			/* config is good */
+			result = true;
+		}
+	}
+
+	return result;
+}
+
+char* iptvx_config_get_overlay_app(){
+	char* result = "";
+
+	const char* appFile = "";
+	if (config_lookup_string(&cfg, "app", &appFile)){
+		/* we have the app file */
+		printf("App file: %s",appFile);
+	}
+
+	return result;
+}
