@@ -27,12 +27,15 @@ void startplay(void* context){
 /* main application code */
 int main (int argc, char *argv[]){
 	/* parse input arguments first */
-	//struct arguments arguments = iptvx_parse_args(argc,argv);
+	struct arguments arguments = iptvx_parse_args(argc,argv);
 
 	/* ensure that there is a config file */
 	if(iptvx_config_init() == true){
+		int width = iptvx_config_get_setting_int("width",1280);
+		int height = iptvx_config_get_setting_int("height",720);
+
 		/* initialise the video playback */
-		iptvx_video_init("http://live-lh.daserste.de/i/daserste_de@91204/master.m3u8",1280,720);
+		iptvx_video_init("http://live-lh.daserste.de/i/daserste_de@91204/master.m3u8",width,height);
 
 		/* get the pointers to the webkit png data and status */
 		void* overlay_data = iptvx_get_overlay_ptr();
@@ -44,7 +47,7 @@ int main (int argc, char *argv[]){
 		iptvx_webkit_start_thread(overlayApp);
 
 		/* create the thread for the main window */
-		iptvx_create_window(1280,720,keydown,startplay);
+		iptvx_create_window(width,height,keydown,startplay);
 	}
 
 

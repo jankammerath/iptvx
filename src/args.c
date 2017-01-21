@@ -32,6 +32,6 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 
 struct arguments iptvx_parse_args(int argc, char *argv[]){
 	struct arguments arguments;
-	argp_parse (&argp, argc, argv, 0, 0, &arguments);
+	//argp_parse (&argp, argc, argv, 0, 0, &arguments);
 	return arguments;
 }

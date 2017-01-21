@@ -85,3 +85,36 @@ char* iptvx_config_get_overlay_app(){
 
 	return result;
 }
+
+int iptvx_config_get_setting_int(char* setting_name, int default_value){
+	int result = default_value;
+
+	int base;
+	if (config_lookup_int(&cfg, setting_name, &base)){
+		result = base;
+	}
+
+	return result;
+}
+
+bool iptvx_config_get_setting_bool(char* setting_name, bool default_value){
+	bool result = default_value;
+
+	int base;
+	if (config_lookup_bool(&cfg, setting_name, &base)){
+		result = base;
+	}
+
+	return result;
+}
+
+char* iptvx_config_get_setting_string(char* setting_name, char* default_value){
+	char* result = default_value;
+
+	const char* base;
+	if (config_lookup_string(&cfg, setting_name, &base)){
+		result = (char*)base;
+	}
+
+	return result;
+}
