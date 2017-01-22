@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <glib.h>
+#include <libconfig.h>
 
+/* a programme on a channel */
 struct programme{
 	GString* title;
 	long start;
@@ -12,6 +14,7 @@ struct programme{
 	GString* description;
 } typedef programme;
 
+/* a channel */
 struct channel{
 	GString* name;
 	GString* url;
@@ -19,7 +22,10 @@ struct channel{
 	programme programmeList[];
 } typedef channel;
 
-/* initialise epg */
-bool epg_init(channel channelList[]){
+/* the channel list */
+channel list[];
 
+/* initialise epg */
+bool iptvx_epg_init(config_t* cfg){
+	
 }

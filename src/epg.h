@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool epg_init(channel channelList[]);
+bool iptvx_epg_init(config_t* cfg);
 
 #endif

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <libconfig.h>
 #include "args.h"
 #include "config.h"
 #include "window.h"
@@ -36,6 +37,10 @@ int main (int argc, char *argv[]){
 	if(iptvx_config_init() == true){
 		int width = iptvx_config_get_setting_int("width",1280);
 		int height = iptvx_config_get_setting_int("height",720);
+
+		/* initialise the epg */
+		config_t* cfg = iptvx_get_config();
+		iptvx_epg_init(cfg);
 
 		/* initialise the video playback */
 		iptvx_video_init("https://zdf1314-lh.akamaihd.net/i/de14_v1@392878/index_1456_av-b.m3u8?sd=10&rebase=on&id=",width,height);

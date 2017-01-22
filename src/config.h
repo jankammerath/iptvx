@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+config_t* iptvx_get_config();
 bool iptvx_config_init();
 bool iptvx_config_file_exists();
 char* iptvx_get_config_filename();

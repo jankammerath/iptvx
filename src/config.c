@@ -7,6 +7,11 @@
 
 config_t cfg;
 
+/* returns ptr to config */
+config_t* iptvx_get_config(){
+	return &cfg;
+}
+
 /* gets the configuration file and also 
 	checks if the configuration file exists */
 char* iptvx_get_config_filename(){
