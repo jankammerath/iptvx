@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <libconfig.h>
+#include <glib.h>
 #include "args.h"
 #include "config.h"
 #include "window.h"
@@ -42,8 +43,11 @@ int main (int argc, char *argv[]){
 		config_t* cfg = iptvx_get_config();
 		iptvx_epg_init(cfg);
 
+		/* get the default channel's url */
+		GString* defaultUrl = iptvx_epg_get_default_channel_url();
+
 		/* initialise the video playback */
-		iptvx_video_init("https://zdf1314-lh.akamaihd.net/i/de14_v1@392878/index_1456_av-b.m3u8?sd=10&rebase=on&id=",width,height);
+		iptvx_video_init((char*)defaultUrl,width,height);
 
 		/* get the pointers to the webkit png data and status */
 		void* overlay_data = iptvx_get_overlay_ptr();
