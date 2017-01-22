@@ -40,7 +40,7 @@ static size_t curl_write_data(void *buffer, size_t G_GNUC_UNUSED size, size_t nm
 }
 
 /* downloads a URL and returns the result as string */
-GString* util_download_string(GString* url){
+GString* util_download_string(char* url){
 	GString* result = g_string_new("");
 
 	/* curl types */
@@ -51,11 +51,14 @@ GString* util_download_string(GString* url){
 	curl_global_init(CURL_GLOBAL_DEFAULT);
  	curl = curl_easy_init();
 
+ 	printf("cURL fetching '%s'\n",url);
+
  	/* ensure CURL initialised properly */
  	if(curl){
  		/* define the url to fetch */
  		curl_easy_setopt(curl,CURLOPT_URL,url);
 
+ 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "iptvx-xmltv-agent/1.0");
  		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
     	curl_easy_setopt(curl, CURLOPT_WRITEDATA, result);
 
@@ -67,6 +70,8 @@ GString* util_download_string(GString* url){
       		fprintf(stderr, "cURL failed: %s\n",
             				curl_easy_strerror(res));
     	}
+
+    	printf("XML RESULT: %s\n",result);
  
 	    /* cleanup curl */ 
 	    curl_easy_cleanup(curl);

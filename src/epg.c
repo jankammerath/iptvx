@@ -50,7 +50,17 @@ void iptvx_epg_load_channel(channel* current){
 	time_t now = time(NULL);
 	struct tm *t = localtime(&now);
 	strftime(epg_url,sizeof(epg_url)-1,(char*)current->epgUrl,t);
-	printf("url: %s\n",epg_url);
+
+	char* cacheFile = g_strrstr(epg_url,"/")+1;
+	char* cacheFilePath = g_strjoin("","cache/epg/",cacheFile,NULL);
+
+	if(!util_file_exists(cacheFilePath)){
+		/* file doesn't exist, we need to fetch it */
+		GString* xmltv = util_download_string(epg_url);
+		printf("XML:\n%s\n",xmltv);
+	}else{
+		/* file exists, we'll get it */
+	}
 }
 
 /* initiates the epg load for each channel */
