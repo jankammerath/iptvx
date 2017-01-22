@@ -46,6 +46,8 @@ int main (int argc, char *argv[]){
 		/* get the default channel's url */
 		GString* defaultUrl = iptvx_epg_get_default_channel_url();
 
+		exit(1);
+
 		/* initialise the video playback */
 		iptvx_video_init((char*)defaultUrl,width,height);
 

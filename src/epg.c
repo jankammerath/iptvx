@@ -43,9 +43,14 @@ GString* iptvx_epg_get_default_channel_url(){
 	return result;
 }
 
-/* loads the epg data of the channel into the list */
-int iptvx_epg_load_channel(void* channelName){
-	return 0;
+/* loads the epg of the defined channel */
+void iptvx_epg_load_channel(channel* current){
+	/* create EPG url for today */
+	char epg_url[256];
+	time_t now = time(NULL);
+	struct tm *t = localtime(&now);
+	strftime(epg_url,sizeof(epg_url)-1,(char*)current->epgUrl,t);
+	printf("url: %s\n",epg_url);
 }
 
 /* initiates the epg load for each channel */
@@ -56,7 +61,7 @@ void iptvx_epg_load(){
 		channel* current = &g_array_index(list,channel,c);
 
 		/* start the thread to capture xmltv epg */
-		SDL_CreateThread(iptvx_epg_load_channel,current);
+		iptvx_epg_load_channel(current);
 	}
 }
 
@@ -110,6 +115,9 @@ bool iptvx_epg_init(config_t* cfg){
             /* append channel to list */
             g_array_append_val(list,current);
 		}
+
+		// all channels parsed, launch epg load
+		iptvx_epg_load();
 	}else{
 		/* output and error when channels not present */
 		printf("Error getting channels from config\n");
