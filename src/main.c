@@ -8,6 +8,7 @@
 #include "window.h"
 #include "video.h"
 #include "webkit.h"
+#include "epg.h"
 
 /* handles any key down event */
 void keydown(int keyCode){
