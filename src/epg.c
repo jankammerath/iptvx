@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <libconfig.h>
 #include <SDL/SDL.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
 #include "util.h"
 
 /* a programme on a channel */
@@ -43,6 +45,41 @@ GString* iptvx_epg_get_default_channel_url(){
 	return result;
 }
 
+/* parses the programmes from xmltv and returns it as 
+	a GArray holding programme structs */
+GArray* iptvx_epg_get_programmelist(GString* xmltv){
+	GArray* result;
+
+	/* create libxml object instance */
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+
+	/* parse from the xmltv string */
+	doc = xmlParseDoc(xmltv->str);
+	cur = xmlDocGetRootElement(doc);
+
+	/* get all programme nodes */
+	xmlNodePtr progNode = cur->children;
+	while(progNode != NULL){
+		if(xmlStrcmp(progNode->name,"programme")){
+			xmlNodePtr propNode = progNode->children;
+
+			while(propNode != NULL){
+				printf("prop: %s\n",propNode->name);
+				if(xmlStrcmp(propNode->name,"title")){
+					printf("Programme: %s\n",xmlNodeGetContent(propNode));
+				}
+
+				propNode = propNode->next;
+			}
+		}
+
+		progNode = progNode->next;
+	}
+
+	return result;
+}
+
 /* loads the epg of the defined channel */
 void iptvx_epg_load_channel(channel* current){
 	/* create EPG url for today */
@@ -54,13 +91,19 @@ void iptvx_epg_load_channel(channel* current){
 	char* cacheFile = g_strrstr(epg_url,"/")+1;
 	char* cacheFilePath = g_strjoin("","cache/epg/",cacheFile,NULL);
 
+	GString* xmltv = g_string_new(NULL);
 	if(!util_file_exists(cacheFilePath)){
 		/* file doesn't exist, we need to fetch it */
-		GString* xmltv = util_download_string(epg_url);
-		printf("XMLTV data: %s",xmltv->str);
+		xmltv = util_download_string(epg_url);
+
+		/* finally flush the xmltv to disk cache */
+
 	}else{
 		/* file exists, we'll get it */
 	}
+
+	/* parse the programme list from the xmltv data */
+	current->programmeList = iptvx_epg_get_programmelist(xmltv);
 }
 
 /* initiates the epg load for each channel */
