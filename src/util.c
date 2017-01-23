@@ -17,31 +17,15 @@ bool util_file_exists(char* fileName){
 	return result;
 }
 
-/* replace a string in a string */
-char* str_replace(const char* orig_str, const char* old_token, const char* new_token){
-   char*       new_str = 0;
-   const char* pos = strstr(orig_str, old_token);
-
-   if (pos){
-      new_str = calloc(1, strlen(orig_str) - strlen(old_token) + strlen(new_token) + 1);
-      strncpy(new_str, orig_str, pos - orig_str);
-      strcat(new_str, new_token);
-      strcat(new_str, pos + strlen(old_token));
-   }
-
-   return new_str;
-}
-
-/* curl write function to flush into gstring */
-static size_t curl_write_data(void *buffer, size_t G_GNUC_UNUSED size, size_t nmemb, void *userp){
-	GString *s = userp;
-	g_string_append_len(s, buffer, nmemb);
-	return nmemb;
+/* cURL write function to flush into the gstring */
+int util_curl_write_data(char* in, uint size, uint nmemb, GString* out){
+  g_string_append_len(out, in, nmemb);
+  return nmemb;
 }
 
 /* downloads a URL and returns the result as string */
 GString* util_download_string(char* url){
-	GString* result = g_string_new("");
+	GString* result = g_string_new(NULL);
 
 	/* curl types */
 	CURL *curl;
@@ -51,27 +35,26 @@ GString* util_download_string(char* url){
 	curl_global_init(CURL_GLOBAL_DEFAULT);
  	curl = curl_easy_init();
 
- 	printf("cURL fetching '%s'\n",url);
-
  	/* ensure CURL initialised properly */
  	if(curl){
  		/* define the url to fetch */
  		curl_easy_setopt(curl,CURLOPT_URL,url);
 
- 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "iptvx-xmltv-agent/1.0");
- 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data);
+ 		/* set the curl options for fetching the data */
+ 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "iptvx/1.0 (iptvx.org)");
+ 		curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
+ 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, util_curl_write_data);
     	curl_easy_setopt(curl, CURLOPT_WRITEDATA, result);
 
  		/* execute the query */
  		res = curl_easy_perform(curl);
-    
+
     	/* check for any errors */ 
     	if(res != CURLE_OK){
-      		fprintf(stderr, "cURL failed: %s\n",
-            				curl_easy_strerror(res));
+      		fprintf(stderr, "cURL failed for '%s':\n%s\n", 
+      				url, curl_easy_strerror(res));
     	}
-
-    	printf("XML RESULT: %s\n",result);
  
 	    /* cleanup curl */ 
 	    curl_easy_cleanup(curl);

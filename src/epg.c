@@ -57,7 +57,7 @@ void iptvx_epg_load_channel(channel* current){
 	if(!util_file_exists(cacheFilePath)){
 		/* file doesn't exist, we need to fetch it */
 		GString* xmltv = util_download_string(epg_url);
-		printf("XML:\n%s\n",xmltv);
+		printf("XMLTV data: %s",xmltv->str);
 	}else{
 		/* file exists, we'll get it */
 	}
