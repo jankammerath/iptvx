@@ -48,33 +48,31 @@ GString* iptvx_epg_get_default_channel_url(){
 /* parses the programmes from xmltv and returns it as 
 	a GArray holding programme structs */
 GArray* iptvx_epg_get_programmelist(GString* xmltv){
-	GArray* result;
+	GArray* result = g_array_new(false,false,sizeof(programme));
 
 	/* create libxml object instance */
 	xmlDocPtr doc;
-	xmlNodePtr cur;
+	xmlNodePtr cur, progNode, valNode;
 
 	/* parse from the xmltv string */
 	doc = xmlParseDoc(xmltv->str);
 	cur = xmlDocGetRootElement(doc);
 
 	/* get all programme nodes */
-	xmlNodePtr progNode = cur->children;
-	while(progNode != NULL){
-		if(xmlStrcmp(progNode->name,"programme")){
-			xmlNodePtr propNode = progNode->children;
+	for(progNode = cur->children; progNode != NULL; progNode = progNode->next){
+		if(xmlStrcmp(progNode->name,"programme")==0){
+			/* create prorgramme struct */
+			programme prog;
 
-			while(propNode != NULL){
-				printf("prop: %s\n",propNode->name);
-				if(xmlStrcmp(propNode->name,"title")){
-					printf("Programme: %s\n",xmlNodeGetContent(propNode));
+			for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
+				if(xmlStrcmp(valNode->name,"title")==0){
+					prog.title = g_string_new(valNode->children->content);
 				}
-
-				propNode = propNode->next;
 			}
-		}
 
-		progNode = progNode->next;
+			/* flush programme into result */
+			g_array_append_val(result,prog);
+		}
 	}
 
 	return result;
