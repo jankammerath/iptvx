@@ -6,6 +6,7 @@
 #include <SDL/SDL.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
+#include <time.h>
 #include "util.h"
 
 /* a programme on a channel */
@@ -45,6 +46,14 @@ GString* iptvx_epg_get_default_channel_url(){
 	return result;
 }
 
+/* takes an XMLTV date string, converts it to UNIX 
+	timestamp and returns that timestamp as long */
+long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
+	long result = 0;
+
+	return result;
+}
+
 /* parses the programmes from xmltv and returns it as 
 	a GArray holding programme structs */
 GArray* iptvx_epg_get_programmelist(GString* xmltv){
@@ -64,11 +73,34 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 			/* create prorgramme struct */
 			programme prog;
 
+			/* initialise properties */
+			prog.title = g_string_new("");
+			prog.description = g_string_new("");
+			prog.category = g_string_new("");
+			prog.start = 0;
+			prog.stop = 0;
+			prog.productionDate = 0;
+
+			/* get programme information */
 			for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
 				if(xmlStrcmp(valNode->name,"title")==0){
 					prog.title = g_string_new(valNode->children->content);
+				}if(xmlStrcmp(valNode->name,"desc")==0){
+					prog.description = g_string_new(valNode->children->content);
+				}if(xmlStrcmp(valNode->name,"category")==0){
+					/* only take first category found */
+					if(prog.category->len == 0){
+						prog.category = g_string_new(valNode->children->content);
+					}
+				}if(xmlStrcmp(valNode->name,"date")==0){
+					GString* dateVal = g_string_new(valNode->children->content);
+					prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
 				}
 			}
+
+			printf("Programme:\t%s\n"
+					"Date:\t%d\n\n",
+					prog.title->str,prog.productionDate);
 
 			/* flush programme into result */
 			g_array_append_val(result,prog);
