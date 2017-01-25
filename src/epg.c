@@ -51,6 +51,10 @@ GString* iptvx_epg_get_default_channel_url(){
 long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 	long result = 0;
 
+	struct tm timeStruct;
+	strptime(xmltvDate->str,"%Y%m%d%H%M%S %z",&timeStruct);
+	result = mktime(&timeStruct);
+
 	return result;
 }
 
@@ -73,12 +77,16 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 			/* create prorgramme struct */
 			programme prog;
 
+			/* get start and stop as string */
+			GString* startTime = g_string_new(xmlGetProp(progNode,"start"));
+			GString* stopTime = g_string_new(xmlGetProp(progNode,"stop"));
+			prog.start = iptvx_epg_get_xmltv_timestamp(startTime);
+			prog.stop = iptvx_epg_get_xmltv_timestamp(stopTime);
+
 			/* initialise properties */
 			prog.title = g_string_new("");
 			prog.description = g_string_new("");
 			prog.category = g_string_new("");
-			prog.start = 0;
-			prog.stop = 0;
 			prog.productionDate = 0;
 
 			/* get programme information */
@@ -97,10 +105,6 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 					prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
 				}
 			}
-
-			printf("Programme:\t%s\n"
-					"Date:\t%d\n\n",
-					prog.title->str,prog.productionDate);
 
 			/* flush programme into result */
 			g_array_append_val(result,prog);
