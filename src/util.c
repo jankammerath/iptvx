@@ -24,7 +24,6 @@
 #include <curl/curl.h>
 #include <glib.h>
 
-/* checks if a file exists on disk */
 bool util_file_exists(char* fileName){
 	bool result = false;
 
@@ -35,7 +34,6 @@ bool util_file_exists(char* fileName){
 	return result;
 }
 
-/* flushes the content into the file located at file */
 void file_put_contents(GString* file, GString* content){
 	FILE *fp = fopen(file->str, "ab");
     if (fp != NULL){
@@ -44,7 +42,6 @@ void file_put_contents(GString* file, GString* content){
     }
 }
 
-/* reads contents of file and returns as GString pointer */
 GString* file_get_contents(GString* file){
 	GString* result;
 
@@ -68,13 +65,11 @@ GString* file_get_contents(GString* file){
 	result = g_string_new(buffer);
 }
 
-/* cURL write function to flush into the gstring */
 int util_curl_write_data(char* in, uint size, uint nmemb, GString* out){
   g_string_append_len(out, in, nmemb);
   return nmemb;
 }
 
-/* downloads a URL and returns the result as string */
 GString* util_download_string(char* url){
 	GString* result = g_string_new(NULL);
 
