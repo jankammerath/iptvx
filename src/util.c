@@ -17,6 +17,39 @@ bool util_file_exists(char* fileName){
 	return result;
 }
 
+/* flushes the content into the file located at file */
+void file_put_contents(GString* file, GString* content){
+	FILE *fp = fopen(file->str, "ab");
+    if (fp != NULL){
+        fputs(content->str, fp);
+        fclose(fp);
+    }
+}
+
+/* reads contents of file and returns as GString pointer */
+GString* file_get_contents(GString* file){
+	GString* result;
+
+	char * buffer = 0;
+	long length;
+	FILE * f = fopen (file->str, "rb");
+
+	if (f){
+	  fseek (f, 0, SEEK_END);
+	  length = ftell (f);
+	  
+	  fseek (f, 0, SEEK_SET);
+	  buffer = malloc (length);
+
+	  if (buffer){
+	    fread (buffer, 1, length, f);
+	  }
+	  fclose (f);
+	}	
+
+	result = g_string_new(buffer);
+}
+
 /* cURL write function to flush into the gstring */
 int util_curl_write_data(char* in, uint size, uint nmemb, GString* out){
   g_string_append_len(out, in, nmemb);

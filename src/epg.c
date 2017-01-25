@@ -131,9 +131,10 @@ void iptvx_epg_load_channel(channel* current){
 		xmltv = util_download_string(epg_url);
 
 		/* finally flush the xmltv to disk cache */
-
+		file_put_contents(g_string_new(cacheFilePath),xmltv);
 	}else{
 		/* file exists, we'll get it */
+		xmltv = file_get_contents(g_string_new(cacheFilePath));
 	}
 
 	/* parse the programme list from the xmltv data */
