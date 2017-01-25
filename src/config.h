@@ -16,6 +16,16 @@
 
 */
 
+/*
+   @author     Jan Kammerath
+   @date       25 Jan 2017
+
+   Application configuration module working 
+   with libconfig to handle the config files,
+   read them and provide the settings to 
+   the application
+*/
+
 #ifndef	CONFIG_H
 #define CONFIG_H
 
