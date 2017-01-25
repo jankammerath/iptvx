@@ -25,13 +25,18 @@
 
 config_t cfg;
 
-/* returns ptr to config */
+/*
+   Gets the configuration struct pointer
+   @return           Config struct pointer
+*/
 config_t* iptvx_get_config(){
 	return &cfg;
 }
 
-/* gets the configuration file and also 
-	checks if the configuration file exists */
+/*
+   Gets the config file name
+   @return           the config file name and path
+*/
 char* iptvx_get_config_filename(){
 	char* result = "";
 
@@ -47,7 +52,10 @@ char* iptvx_get_config_filename(){
 	return result;
 }
 
-/* checks if a local config file is present */
+/*
+   Checks if config file exists
+   @return           true when it's there, false when not
+*/
 bool iptvx_config_file_exists(){
 	bool result = false;
 
@@ -59,7 +67,10 @@ bool iptvx_config_file_exists(){
 	return result;
 }
 
-/* initialises and loads config file */
+/*
+   Initialises the configuration
+   @return           true when ok, otherwise false
+*/
 bool iptvx_config_init(){
 	bool result = false;
 
@@ -86,6 +97,10 @@ bool iptvx_config_init(){
 	return result;
 }
 
+/* 
+   Gets the overlay app file
+   @return           file name of the overlay application
+*/
 char* iptvx_config_get_overlay_app(){
 	char* result = "";
 
@@ -109,6 +124,12 @@ char* iptvx_config_get_overlay_app(){
 	return result;
 }
 
+/* 
+   Gets a setting value as integer
+   @param   setting_name      name of the setting
+   @param   default_value     default value to use when not present
+   @return                    integer value of the setting
+*/
 int iptvx_config_get_setting_int(char* setting_name, int default_value){
 	int result = default_value;
 
@@ -120,6 +141,12 @@ int iptvx_config_get_setting_int(char* setting_name, int default_value){
 	return result;
 }
 
+/* 
+   Gets a setting value as bool
+   @param   setting_name      name of the setting
+   @param   default_value     default value to use when not present
+   @return                    bool value of the setting
+*/
 bool iptvx_config_get_setting_bool(char* setting_name, bool default_value){
 	bool result = default_value;
 
@@ -131,6 +158,12 @@ bool iptvx_config_get_setting_bool(char* setting_name, bool default_value){
 	return result;
 }
 
+/* 
+   Gets a setting value as string
+   @param   setting_name      name of the setting
+   @param   default_value     default value to use when not present
+   @return                    string value of the setting
+*/
 char* iptvx_config_get_setting_string(char* setting_name, char* default_value){
 	char* result = default_value;
 
