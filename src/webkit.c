@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <webkit2/webkit2.h>
+#include <JavaScriptCore/JavaScript.h>
 
 SDL_Thread *webkit_thread;
 
@@ -35,6 +36,15 @@ struct png_data{
 static png_data overlay_data;
 GByteArray* png_byte_data;
 GByteArray* old_png_byte_data;
+
+/*
+  Returns the JavaScript context of this webkit view
+  @return       JavaScript context reference
+*/
+JSGlobalContextRef iptvx_get_js_context(){
+  return webkit_web_view_get_javascript_global_context
+                    (WEBKIT_WEB_VIEW(iptvx_gtk_webview));
+}
 
 /* returns overlay png data link */
 void* iptvx_get_overlay_ptr(){

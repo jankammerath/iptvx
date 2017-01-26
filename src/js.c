@@ -15,21 +15,16 @@
    limitations under the License.
 
 */
-
-#ifndef	WEBKIT_H
-#define WEBKIT_H
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <JavaScriptCore/JavaScript.h>
 
+JSGlobalContextRef context;
+
 /*
-  Returns the JavaScript context of this webkit view
-  @return       JavaScript context reference
+   Assigns JS Global Context and initialises
+   @param   jsGlobalContext         the global js context to work on
 */
-JSGlobalContextRef iptvx_get_js_context();
-
-extern void iptvx_webkit_sendkey(int keyCode);
-extern void* iptvx_get_overlay_ptr();
-extern void* iptvx_get_overlay_ready_ptr();
-extern void iptvx_webkit_start_thread(char *file);
-
-#endif
+void iptvx_js_init(JSGlobalContextRef jsGlobalContext){
+   context = jsGlobalContext;
+}

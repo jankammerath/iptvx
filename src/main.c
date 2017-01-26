@@ -28,6 +28,7 @@
 #include "window.h"
 #include "video.h"
 #include "webkit.h"
+#include "js.h"
 #include "epg.h"
 
 /* handles any key down event */
