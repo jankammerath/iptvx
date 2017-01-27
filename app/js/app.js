@@ -1,31 +1,72 @@
-$(document).ready(function(){
-	resize();
-});
+/*
 
-$(window).resize(function(){
-	resize();
-});
+   Copyright 2017   Jan Kammerath
 
-$(window).keydown(function(event){
-	var keyCode = event.which;
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-	/* fadein and -out with space (32) */
-	if(keyCode == 32){
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+*/
+
+var app = {
+	/* local epg object */
+	epg: {},
+
+	/* initialises the app */
+	init: function(){
+		/* attach resize to ready and window resize */
+		$(document).ready(function(){app.resize();});
+		$(window).resize(function(){app.resize();});
+
+		/* attach key downs */
+		$(window).keydown(function(event){
+			var keyCode = event.which;
+
+			/* control ui toggle with spacebar (32) */
+			if(keyCode == 32){app.toggleControlUi();}
+
+			/* switch next channel with left (276) and right (275) */
+			if(keyCode == 276){app.exec("channel-prev");}
+			if(keyCode == 275){app.exec("channel-next");}
+
+			$("#debuginfo").html("Key pressed: "+event.which
+								+", Character: "+event.key
+								+", Obj-Status: "+typeof(iptvx));
+		});
+	},
+
+	/* executes core message */
+	exec: function(command){
+		if(typeof(iptvx)=="object"){
+			if(typeof(iptvx.exec)=="function"){
+				iptvx.exec(command);
+			}
+		}
+	},
+
+	/* toggles the control ui */
+	toggleControlUi: function(){
 		if($("#ui").is(":visible") == true){
 			$("#ui").fadeOut();
 		}else{
 			$("#ui").fadeIn();
 		}
+	},
+
+	/* handles resize of the window */
+	resize: function(){
+		var controlLeft = ($(window).innerWidth()/2)-($("#control").outerWidth()/2);
+		$("#control").css("left",controlLeft+"px");	
 	}
-
-	$("#debuginfo").html("Key pressed: "+event.which
-						+", Character: "+event.key
-						+", Obj-Status: "+typeof(window.webkit));
-
-	iptvx.exec("EHLO, EHLO!");
-});
-
-function resize(){
-	var controlLeft = ($(window).innerWidth()/2)-($("#control").outerWidth()/2);
-	$("#control").css("left",controlLeft+"px");	
 }
+
+/* initialise the app */
+app.init();
