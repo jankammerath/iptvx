@@ -19,17 +19,10 @@
 #ifndef	WEBKIT_H
 #define WEBKIT_H
 
-#include <JavaScriptCore/JavaScript.h>
+#include <webkit2/webkit2.h>
 
-/*
-  Returns the JavaScript context of this webkit view
-  @return       JavaScript context reference
-*/
-JSGlobalContextRef iptvx_get_js_context();
-
-extern void iptvx_webkit_sendkey(int keyCode);
 extern void* iptvx_get_overlay_ptr();
 extern void* iptvx_get_overlay_ready_ptr();
-extern void iptvx_webkit_start_thread(char *file);
+extern void iptvx_webkit_start_thread(char *file,void (*loadFinishedCallbackFunc)(void*));
 
 #endif

@@ -18,13 +18,19 @@
 #ifndef JS_H
 #define JS_H
 
-#include <JavaScriptCore/JavaScript.h>
+#include <webkit2/webkit2.h>
 
 /*
-   Assigns JS Global Context and initialises
-   @param   jsGlobalContext         the global js context to work on
+   Initialises the JavaScript API interface
+   @param   webview                          the webview to work on
+   @param   controlMessageCallbackFunc       callback func when control msgs arrive
 */
-void iptvx_js_init(JSGlobalContextRef jsGlobalContext);
+void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(void*));
 
+/*
+   Sends a key down event to the js application
+   @param   keyCode           the code of the key to transmit
+*/
+void iptvx_js_sendkey(int keyCode);
 
 #endif

@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <webkit2/webkit2.h>
-#include <JavaScriptCore/JavaScript.h>
 
 SDL_Thread *webkit_thread;
 
@@ -37,14 +36,7 @@ static png_data overlay_data;
 GByteArray* png_byte_data;
 GByteArray* old_png_byte_data;
 
-/*
-  Returns the JavaScript context of this webkit view
-  @return       JavaScript context reference
-*/
-JSGlobalContextRef iptvx_get_js_context(){
-  return webkit_web_view_get_javascript_global_context
-                    (WEBKIT_WEB_VIEW(iptvx_gtk_webview));
-}
+void (*loadFinishedCallback)(void*);
 
 /* returns overlay png data link */
 void* iptvx_get_overlay_ptr(){
@@ -54,24 +46,6 @@ void* iptvx_get_overlay_ptr(){
 /* returns ptr to bool indicating if busy */
 bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
-}
-
-/* sends a key to the browser */
-extern void iptvx_webkit_sendkey(int keyCode){
-  char scriptKeyEvent[512];
-
-  char keyName[2];
-  keyName[0] = (char)keyCode;
-  keyName[1] = '\0';
-  char* xkeyName = "a";
-  sprintf(scriptKeyEvent,"var e = new Event(\"keydown\");"
-        "e.key=\"%s\";e.keyCode=%d;"
-        "e.which=%d;e.altKey=false;e.ctrlKey=false;"
-        "e.shiftKey=false;e.metaKey=false;e.bubbles=true;"
-        "window.dispatchEvent(e);",keyName,keyCode,keyCode);
-
-  webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(iptvx_gtk_webview),
-                    scriptKeyEvent,NULL,NULL,NULL);
 }
 
 static cairo_status_t iptvx_webkit_snapshot_write_png (void *closure, const unsigned char *data, unsigned int length){
@@ -115,6 +89,9 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
     return;
   }
 
+  /* fire callback when load finished */
+  (*loadFinishedCallback)(webview);
+
   webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
@@ -126,7 +103,13 @@ int iptvx_webkit_start(void* file){
 	gtk_init(NULL,NULL);
 	iptvx_gtk_window = gtk_offscreen_window_new ();
 	gtk_window_set_default_size(GTK_WINDOW(iptvx_gtk_window), 1280, 720);
-	iptvx_gtk_webview = webkit_web_view_new();
+	
+  /* create user content manager and web view with it 
+    which is required to be able to fire js and retrieve 
+    messages from the js interface */
+  WebKitUserContentManager* user_content_mgr = webkit_user_content_manager_new();
+  iptvx_gtk_webview = webkit_web_view_new_with_user_content_manager(user_content_mgr);
+
 	gtk_container_add (GTK_CONTAINER (iptvx_gtk_window), iptvx_gtk_webview);
 	g_signal_connect (iptvx_gtk_webview, "load-changed",
 	                G_CALLBACK (iptvx_webkit_loadchanged_callback), "");
@@ -142,7 +125,8 @@ int iptvx_webkit_start(void* file){
 	gtk_main ();
 }
 
-void iptvx_webkit_start_thread(char *file){
+void iptvx_webkit_start_thread(char *file,void (*loadFinishedCallbackFunc)(void*)){
   iptvx_webkit_ready = false;
+  loadFinishedCallback = loadFinishedCallbackFunc;
   webkit_thread = SDL_CreateThread(iptvx_webkit_start,file);
 }

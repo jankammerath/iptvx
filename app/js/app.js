@@ -18,7 +18,11 @@ $(window).keydown(function(event){
 		}
 	}
 
-	$("#debuginfo").html("Key pressed: "+event.which+", Character: "+event.key);
+	$("#debuginfo").html("Key pressed: "+event.which
+						+", Character: "+event.key
+						+", Obj-Status: "+typeof(window.webkit));
+
+	iptvx.exec("EHLO, EHLO!");
 });
 
 function resize(){

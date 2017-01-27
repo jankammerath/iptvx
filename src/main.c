@@ -38,12 +38,26 @@ void keydown(int keyCode){
 		iptvx_video_free();
 	}else{
 		// forward key input to webkit
-		iptvx_webkit_sendkey(keyCode);		
+		iptvx_js_sendkey(keyCode);		
 	}
 }
 
+/*
+	Handles retrieval of API control messages
+	@param		message 	the control message as string
+*/
+void control_message_received(void* message){
+	printf("CONTROL MESSAGE RECEIVED: %s\n",message);
+}
+
+/* handles browser load finish */
+void load_finished(void* webview){
+	/* initialise JS API with webview and callback func */
+	iptvx_js_init(webview,control_message_received);
+}
+
 /* starts playback when SDL window is ready */
-void startplay(void* context){
+void start_play(void* context){
 	/* start the playback on screen */
 	iptvx_video_play(iptvx_window_lock,iptvx_window_unlock,iptvx_window_display,context);
 }
@@ -75,10 +89,10 @@ int main (int argc, char *argv[]){
 
 		/* start the webkit thread */
 		char* overlayApp = iptvx_config_get_overlay_app();
-		iptvx_webkit_start_thread(overlayApp);
+		iptvx_webkit_start_thread(overlayApp,load_finished);
 
 		/* create the thread for the main window */
-		iptvx_create_window(width,height,keydown,startplay);
+		iptvx_create_window(width,height,keydown,start_play);
 	}
 
 
