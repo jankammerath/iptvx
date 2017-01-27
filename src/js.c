@@ -94,6 +94,10 @@ void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(voi
 void iptvx_js_sendkey(int keyCode){
   char scriptKeyEvent[512];
 
+  if(keyCode == 13){
+    keyCode = 271;
+  }
+
   char keyName[2];
   keyName[0] = (char)keyCode;
   keyName[1] = '\0';

@@ -22,7 +22,10 @@
 	@return								The JavaScript keycode
 */
 int keycode_convert_sdl_to_js(int sdl_keycode){
-	int result = sdl_keycode;
+	int result;
+
+	/* SDL key is default */
+	result = sdl_keycode;
 
 	/* calculate the characters A-Z */
 	if(sdl_keycode >= 97 && sdl_keycode <= 122){
@@ -34,10 +37,16 @@ int keycode_convert_sdl_to_js(int sdl_keycode){
 		result = sdl_keycode - 170;
 	}	
 
+	/* calculate the keypad numbers */
+	if(sdl_keycode >= 256 && sdl_keycode <= 265){
+		result = sdl_keycode - 208;
+	}
+
 	/* define delete key */
 	if(sdl_keycode == 127){result=46;}
 
 	/* define up, down, pgup, pgdown, home etc. */
+	if(sdl_keycode == 271){result=13;}
 	if(sdl_keycode == 273){result=38;}
 	if(sdl_keycode == 274){result=40;}
 	if(sdl_keycode == 275){result=39;}

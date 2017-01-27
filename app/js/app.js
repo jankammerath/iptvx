@@ -17,10 +17,10 @@
 */
 
 var app = {
-	/* local epg object */
+	/* epg ui object */
 	epg: {},
 
-	/* local control object */
+	/* control ui object */
 	control: {},
 
 	/* initialises the app */
@@ -41,13 +41,13 @@ var app = {
 			if(keyCode == 40){app.exec("channel-next");}
 
 			/* output the debug message */
-			app.showDebug();
+			app.showDebug(keyCode);
 		});
 	},
 
 	/* shows the debug message */
-	showDebug: function(){
-		var debugText = "Key: "+event.which;
+	showDebug: function(keyVal){
+		var debugText = "Key: "+keyVal;
 		if(typeof(iptvx)=="object"){
 			debugText += " - API OK";
 		}else{
@@ -72,5 +72,5 @@ var app = {
 	}
 }
 
-/* initialise the app */
-app.init();
+/* initialise the app when document is ready */
+$(document).ready(function(){app.init();});
