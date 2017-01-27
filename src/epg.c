@@ -50,14 +50,14 @@ struct channel{
 /* the channel list */
 GArray* list;
 
-GString* iptvx_epg_get_default_channel_url(){
-	GString* result = g_string_new("");
+channel* iptvx_epg_get_default_channel(){
+	channel* result;
 
 	int c = 0;
 	for(c = 0; c < list->len; c++){
 		channel* current = &g_array_index(list,channel,c);
 		if(current->isDefault == true){
-			result = current->url;
+			result = current;
 		}
 	}
 

@@ -31,6 +31,13 @@
 #include "js.h"
 #include "epg.h"
 
+/* context of the window */
+void* main_window_context;
+
+/* window dimensions */
+int main_window_width;
+int main_window_height;
+
 /* handles any key down event */
 void keydown(int keyCode){
 	if(keyCode == 27){
@@ -56,10 +63,24 @@ void load_finished(void* webview){
 	iptvx_js_init(webview,control_message_received);
 }
 
-/* starts playback when SDL window is ready */
-void start_play(void* context){
+/* plays a channel's url with the video player */
+void channel_video_play(char* url){
+	/* initialise the video playback */
+	iptvx_video_init(url,main_window_width,main_window_height);
+
 	/* start the playback on screen */
-	iptvx_video_play(iptvx_window_lock,iptvx_window_unlock,iptvx_window_display,context);
+	iptvx_video_play(iptvx_window_lock,iptvx_window_unlock,
+					iptvx_window_display,main_window_context);	
+}
+
+/* starts playback when SDL window is ready */
+void window_ready(void* context){
+	/* keep window context as it might be required later on */
+	main_window_context = context;
+
+	/* get the default channel and play it */
+	channel* defaultChannel = iptvx_epg_get_default_channel();
+	channel_video_play((char*)defaultChannel->url);
 }
 
 /* main application code */
@@ -69,18 +90,12 @@ int main (int argc, char *argv[]){
 
 	/* ensure that there is a config file */
 	if(iptvx_config_init() == true){
-		int width = iptvx_config_get_setting_int("width",1280);
-		int height = iptvx_config_get_setting_int("height",720);
+		main_window_width = iptvx_config_get_setting_int("width",1280);
+		main_window_height = iptvx_config_get_setting_int("height",720);
 
 		/* initialise the epg */
 		config_t* cfg = iptvx_get_config();
 		iptvx_epg_init(cfg);
-
-		/* get the default channel's url */
-		GString* defaultUrl = iptvx_epg_get_default_channel_url();
-
-		/* initialise the video playback */
-		iptvx_video_init((char*)defaultUrl,width,height);
 
 		/* get the pointers to the webkit png data and status */
 		void* overlay_data = iptvx_get_overlay_ptr();
@@ -92,7 +107,9 @@ int main (int argc, char *argv[]){
 		iptvx_webkit_start_thread(overlayApp,load_finished);
 
 		/* create the thread for the main window */
-		iptvx_create_window(width,height,keydown,start_play);
+		iptvx_create_window(main_window_width,
+							main_window_height,
+							keydown,window_ready);
 	}
 
 

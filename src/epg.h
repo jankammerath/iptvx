@@ -22,8 +22,28 @@
 #include <stdbool.h>
 #include <glib.h>
 
+/* a programme on a channel */
+struct programme{
+   GString* title;
+   long start;
+   long stop;
+   int productionDate;
+   GString* category;
+   GString* description;
+} typedef programme;
+
+/* a channel */
+struct channel{
+   bool isDefault;
+   GString* name;
+   GString* url;
+   GString* epgUrl;
+   GString* logoUrl;
+   GArray* programmeList;
+} typedef channel;
+
 bool iptvx_epg_init(config_t* cfg);
-GString* iptvx_epg_get_default_channel_url();
+channel* iptvx_epg_get_default_channel();
 void iptvx_epg_load_channel(GString* channelName);
 void iptvx_epg_load();
 

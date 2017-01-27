@@ -20,6 +20,9 @@ var app = {
 	/* local epg object */
 	epg: {},
 
+	/* local control object */
+	control: {},
+
 	/* initialises the app */
 	init: function(){
 		/* attach resize to ready and window resize */
@@ -31,16 +34,26 @@ var app = {
 			var keyCode = event.which;
 
 			/* control ui toggle with spacebar (32) */
-			if(keyCode == 32){app.toggleControlUi();}
+			if(keyCode == 32){app.control.toggle();}
 
 			/* switch next channel with left (276) and right (275) */
 			if(keyCode == 276){app.exec("channel-prev");}
 			if(keyCode == 275){app.exec("channel-next");}
 
-			$("#debuginfo").html("Key pressed: "+event.which
-								+", Character: "+event.key
-								+", Obj-Status: "+typeof(iptvx));
+			/* output the debug message */
+			app.showDebug();
 		});
+	},
+
+	/* shows the debug message */
+	showDebug: function(){
+		var debugText = "Key: "+event.which;
+		if(typeof(iptvx)=="object"){
+			debugText += " - API OK";
+		}else{
+			debugText += " - NO API!";
+		}
+		$("#debuginfo").html(debugText);
 	},
 
 	/* executes core message */
@@ -49,15 +62,6 @@ var app = {
 			if(typeof(iptvx.exec)=="function"){
 				iptvx.exec(command);
 			}
-		}
-	},
-
-	/* toggles the control ui */
-	toggleControlUi: function(){
-		if($("#ui").is(":visible") == true){
-			$("#ui").fadeOut();
-		}else{
-			$("#ui").fadeIn();
 		}
 	},
 
