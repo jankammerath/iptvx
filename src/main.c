@@ -30,6 +30,7 @@
 #include "webkit.h"
 #include "js.h"
 #include "epg.h"
+#include "keycode.h"
 
 /* context of the window */
 void* main_window_context;
@@ -44,8 +45,8 @@ void keydown(int keyCode){
 		// termination of application
 		iptvx_video_free();
 	}else{
-		// forward key input to webkit
-		iptvx_js_sendkey(keyCode);		
+		// forward key after converting from SDL to JS
+		iptvx_js_sendkey(keycode_convert_sdl_to_js(keyCode));		
 	}
 }
 

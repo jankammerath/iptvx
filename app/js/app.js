@@ -37,8 +37,8 @@ var app = {
 			if(keyCode == 32){app.control.toggle();}
 
 			/* switch next channel with left (276) and right (275) */
-			if(keyCode == 276){app.exec("channel-prev");}
-			if(keyCode == 275){app.exec("channel-next");}
+			if(keyCode == 38){app.exec("channel-prev");}
+			if(keyCode == 40){app.exec("channel-next");}
 
 			/* output the debug message */
 			app.showDebug();
