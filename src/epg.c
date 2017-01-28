@@ -57,6 +57,9 @@ GArray* list;
 bool iptvx_epg_ready;
 int iptvx_epg_percentage_loaded;
 
+/* status update callback */
+void (*epgStatusUpdateCallback)(void*);
+
 channel* iptvx_epg_get_default_channel(){
 	channel* result;
 
@@ -178,18 +181,23 @@ int iptvx_epg_load(void* nothing){
 
 		/* update percentage status */
 		iptvx_epg_percentage_loaded = ((c / list->len) * 100);
+		epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
 	}
 
 	/* update status indicators */
 	iptvx_epg_ready = true;
 	iptvx_epg_percentage_loaded = 100;
+	epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
 
 	return 0;
 }
 
 /* initialise epg */
-bool iptvx_epg_init(config_t* cfg){
+bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 	list = g_array_new (false,false,sizeof(channel));
+
+	/* assign the local callback function */
+	epgStatusUpdateCallback = statusUpdateCallback;
 
 	/* init status indicators */
 	iptvx_epg_ready = false;

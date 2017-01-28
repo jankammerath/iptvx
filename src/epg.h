@@ -42,7 +42,7 @@ struct channel{
    GArray* programmeList;
 } typedef channel;
 
-bool iptvx_epg_init(config_t* cfg);
+bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*));
 channel* iptvx_epg_get_default_channel();
 void iptvx_epg_load_channel(GString* channelName);
 void iptvx_epg_load();

@@ -39,14 +39,22 @@ void* main_window_context;
 int main_window_width;
 int main_window_height;
 
+/* module status */
+bool main_js_ready;
+bool main_window_ready;
+bool main_epg_ready;
+
 /* handles any key down event */
 void keydown(int keyCode){
 	if(keyCode == 27){
-		// termination of application
+		/* termination of application */
 		iptvx_video_free();
 	}else{
-		// forward key after converting from SDL to JS
-		iptvx_js_sendkey(keycode_convert_sdl_to_js(keyCode));		
+		/* forward key after converting from SDL to JS */
+		if(main_js_ready){
+			/* only when JS API alive */
+			iptvx_js_sendkey(keycode_convert_sdl_to_js(keyCode));
+		}		
 	}
 }
 
@@ -65,6 +73,7 @@ void control_message_received(void* message){
 void load_finished(void* webview){
 	/* initialise JS API with webview and callback func */
 	iptvx_js_init(webview,control_message_received);
+	main_js_ready = true;
 }
 
 /* 
@@ -85,12 +94,36 @@ void channel_video_play(char* url){
 	@param		context 	the SDL context of the finished window
 */
 void window_ready(void* context){
+	main_window_ready = true;
+
 	/* keep window context as it might be required later on */
 	main_window_context = context;
 
-	/* get the default channel and play it */
-	channel* defaultChannel = iptvx_epg_get_default_channel();
-	channel_video_play((char*)defaultChannel->url);
+	/* start playback when epg is ready */
+	if(main_epg_ready){
+		/* get the default channel and play it */
+		channel* defaultChannel = iptvx_epg_get_default_channel();
+		channel_video_play((char*)defaultChannel->url);
+	}
+}
+
+/*
+	handles epg status updates
+	@param 		progress 	int ptr with load percentage;
+*/
+void epg_status_update(void* progress){
+	/* get epg progress value */
+	int progressVal = *(int*)progress;
+
+	/* mark ready when 100 percent reached */
+	if(progressVal == 100){
+		main_epg_ready = true;
+	}
+
+	/* send status to JS API when ready */
+	if(main_js_ready){
+
+	}
 }
 
 /* main application code */
@@ -100,12 +133,16 @@ int main (int argc, char *argv[]){
 
 	/* ensure that there is a config file */
 	if(iptvx_config_init() == true){
+		main_js_ready = false;
+		main_window_ready = false;
+		main_epg_ready = false;
+
 		main_window_width = iptvx_config_get_setting_int("width",1280);
 		main_window_height = iptvx_config_get_setting_int("height",720);
 
 		/* initialise the epg */
 		config_t* cfg = iptvx_get_config();
-		iptvx_epg_init(cfg);
+		iptvx_epg_init(cfg,epg_status_update);
 
 		/* get the pointers to the webkit png data and status */
 		void* overlay_data = iptvx_get_overlay_ptr();
