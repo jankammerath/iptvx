@@ -21,9 +21,7 @@ app.list = {
 
 	/* initialises the programme list */
 	init: function(){
-		/* determine max-height and set it */
-		var max_h = $(window).innerHeight()-40;
-		$("#list").css("max-height",max_h+"px");
+		
 	},
 
 	toggle: function(forceOut = false){

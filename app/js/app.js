@@ -85,6 +85,9 @@ var app = {
 	resize: function(){
 		var controlLeft = ($(window).innerWidth()/2)-($("#control").outerWidth()/2);
 		$("#control").css("left",controlLeft+"px");	
+
+		var listMaxHeight = $(window).innerHeight()-40;
+		$("#list").css("max-height",listMaxHeight+"px");
 	}
 }
 
