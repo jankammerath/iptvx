@@ -26,6 +26,9 @@ app.control = {
 
 	/* starts the interval that listens to the epg */
 	listen: function(){
+		/* launch first update */
+		app.control.update();
+
 		/* update from epg every second */
 		setInterval(app.control.update,1000);
 	},
@@ -40,9 +43,12 @@ app.control = {
 			var now = Date.now();
 
 			/* set the width of the progress bar */
-			var stopTs = data.programme.stop*1000;
-			var progressVal = ((now / stopTs)*100);
+			var startTs = data.programme.start*1000;
+			var stopTs = (data.programme.stop*1000)-startTs;
+			var progressVal = (((now-startTs) / stopTs)*100);
+
 			$("#progressbarvalue").css("width",progressVal+"%");
+			$("#progresstime").css("left",progressVal+"%");
 
 			/* show time on the ui */
 			var progStart = new Date(data.programme.start*1000);

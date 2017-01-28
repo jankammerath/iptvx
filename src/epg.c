@@ -157,8 +157,9 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 	long result = 0;
 
 	struct tm timeStruct;
+
 	strptime(xmltvDate->str,"%Y%m%d%H%M%S %z",&timeStruct);
-	result = mktime(&timeStruct);
+	result = timegm(&timeStruct)-3600;
 
 	return result;
 }
