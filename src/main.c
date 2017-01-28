@@ -58,13 +58,19 @@ void control_message_received(void* message){
 	printf("CONTROL MESSAGE RECEIVED: %s\n",message);
 }
 
-/* handles browser load finish */
+/*
+	Handles browser load finished
+	@param		webview 	the webview that finished
+*/
 void load_finished(void* webview){
 	/* initialise JS API with webview and callback func */
 	iptvx_js_init(webview,control_message_received);
 }
 
-/* plays a channel's url with the video player */
+/* 
+	plays a channel's url with the video player 
+	@param		url 		the url to play
+*/
 void channel_video_play(char* url){
 	/* initialise the video playback */
 	iptvx_video_init(url,main_window_width,main_window_height);
@@ -74,7 +80,10 @@ void channel_video_play(char* url){
 					iptvx_window_display,main_window_context);	
 }
 
-/* starts playback when SDL window is ready */
+/* 
+	handles signal when SDL window is ready 
+	@param		context 	the SDL context of the finished window
+*/
 void window_ready(void* context){
 	/* keep window context as it might be required later on */
 	main_window_context = context;

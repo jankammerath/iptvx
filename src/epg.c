@@ -27,6 +27,9 @@
 #include <time.h>
 #include "util.h"
 
+/* thread loading the epg data */
+SDL_Thread *epg_thread;
+
 /* a programme on a channel */
 struct programme{
 	GString* title;
@@ -49,6 +52,10 @@ struct channel{
 
 /* the channel list */
 GArray* list;
+
+/* indicates if ready */
+bool iptvx_epg_ready;
+int iptvx_epg_percentage_loaded;
 
 channel* iptvx_epg_get_default_channel(){
 	channel* result;
@@ -160,7 +167,7 @@ void iptvx_epg_load_channel(channel* current){
 }
 
 /* initiates the epg load for each channel */
-void iptvx_epg_load(){
+int iptvx_epg_load(void* nothing){
 	int c = 0;
 	for(c = 0; c < list->len; c++){
 		/* get this channel */
@@ -168,12 +175,25 @@ void iptvx_epg_load(){
 
 		/* start the thread to capture xmltv epg */
 		iptvx_epg_load_channel(current);
+
+		/* update percentage status */
+		iptvx_epg_percentage_loaded = ((c / list->len) * 100);
 	}
+
+	/* update status indicators */
+	iptvx_epg_ready = true;
+	iptvx_epg_percentage_loaded = 100;
+
+	return 0;
 }
 
 /* initialise epg */
 bool iptvx_epg_init(config_t* cfg){
 	list = g_array_new (false,false,sizeof(channel));
+
+	/* init status indicators */
+	iptvx_epg_ready = false;
+	iptvx_epg_percentage_loaded = 0;
 
 	/* get the channels array from the config */
 	config_setting_t* root = config_root_setting(cfg);
@@ -223,7 +243,7 @@ bool iptvx_epg_init(config_t* cfg){
 		}
 
 		// all channels parsed, launch epg load
-		iptvx_epg_load();
+		epg_thread = SDL_CreateThread(iptvx_epg_load,NULL);
 	}else{
 		/* output and error when channels not present */
 		printf("Error getting channels from config\n");
