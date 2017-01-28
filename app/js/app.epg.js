@@ -46,6 +46,7 @@ app.epg = {
                result.channelId = c;
                result.channelName = iptvx.epg[c].name;
                result.programme = null;
+               result.nextProgramme = new Array();
 
                /* determine the current programme */
                for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
@@ -53,6 +54,17 @@ app.epg = {
                   if(programme.start <= now && programme.stop >= now){
                      /* this is the current show */
                      result.programme = programme;
+                  }else{
+                     /* attach next three shows */
+                     if(result.programme != null){
+                        /* check if programme is after current one 
+                           and we do not already have the next three shows */
+                        if(result.programme.stop <= programme.start
+                           && result.nextProgramme.length < 3){
+                           /* push it into the next programme array */
+                           result.nextProgramme.push(programme);
+                        }
+                     }
                   }
                }
             }  

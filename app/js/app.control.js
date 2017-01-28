@@ -60,12 +60,26 @@ app.control = {
 
 			/* set the programme basic information */
 			$("#showtitle").html(data.programme.title);
-			var showType = data.programme.category;
+			var showInfo = data.programme.category;
 			if(data.programme.productionDate!=""){
-				showType += " ("+data.programme.productionDate+")";
+				showInfo += " ("+data.programme.productionDate+")";
+			}if(data.programme.description != ""){
+				showInfo += " - " + data.programme.description;
+			} 
+			$("#showinfo").html(showInfo);
+			
+			/* render upcoming shows */
+			var nextProgrammeHtml = "";
+			for(var n=0;n<data.nextProgramme.length;n++){
+				var nextProgTitle = data.nextProgramme[n].title;
+				var nextProgStart = new Date(data.nextProgramme[n].start*1000);
+				var startTimeText = nextProgStart.toTimeString().substring(0,5);
+				nextProgrammeHtml += '<div class="shownextitem">'
+							+ '<div class="shownextitemtime">' + startTimeText + '</div>'
+							+ '<div class="shownextitemtitle">' + nextProgTitle + '</div>'
+							+ '</div>'
 			}
-			$("#showtype").html(showType);
-			$("#showtext").html(data.programme.description);
+			$("#shownext").html(nextProgrammeHtml);
 		}
 	},
 

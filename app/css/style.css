@@ -175,14 +175,22 @@ body{
   padding-right: 20px;	
 }
 
-#showtype{
+#showinfo{
   font-size: 15px;	
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-#showtext{
-  font-size: 15px;
-  margin-top: 10px;
-  width: 500px;
-  overflow-y: hidden;
-  height: 40px;	
+.shownextitem{
+  height:20px;
+  font-size:15px;
+  margin-top:5px;
+}
+
+.shownextitemtime{
+  float:left;
+  font-weight:bold;
+  margin-right: 20px;
+  width: 50px;
 }
