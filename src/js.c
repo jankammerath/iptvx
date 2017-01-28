@@ -114,10 +114,9 @@ void iptvx_js_set_current_channel(int channel_id){
   @param      epg_data        JSON Array with complete epg data
 */
 void iptvx_js_set_epg_data(GString* epg_data){
-  char jsCode[2048];
-
-  sprintf(jsCode,"iptvx.epg = %s;",epg_data->str);
-  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
+  GString* jsCode = g_string_new("");
+  g_string_printf(jsCode,"iptvx.epg = %s;",epg_data->str);
+  webkit_web_view_run_javascript(js_view,jsCode->str,NULL,NULL,NULL);
 }
 
 /*

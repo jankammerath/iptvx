@@ -45,12 +45,12 @@ app.epg = {
             if(c == iptvx.channel){
                result.channelId = c;
                result.channelName = iptvx.epg[c].name;
+               result.programme = null;
 
                /* determine the current programme */
                for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
                   var programme = iptvx.epg[c].programmeList[p];
-
-                  if(programme.start >= now && programme.stop <= now){
+                  if(programme.start <= now && programme.stop >= now){
                      /* this is the current show */
                      result.programme = programme;
                   }

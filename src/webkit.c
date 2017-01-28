@@ -38,6 +38,16 @@ GByteArray* old_png_byte_data;
 
 void (*loadFinishedCallback)(void*);
 
+bool enableWebKitInspector;
+
+/*
+  Defines whether the dev tool should be enabled or not
+  @param    enableTool    true to enable, false to disable
+*/
+void iptvx_webkit_enable_devtool(bool enableTool){
+  enableWebKitInspector = enableTool;
+}
+
 /* returns overlay png data link */
 void* iptvx_get_overlay_ptr(){
   return &overlay_data;
@@ -114,9 +124,9 @@ int iptvx_webkit_start(void* file){
 	g_signal_connect (iptvx_gtk_webview, "load-changed",
 	                G_CALLBACK (iptvx_webkit_loadchanged_callback), "");
 
-	// Ignore any SSL errors. Don't makes sense to abort taking a snapshoot because of a bad cert.
-	webkit_web_context_set_tls_errors_policy(webkit_web_view_get_context(WEBKIT_WEB_VIEW (iptvx_gtk_webview)),
-	                                       WEBKIT_TLS_ERRORS_POLICY_IGNORE);
+  /* write all console messages to stdout */
+  WebKitSettings *wk_setting = webkit_web_view_get_settings (WEBKIT_WEB_VIEW(iptvx_gtk_webview));
+  g_object_set (G_OBJECT(wk_setting), "enable-write-console-messages-to-stdout", TRUE, NULL);
 
   char *filename = (char*)file;
 	char *url = g_strjoin("","file://",filename,NULL);

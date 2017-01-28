@@ -135,7 +135,7 @@ void epg_status_update(void* progress){
 
 		/* signal complete epg data */
 		GString* epg_data = iptvx_epg_get_json();
-		//iptvx_js_set_epg_data(epg_data);
+		iptvx_js_set_epg_data(epg_data);
 
 		/* signal current channel */
 		iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
