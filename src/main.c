@@ -98,13 +98,6 @@ void window_ready(void* context){
 
 	/* keep window context as it might be required later on */
 	main_window_context = context;
-
-	/* start playback when epg is ready */
-	if(main_epg_ready){
-		/* get the default channel and play it */
-		channel* defaultChannel = iptvx_epg_get_default_channel();
-		channel_video_play((char*)defaultChannel->url);
-	}
 }
 
 /*
@@ -139,6 +132,11 @@ void epg_status_update(void* progress){
 
 		/* signal current channel */
 		iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
+
+		/* activate video playback by getting
+			the default channel and play it */
+		channel* defaultChannel = iptvx_epg_get_default_channel();
+		channel_video_play((char*)defaultChannel->url);
 	}
 
 	if(main_js_ready){

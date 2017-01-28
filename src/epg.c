@@ -26,6 +26,9 @@
 #include <libxml/parser.h>
 #include <time.h>
 #include <json-c/json.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "util.h"
 
 /* thread loading the epg data */
@@ -228,6 +231,19 @@ void iptvx_epg_load_channel(channel* current){
 	struct tm *t = localtime(&now);
 	strftime(epg_url,sizeof(epg_url)-1,(char*)current->epgUrl,t);
 
+	/* ensure the cache path exists */
+	struct stat st = {0};
+	if (stat("cache", &st) == -1) {
+    	mkdir("cache", 0700);
+    	mkdir("cache/epg", 0700);
+    	mkdir("cache/logo", 0700);
+	}if (stat("cache/epg", &st) == -1) {
+		mkdir("cache/epg", 0700);
+	}if (stat("cache/logo", &st) == -1) {
+		mkdir("cache/logo", 0700);
+	}
+
+	/* define the cache file */
 	char* cacheFile = g_strrstr(epg_url,"/")+1;
 	char* cacheFilePath = g_strjoin("","cache/epg/",cacheFile,NULL);
 
