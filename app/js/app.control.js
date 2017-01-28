@@ -36,8 +36,24 @@ app.control = {
 		$("#channelname").html(data.channelName);
 
 		if(data.programme != null){
-			$("#showtitle").html(data.programme.title);
+			/* show the time and progress */
+			var now = Date.now();
 
+			/* set the width of the progress bar */
+			var stopTs = data.programme.stop*1000;
+			var progressVal = ((now / stopTs)*100);
+			$("#progressbarvalue").css("width",progressVal+"%");
+
+			/* show time on the ui */
+			var progStart = new Date(data.programme.start*1000);
+			var progStop = new Date(data.programme.stop*1000);
+			
+			$("#showstart").html(progStart.toTimeString().substring(0,5));
+			$("#showend").html(progStop.toTimeString().substring(0,5));
+			$("#progresstime").html(new Date().toTimeString().substring(0,5));
+
+			/* set the programme basic information */
+			$("#showtitle").html(data.programme.title);
 			var showType = data.programme.category;
 			if(data.programme.productionDate!=""){
 				showType += " ("+data.programme.productionDate+")";
@@ -45,6 +61,14 @@ app.control = {
 			$("#showtype").html(showType);
 			$("#showtext").html(data.programme.description);
 		}
+	},
+
+	formatTime: function(dateObj){
+		var result = "";
+
+
+
+		return result;
 	},
 
 	/* toggles the control ui */
