@@ -136,7 +136,11 @@ void curl_download_url(char* url, void* write_func, void* write_data){
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "iptvx/1.0 (iptvx.org)");
     curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_func);
+
+    if(write_func != NULL){
+      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_func);
+    }
+    
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, write_data);
 
     /* execute the query */
@@ -157,16 +161,14 @@ void curl_download_url(char* url, void* write_func, void* write_data){
 }
 
 /*
-  Downloads a URL as byte array (raw data)
+  Downloads a URL as file
   @param    url         the url to download
-  @return               the contents as byte array
+  @param    filePath    the file to write to
 */
-GByteArray* util_download_data(char* url){
-  GByteArray* result = g_byte_array_new();
-
-  curl_download_url(url,util_curl_write_bytearray,result);
-
-  return result;
+void* util_download_file(char* url, char* filePath){
+  FILE* file = fopen(filePath, "w");
+  curl_download_url(url,NULL,file);
+  fclose(file);
 }
 
 /*
@@ -175,7 +177,7 @@ GByteArray* util_download_data(char* url){
    @return              the contents as string
 */
 GString* util_download_string(char* url){
-	GString* result = g_string_new(NULL);
+	GString* result = g_string_new("");
 
   curl_download_url(url,util_curl_write_string,result);
 

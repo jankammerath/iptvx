@@ -233,13 +233,22 @@ void iptvx_epg_load_channel(channel* current){
 
 	/* ensure the cache path exists */
 	struct stat st = {0};
+
+	/* if cache folder needs to be created, 
+		we also need to create epg and logo */
 	if (stat("cache", &st) == -1) {
     	mkdir("cache", 0700);
     	mkdir("cache/epg", 0700);
     	mkdir("cache/logo", 0700);
-	}if (stat("cache/epg", &st) == -1) {
+	}
+
+	/* but also ensure to create each of the others */
+	if (stat("cache/epg", &st) == -1) {
 		mkdir("cache/epg", 0700);
-	}if (stat("cache/logo", &st) == -1) {
+	}
+
+	/* for logo as well */
+	if (stat("cache/logo", &st) == -1) {
 		mkdir("cache/logo", 0700);
 	}
 
@@ -250,8 +259,7 @@ void iptvx_epg_load_channel(channel* current){
 
 	/* download the logo when its not there */
 	if(!util_file_exists(logoCacheFilePath)){
-		// GByteArray* logoBuf = util_download_data(logoUrl->str);
-		//file_put_contents(g_string_new(logoCacheFilePath),logoBuf); */
+		// util_download_file(logoUrl->str,logoCacheFilePath);
 	}
 
 	/* define the cache file for epg */
