@@ -91,13 +91,82 @@ GString* file_get_contents(GString* file){
 /*
    cURL write function to write into string
    @param   in     		input char pointer
-   @param	nmemb		size of the memory to write
-   @param	out			string to write result into
-   @return              result status
+   @param	  nmemb		  size of the memory to write
+   @param	  out			  string to write result into
+   @return            result status
 */
-int util_curl_write_data(char* in, uint size, uint nmemb, GString* out){
+int util_curl_write_string(char* in, uint size, uint nmemb, GString* out){
   g_string_append_len(out, in, nmemb);
   return nmemb;
+}
+
+/*
+   cURL write function to write into byte array
+   @param   in          input char pointer
+   @param   nmemb       size of the memory to write
+   @param   out         byte array to write result into
+   @return              result status
+*/
+int util_curl_write_bytearray(char* in, uint size, uint nmemb, GByteArray* out){
+  g_byte_array_append(out, in, nmemb);
+  return nmemb;
+}
+
+/*
+  Queries a URL with cURL and writes using the passed func and buf
+  @param        url             The url to download
+  @param        write_func      The function to use for writing
+  @param        write_data      The data to write into
+*/
+void curl_download_url(char* url, void* write_func, void* write_data){
+  /* curl types */
+  CURL *curl;
+  CURLcode res;
+
+    /* initialise curl library */
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+  curl = curl_easy_init();
+
+  /* ensure CURL initialised properly */
+  if(curl){
+    /* define the url to fetch */
+    curl_easy_setopt(curl,CURLOPT_URL,url);
+
+    /* set the curl options for fetching the data */
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "iptvx/1.0 (iptvx.org)");
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_func);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, write_data);
+
+    /* execute the query */
+    res = curl_easy_perform(curl);
+
+      /* check for any errors */ 
+      if(res != CURLE_OK){
+          fprintf(stderr, "cURL failed for '%s':\n%s\n", 
+              url, curl_easy_strerror(res));
+      }
+ 
+      /* cleanup curl */ 
+      curl_easy_cleanup(curl);
+  }
+
+  /* cleanup global curl */
+  curl_global_cleanup();  
+}
+
+/*
+  Downloads a URL as byte array (raw data)
+  @param    url         the url to download
+  @return               the contents as byte array
+*/
+GByteArray* util_download_data(char* url){
+  GByteArray* result = g_byte_array_new();
+
+  curl_download_url(url,util_curl_write_bytearray,result);
+
+  return result;
 }
 
 /*
@@ -108,41 +177,7 @@ int util_curl_write_data(char* in, uint size, uint nmemb, GString* out){
 GString* util_download_string(char* url){
 	GString* result = g_string_new(NULL);
 
-	/* curl types */
-	CURL *curl;
-  	CURLcode res;
-
-  	/* initialise curl library */
-	curl_global_init(CURL_GLOBAL_DEFAULT);
- 	curl = curl_easy_init();
-
- 	/* ensure CURL initialised properly */
- 	if(curl){
- 		/* define the url to fetch */
- 		curl_easy_setopt(curl,CURLOPT_URL,url);
-
- 		/* set the curl options for fetching the data */
- 		curl_easy_setopt(curl, CURLOPT_USERAGENT, "iptvx/1.0 (iptvx.org)");
- 		curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
- 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
- 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, util_curl_write_data);
-    	curl_easy_setopt(curl, CURLOPT_WRITEDATA, result);
-
- 		/* execute the query */
- 		res = curl_easy_perform(curl);
-
-    	/* check for any errors */ 
-    	if(res != CURLE_OK){
-      		fprintf(stderr, "cURL failed for '%s':\n%s\n", 
-      				url, curl_easy_strerror(res));
-    	}
- 
-	    /* cleanup curl */ 
-	    curl_easy_cleanup(curl);
- 	}
-
- 	/* cleanup global curl */
- 	curl_global_cleanup();
+  curl_download_url(url,util_curl_write_string,result);
 
  	return result;
 }

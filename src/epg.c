@@ -243,7 +243,18 @@ void iptvx_epg_load_channel(channel* current){
 		mkdir("cache/logo", 0700);
 	}
 
-	/* define the cache file */
+	/* define the cache file for the logo */
+	GString* logoUrl = g_string_new((char*)current->logoUrl);
+	char* logoCacheFile = g_strrstr(logoUrl->str,"/")+1;
+	char* logoCacheFilePath = g_strjoin("","cache/logo/",logoCacheFile,NULL);
+
+	/* download the logo when its not there */
+	if(!util_file_exists(logoCacheFilePath)){
+		// GByteArray* logoBuf = util_download_data(logoUrl->str);
+		//file_put_contents(g_string_new(logoCacheFilePath),logoBuf); */
+	}
+
+	/* define the cache file for epg */
 	char* cacheFile = g_strrstr(epg_url,"/")+1;
 	char* cacheFilePath = g_strjoin("","cache/epg/",cacheFile,NULL);
 

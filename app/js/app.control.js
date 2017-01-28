@@ -58,6 +58,14 @@ app.control = {
 			$("#showend").html(progStop.toTimeString().substring(0,5));
 			$("#progresstime").html(new Date().toTimeString().substring(0,5));
 
+			/* prevent overlapping with start and stop display */
+			if(progressVal >= 11 && progressVal <= 89){
+				$("#progresstime").show();
+			}else{
+				/* hide to prevent overlap */
+				$("#progresstime").hide();
+			}
+
 			/* set the programme basic information */
 			$("#showtitle").html(data.programme.title);
 			var showInfo = data.programme.category;

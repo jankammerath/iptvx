@@ -49,6 +49,13 @@ void file_put_contents(GString* file, GString* content);
 GString* file_get_contents(GString* file);
 
 /*
+  Downloads a URL as byte array (raw data)
+  @param    url         the url to download
+  @return               the contents as byte array
+*/
+GByteArray* util_download_data(char* url);
+
+/*
    Downloads a URL as string
    @param   url         the url to download
    @return              the contents as string
