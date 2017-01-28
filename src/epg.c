@@ -53,6 +53,9 @@ struct channel{
 /* the channel list */
 GArray* list;
 
+/* defines current channel */
+int current_channel;
+
 /* indicates if ready */
 bool iptvx_epg_ready;
 int iptvx_epg_percentage_loaded;
@@ -68,6 +71,7 @@ channel* iptvx_epg_get_default_channel(){
 		channel* current = &g_array_index(list,channel,c);
 		if(current->isDefault == true){
 			result = current;
+			current_channel = c;
 		}
 	}
 
@@ -195,6 +199,9 @@ int iptvx_epg_load(void* nothing){
 /* initialise epg */
 bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 	list = g_array_new (false,false,sizeof(channel));
+
+	/* init current channel */
+	current_channel = 0;
 
 	/* assign the local callback function */
 	epgStatusUpdateCallback = statusUpdateCallback;

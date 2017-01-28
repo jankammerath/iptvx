@@ -77,7 +77,7 @@ void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(voi
    webkit_user_content_manager_register_script_message_handler(user_content, "iptvxexec");
 
    /* define the basic js object */
-   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], channel: '', "
+   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], channel: 0, "
                      " exec: function(cmd){ "
                      " window.webkit.messageHandlers.iptvxexec.postMessage(cmd); "
                      " } "
