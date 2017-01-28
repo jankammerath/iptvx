@@ -43,6 +43,12 @@ struct channel{
 } typedef channel;
 
 /*
+   Returns all channel and epg info as JSON string
+   @return     JSON string with all EPG info
+*/
+GString* iptvx_epg_get_json();
+
+/*
    Returns the id (list index) of the current channel
    @return  the list index of the current channel
 */

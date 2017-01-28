@@ -25,6 +25,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <time.h>
+#include <json-c/json.h>
 #include "util.h"
 
 /* thread loading the epg data */
@@ -62,6 +63,70 @@ int iptvx_epg_percentage_loaded;
 
 /* status update callback */
 void (*epgStatusUpdateCallback)(void*);
+
+/*
+	Returns all channel and epg info as JSON string
+	@return 		JSON string with all EPG info
+*/
+GString* iptvx_epg_get_json(){
+	GString* result = g_string_new(NULL);
+
+	/* json result object array */
+	json_object* j_chan_array = json_object_new_array();
+
+	int c = 0;
+	for(c = 0; c < list->len; c++){
+		/* get the channel */
+		channel* chan = &g_array_index(list,channel,c);
+
+		/* create the channel js object */
+		json_object* j_chan = json_object_new_object();
+
+		json_object_object_add(j_chan,"name",
+			json_object_new_string((char*)chan->name));
+		json_object_object_add(j_chan,"logoUrl",
+			json_object_new_string((char*)chan->logoUrl));
+
+		/* json array with the programme */
+		json_object* j_prog_array = json_object_new_array();
+
+		int p = 0;
+		for(p = 0; p < chan->programmeList->len; p++){
+			/* get the programme */
+			programme* prog = &g_array_index(chan->programmeList,programme,p);
+
+			/* create the programme js object */
+			json_object* j_prog = json_object_new_object();
+
+			json_object_object_add(j_prog,"title",
+				json_object_new_string(prog->title->str));
+			json_object_object_add(j_prog,"description",
+				json_object_new_string(prog->description->str));
+			json_object_object_add(j_prog,"category",
+				json_object_new_string(prog->category->str));
+			json_object_object_add(j_prog,"start",
+				json_object_new_int(prog->start));
+			json_object_object_add(j_prog,"stop",
+				json_object_new_int(prog->stop));
+			json_object_object_add(j_prog,"productionDate",
+				json_object_new_int(prog->productionDate));
+
+			/* add the programme to the programmelist json array */
+			json_object_array_add(j_prog_array,j_prog);
+		}
+
+		/* add programmelist json array */
+		json_object_object_add(j_chan,"programmeList",j_prog_array);
+
+		/* add the channel to the result json array */
+		json_object_array_add(j_chan_array,j_chan);
+	}
+
+	/* finally pass j_object to result string */
+	result = g_string_new(json_object_to_json_string(j_chan_array));
+
+	return result;
+}
 
 /*
 	Returns the id (list index) of the current channel

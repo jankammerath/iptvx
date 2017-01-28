@@ -110,6 +110,17 @@ void iptvx_js_set_current_channel(int channel_id){
 }
 
 /*
+  Signals the epg data to the JS app
+  @param      epg_data        JSON Array with complete epg data
+*/
+void iptvx_js_set_epg_data(GString* epg_data){
+  char jsCode[2048];
+
+  sprintf(jsCode,"iptvx.epg = %s;",epg_data->str);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
+}
+
+/*
    Sends a key down event to the js application
    @param   keyCode           the code of the key to transmit
 */
