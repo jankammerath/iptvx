@@ -24,6 +24,26 @@ app.control = {
 		/* start the EPG data interval */
 	},
 
+	/* starts the interval that listens to the epg */
+	listen: function(){
+		/* update from epg every second */
+		setInterval(app.control.update,1000);
+	},
+
+	/* called by listen and updates from the epg */
+	update: function(){
+		var data = app.epg.getCurrentChannelShow();
+		$("#channelname").html(data.channelName);
+		$("#showtitle").html(data.programme.title);
+
+		var showType = data.programme.category;
+		if(data.programme.productionDate!=""){
+			showType += " ("+data.programme.productionDate+")";
+		}
+		$("#showtype").html(showType);
+		$("#showtext").html(data.programme.description);
+	},
+
 	/* toggles the control ui */
 	toggle: function(forceOut = false){
 		if(app.control.visible == true

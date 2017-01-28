@@ -28,6 +28,9 @@ var app = {
 
 	/* initialises the app */
 	init: function(){
+		/* attach global error handler */
+		app.attachErrorHandler();
+
 		/* attach resize to ready and window resize */
 		$(document).ready(function(){app.resize();});
 		$(window).resize(function(){app.resize();});
@@ -63,6 +66,27 @@ var app = {
 		app.epg.init();
 		app.control.init();
 		app.list.init();
+	},
+
+	attachErrorHandler: function(){
+		window.onerror = function (msg, url, lineNo, columnNo, error) {
+		    var string = msg.toLowerCase();
+		    var substring = "script error";
+		    if (string.indexOf(substring) > -1){
+		        $("#debuginfo").html('Script Error: See Browser Console for Detail');
+		    } else {
+		        var message = [
+		            'Message: ' + msg,
+		            'URL: ' + url,
+		            'Line: ' + lineNo,
+		            'Column: ' + columnNo
+		        ].join(' - ');
+
+		        $("#debuginfo").html(message);
+		    }
+
+		    return false;
+		};
 	},
 
 	/* shows the debug message */

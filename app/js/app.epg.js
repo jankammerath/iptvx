@@ -33,6 +33,35 @@ app.epg = {
       }
    },
 
+   /* gets the current channel and its current show */
+   getCurrentChannelShow: function(){
+      var result = new Object();
+      var now = Date.now() / 1000;
+
+      if(typeof(iptvx)=="object"){
+         /* iterate through all channels */
+         for(var c=0;c<iptvx.epg.length;c++){
+            /* ensure c is the active channel number */
+            if(c == iptvx.channel){
+               result.channelId = c;
+               result.channelName = iptvx.epg[c].name;
+
+               /* determine the current programme */
+               for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
+                  var programme = iptvx.epg[c].programmeList[p];
+
+                  if(programme.start >= now && programme.stop <= now){
+                     /* this is the current show */
+                     result.programme = programme;
+                  }
+               }
+            }  
+         }
+      }
+
+      return result;
+   },
+
    checkStatus: function(){
       var result = false;
 
@@ -41,6 +70,9 @@ app.epg = {
             /* epg is finished */
             result = true;
             $("#status").hide();
+
+            /* tell the control to listen */
+            app.control.listen();
 
             /* show the control */
             app.control.toggle();
