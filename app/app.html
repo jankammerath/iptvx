@@ -18,40 +18,66 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" 
-        xmlns:og="http://ogp.me/ns#"
-        xmlns:fb="https://www.facebook.com/2008/fbml" xml:lang="de">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
 <head>
     <title>iptvx</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/style.css" />
 </head>
 <body>
-    <div id="ui">
-        <div id="control">
-            <div id="progress">
-                <div id="progressbar">
-                    <div id="progressbarvalue"></div>
-                </div>
-                
-                <div id="showstart">00:00</div>
-                <div id="showend">00:00</div>
-                <div id="progresstime">00:00</div>
-            </div>
-            <div id="info">
-                <div id="channelname"></div>
-                <div id="showtitle">EPG not initialised</div>
-                <div id="showtype">Channel information unavailable</div>
-                <div id="showtext">
-                    The EPG data is not initialised. Please check the configuration 
-                    and the availability of the EPG data source as well as the EPG cache.
-                </div>
-            </div>
+  <div id="ui">
+    <div id="list" class="windowbox">
+      <div class="channel activechannel">
+        <div class="channelname">
+          ARD
         </div>
+        <div class="channelshow">
+          Frühstücksfernsehen um 8
+        </div>
+      </div>
+      <div class="channel">
+        <div class="channelname">
+          ZDF
+        </div>
+        <div class="channelshow">
+          heute show
+        </div>
+      </div>
+      <div class="channel">
+        <div class="channelname">
+          Investigation Discovery
+        </div>
+        <div class="channelshow">
+          Lt. Joe Kenda - The Homicide Hunter (Ep. 11 / 23)
+        </div>
+      </div>
     </div>
 
-    <div id="debuginfo">Debug info</div>
-    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
-    <script type="text/javascript" src="js/app.control.js"></script>
+    <div id="control" class="windowbox">
+      <div id="progress">
+          <div id="progressbar">
+              <div id="progressbarvalue"></div>
+          </div>
+          
+          <div id="showstart">00:00</div>
+          <div id="showend">00:00</div>
+          <div id="progresstime">00:00</div>
+      </div>
+      <div id="info">
+          <div id="channelname"></div>
+          <div id="showtitle">EPG not initialised</div>
+          <div id="showtype">Channel information unavailable</div>
+          <div id="showtext">
+              The EPG data is not initialised. Please check the configuration 
+              and the availability of the EPG data source as well as the EPG cache.
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="debuginfo">Debug info</div>
+  <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+  <script type="text/javascript" src="js/app.control.js"></script>
+  <script type="text/javascript" src="js/app.list.js"></script>
 </body>
 </html>

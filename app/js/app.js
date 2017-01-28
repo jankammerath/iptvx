@@ -17,6 +17,9 @@
 */
 
 var app = {
+	/* list ui object */
+	list: {},
+
 	/* epg ui object */
 	epg: {},
 
@@ -34,7 +37,16 @@ var app = {
 			var keyCode = event.which;
 
 			/* control ui toggle with spacebar (32) */
-			if(keyCode == 32){app.control.toggle();}
+			if(keyCode == 32){
+				app.list.toggle(true);
+				app.control.toggle();
+			}
+
+			/* list ui toggle with shift (16) */
+			if(keyCode == 16){
+				app.control.toggle(true);
+				app.list.toggle();
+			}
 
 			/* switch next channel with left (276) and right (275) */
 			if(keyCode == 38){app.exec("channel-prev");}
@@ -43,6 +55,10 @@ var app = {
 			/* output the debug message */
 			app.showDebug(keyCode);
 		});
+
+		/* initialise ui objects */
+		app.control.init();
+		app.list.init();
 	},
 
 	/* shows the debug message */

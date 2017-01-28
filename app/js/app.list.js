@@ -16,35 +16,36 @@
 
 */
 
-app.control = {
-	visible: true,
+app.list = {
+	visible: false,
 
-	/* initialises the control ui */
+	/* initialises the programme list */
 	init: function(){
-		/* start the EPG data interval */
+		/* determine max-height and set it */
+		var max_h = $(window).innerHeight()-40;
+		$("#list").css("max-height",max_h+"px");
 	},
 
-	/* toggles the control ui */
 	toggle: function(forceOut = false){
-		if(app.control.visible == true
+		if(app.list.visible == true
 			|| forceOut == true){
 			/* fade out to bottom */
-			$("#control").animate({
+			$("#list").animate({
 				opacity: 0,
-				bottom: ($("#control").outerHeight()+100)*-1
+				left: ($("#list").outerWidth()+100)*-1
 			}, 500);
 
 			/* set indicator to false */
-			app.control.visible = false;
+			app.list.visible = false;
 		}else{
 			/* fade in from bottom */
-			$("#control").animate({
+			$("#list").animate({
 				opacity: 0.8,
-				bottom: 30
+				left: 20
 			}, 500);
 
 			/* set indicator to true */
-			app.control.visible = true;
-		}
+			app.list.visible = true;
+		}		
 	}
 }
