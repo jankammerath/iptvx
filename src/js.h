@@ -34,6 +34,12 @@ void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(voi
 void iptvx_js_update_epg_status(int percentage);
 
 /*
+  Signals the current channel to the JS app
+  @param      channel_id        int value with channel list index
+*/
+void iptvx_js_set_current_channel(int channel_id);
+
+/*
    Sends a key down event to the js application
    @param   keyCode           the code of the key to transmit
 */

@@ -99,6 +99,17 @@ void iptvx_js_update_epg_status(int percentage){
 }
 
 /*
+  Signals the current channel to the JS app
+  @param      channel_id        int value with channel list index
+*/
+void iptvx_js_set_current_channel(int channel_id){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.channel = %d;",channel_id);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
+}
+
+/*
    Sends a key down event to the js application
    @param   keyCode           the code of the key to transmit
 */

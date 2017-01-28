@@ -42,6 +42,12 @@ struct channel{
    GArray* programmeList;
 } typedef channel;
 
+/*
+   Returns the id (list index) of the current channel
+   @return  the list index of the current channel
+*/
+int iptvx_epg_get_current_channel_id();
+
 bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*));
 channel* iptvx_epg_get_default_channel();
 void iptvx_epg_load_channel(GString* channelName);

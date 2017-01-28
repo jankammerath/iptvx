@@ -45,7 +45,9 @@ app.epg = {
             /* show the control */
             app.control.toggle();
          }else{
-            $("#status").html(iptvx.epgLoaded);
+            if(iptvx.epgLoaded > 0){
+               $("#status").html(iptvx.epgLoaded);
+            }
             $("#status").show();
          }
       }

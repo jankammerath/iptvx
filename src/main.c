@@ -132,6 +132,9 @@ void epg_status_update(void* progress){
 			/* wait 1s for it to show up */
 			sleep(1);
 		}
+
+		/* signal current channel */
+		iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
 	}
 
 	if(main_js_ready){
