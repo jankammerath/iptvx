@@ -17,7 +17,7 @@
 */
 
 app.control = {
-	visible: true,
+	visible: false,
 
 	/* initialises the control ui */
 	init: function(){

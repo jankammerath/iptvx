@@ -36,27 +36,31 @@ var app = {
 		$(window).keydown(function(event){
 			var keyCode = event.which;
 
-			/* control ui toggle with spacebar (32) */
-			if(keyCode == 32){
-				app.list.toggle(true);
-				app.control.toggle();
+			/* only handle keys when epg is ready */
+			if(app.epg.ready){
+				/* control ui toggle with spacebar (32) */
+				if(keyCode == 32){
+					app.list.toggle(true);
+					app.control.toggle();
+				}
+
+				/* list ui toggle with shift (16) */
+				if(keyCode == 16){
+					app.control.toggle(true);
+					app.list.toggle();
+				}
+
+				/* switch next channel with left (276) and right (275) */
+				if(keyCode == 38){app.exec("channel-prev");}
+				if(keyCode == 40){app.exec("channel-next");}
 			}
-
-			/* list ui toggle with shift (16) */
-			if(keyCode == 16){
-				app.control.toggle(true);
-				app.list.toggle();
-			}
-
-			/* switch next channel with left (276) and right (275) */
-			if(keyCode == 38){app.exec("channel-prev");}
-			if(keyCode == 40){app.exec("channel-next");}
-
+			
 			/* output the debug message */
 			app.showDebug(keyCode);
 		});
 
 		/* initialise ui objects */
+		app.epg.init();
 		app.control.init();
 		app.list.init();
 	},
@@ -65,7 +69,8 @@ var app = {
 	showDebug: function(keyVal){
 		var debugText = "Key: "+keyVal;
 		if(typeof(iptvx)=="object"){
-			debugText += " - API OK";
+			debugText += "; API OK; EPG "
+						+iptvx.epgLoaded+"%";
 		}else{
 			debugText += " - NO API!";
 		}
@@ -88,6 +93,11 @@ var app = {
 
 		var listMaxHeight = $(window).innerHeight()-40;
 		$("#list").css("max-height",listMaxHeight+"px");
+
+		var statusLeft = $(window).innerWidth()/2-$("#status").outerWidth()/2;
+		var statusTop = $(window).innerHeight()/2-$("#status").outerHeight()/2;
+		$("#status").css("left",statusLeft+"px");
+		$("#status").css("top",statusTop+"px");
 	}
 }
 

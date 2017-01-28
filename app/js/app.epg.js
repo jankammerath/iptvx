@@ -17,5 +17,39 @@
 */
 
 app.epg = {
-	
+   ready: false,
+
+	init: function(){
+      /* keep checking until epg ready */
+      app.epg.waitUntilReady();
+   },
+
+   waitUntilReady: function(){
+      /* check the status of the epg */
+      app.epg.ready = app.epg.checkStatus();
+      if(!app.epg.ready){
+         /* check again until it is ready */
+         setTimeout(app.epg.waitUntilReady,500);
+      }
+   },
+
+   checkStatus: function(){
+      var result = false;
+
+      if(typeof(iptvx)=="object"){
+         if(iptvx.epgLoaded == 100){
+            /* epg is finished */
+            result = true;
+            $("#status").hide();
+
+            /* show the control */
+            app.control.toggle();
+         }else{
+            $("#status").html(iptvx.epgLoaded);
+            $("#status").show();
+         }
+      }
+
+      return result;
+   }
 }

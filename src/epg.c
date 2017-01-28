@@ -251,7 +251,7 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 		}
 
 		// all channels parsed, launch epg load
-		epg_thread = SDL_CreateThread(iptvx_epg_load,NULL);
+		epg_thread = SDL_CreateThread(iptvx_epg_load,"");
 	}else{
 		/* output and error when channels not present */
 		printf("Error getting channels from config\n");

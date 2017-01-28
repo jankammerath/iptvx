@@ -130,11 +130,13 @@ int iptvx_create_window(int width, int height,
             current_overlay = g_byte_array_new_take(overlay_png_ref->data,overlay_png_ref->length);
         }
 
-        SDL_RWops *overlay_rwops = SDL_RWFromMem(current_overlay->data,current_overlay->len);
-        overlay = IMG_LoadPNG_RW(overlay_rwops);
-        SDL_BlitSurface(overlay, NULL, screen, NULL);
-        SDL_FreeRW(overlay_rwops);
-        SDL_FreeSurface(overlay);
+        if(current_overlay->data != NULL){
+            SDL_RWops *overlay_rwops = SDL_RWFromMem(current_overlay->data,current_overlay->len);
+            overlay = IMG_LoadPNG_RW(overlay_rwops);
+            SDL_BlitSurface(overlay, NULL, screen, NULL);
+            SDL_FreeRW(overlay_rwops);
+            SDL_FreeSurface(overlay);
+        }
 
         /* unlock mutex */
         SDL_UnlockMutex(ctx.mutex);

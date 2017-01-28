@@ -88,6 +88,17 @@ void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(voi
 }
 
 /*
+  Signals current epg status to the js app
+  @param      percentage        int percentage value of progress
+*/
+void iptvx_js_update_epg_status(int percentage){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.epgLoaded = %d;",percentage);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
+}
+
+/*
    Sends a key down event to the js application
    @param   keyCode           the code of the key to transmit
 */

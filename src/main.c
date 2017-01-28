@@ -109,7 +109,13 @@ void window_ready(void* context){
 
 /*
 	handles epg status updates
-	@param 		progress 	int ptr with load percentage;
+	@param 		progress 	int ptr with load percentage
+
+	@warning	There is a race condition between the JS API
+				and the EPG thread. Should in any occasion the 
+				JS API take significant time to load, then the 
+				while loop to wait for it might freeze the application
+				or at least the thread executed from
 */
 void epg_status_update(void* progress){
 	/* get epg progress value */
@@ -118,11 +124,19 @@ void epg_status_update(void* progress){
 	/* mark ready when 100 percent reached */
 	if(progressVal == 100){
 		main_epg_ready = true;
+
+		/* we need to wait for js to come up as 
+			otherwise it'll not get the notification 
+			that the epg is ready */
+		while(!main_js_ready){
+			/* wait 1s for it to show up */
+			sleep(1);
+		}
 	}
 
-	/* send status to JS API when ready */
 	if(main_js_ready){
-
+		/* send epg status update to js */
+		iptvx_js_update_epg_status(progressVal);		
 	}
 }
 
