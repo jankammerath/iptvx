@@ -126,10 +126,6 @@ void iptvx_js_set_epg_data(GString* epg_data){
 void iptvx_js_sendkey(int keyCode){
   char scriptKeyEvent[512];
 
-  if(keyCode == 13){
-    keyCode = 271;
-  }
-
   char keyName[2];
   keyName[0] = (char)keyCode;
   keyName[1] = '\0';

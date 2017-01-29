@@ -18,22 +18,47 @@
 
 app.list = {
 	visible: false,
+	selectedChannel: -1,
 
 	/* initialises the programme list */
 	init: function(){
 		
 	},
 
+	/* handles key input when present */
+	handleKey: function(keyCode){
+		var epgData = app.epg.getEpgData();
+
+		/* up key */
+		if(keyCode == 38){
+			if(app.list.selectedChannel == 0){
+				app.list.selectedChannel = epgData.length-1;
+			}else{
+				app.list.selectedChannel--;
+			}			
+		}
+
+		/* down key */
+		if(keyCode == 40){
+			if(app.list.selectedChannel == epgData.length-1){
+				app.list.selectedChannel = 0;
+			}else{
+				app.list.selectedChannel++;
+			}
+		}
+	},
+
 	listen: function(){
 		/* launch first update */
 		app.list.update();
 
-		/* update from epg every second */
-		setInterval(app.list.update,1000);
+		/* update from epg every 200ms */
+		setInterval(app.list.update,200);
 	},
 
 	update: function(){
 		var now = Date.now() / 1000;
+		var activeChannel = app.epg.getActiveChannelId();
 		var epgData = app.epg.getEpgData();
 		var listHtml = "";
 
@@ -48,7 +73,15 @@ app.list = {
 				}
 			}
 
-			listHtml += '<div class="channel">'
+			var activeClass = "";
+			if(app.list.selectedChannel == c){
+				activeClass = " activechannel";
+			}if(c == activeChannel && app.list.selectedChannel == -1){
+				activeClass = " activechannel";
+				app.list.selectedChannel = activeChannel;
+			}
+
+			listHtml += '<div class="channel'+activeClass+'">'
 						+ '<div class="channellogo" '
 						+ 'style="background-image:url(../data/logo/'+chan.logoFile+');">'
 						+ '</div>'

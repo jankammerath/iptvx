@@ -17,6 +17,7 @@
 */
 
 app.epg = {
+   visible: false,
    ready: false,
 
 	init: function(){
@@ -38,6 +39,17 @@ app.epg = {
       if(typeof(iptvx)=="object"){
          return iptvx.epg;
       } 
+   },
+
+   /* returns the active channel id */
+   getActiveChannelId: function(){
+      var result = 0;
+
+      if(typeof(iptvx)=="object"){
+         result = iptvx.channel;
+      }
+
+      return result;
    },
 
    /* gets the current channel and its current show */

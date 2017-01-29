@@ -53,9 +53,17 @@ var app = {
 					app.list.toggle();
 				}
 
-				/* switch next channel with left (276) and right (275) */
-				if(keyCode == 38){app.exec("channel-prev");}
-				if(keyCode == 40){app.exec("channel-next");}
+				/* only handle keys when no ui is present to handle */
+				if(app.list.visible == false && app.epg.visible == false){
+					/* switch channel with up (38) and down (40) */
+					if(keyCode == 38){app.exec("channel-prev");}
+					if(keyCode == 40){app.exec("channel-next");}
+				}
+
+				/* allow list to handle keys */
+				if(app.list.visible){
+					app.list.handleKey(keyCode);
+				}
 			}
 			
 			/* output the debug message */
