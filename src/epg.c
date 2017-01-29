@@ -220,6 +220,8 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 		/* get the root element */
 		cur = xmlDocGetRootElement(doc);
 
+		printf("docroot picked up\n");
+
 		/* get all programme nodes */
 		for(progNode = cur->children; progNode != NULL; progNode = progNode->next){
 			if(xmlStrcmp(progNode->name,"programme")==0){
@@ -239,24 +241,32 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 				prog.productionDate = 0;
 
 				/* get programme information */
-				for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
-					if(xmlStrcmp(valNode->name,"title")==0){
-						prog.title = g_string_new(valNode->children->content);
-					}if(xmlStrcmp(valNode->name,"desc")==0){
-						prog.description = g_string_new(valNode->children->content);
-					}if(xmlStrcmp(valNode->name,"category")==0){
-						/* only take first category found */
-						if(prog.category->len == 0){
-							prog.category = g_string_new(valNode->children->content);
+				if(progNode->children != NULL){
+					for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
+						if(xmlStrcmp(valNode->name,"title")==0){
+							if(valNode->children != NULL){
+								prog.title = g_string_new(valNode->children->content);
+							}
+						}if(xmlStrcmp(valNode->name,"desc")==0){
+							if(valNode->children != NULL){
+								prog.description = g_string_new(valNode->children->content);
+							}
+						}if(xmlStrcmp(valNode->name,"category")==0){
+							/* only take first category found */
+							if(prog.category->len == 0 && valNode->children != NULL){
+								prog.category = g_string_new(valNode->children->content);
+							}
+						}if(xmlStrcmp(valNode->name,"date")==0){
+							if(valNode->children != NULL){
+								GString* dateVal = g_string_new(valNode->children->content);
+								prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
+							}
 						}
-					}if(xmlStrcmp(valNode->name,"date")==0){
-						GString* dateVal = g_string_new(valNode->children->content);
-						prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
 					}
-				}
 
-				/* flush programme into result */
-				g_array_append_val(result,prog);
+					/* flush programme into result */
+					g_array_append_val(result,prog);
+				}
 			}
 		}
 	}
@@ -333,8 +343,7 @@ void iptvx_epg_load_channel(channel* current){
 
 		/* fetch xmltv epg from shell if defined */
 		if(current->epgShell->len > 0){
-			GString* shell_xmltv = util_shell_exec(current->epgShell);
-			xmltv = g_string_new(shell_xmltv->str);
+			xmltv = util_shell_exec(current->epgShell);
 		}
 		
 		/* finally flush the xmltv to disk cache */

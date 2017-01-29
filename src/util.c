@@ -40,17 +40,20 @@
 GString* util_shell_exec(GString* command){
   GString* result = g_string_new("");
 
+  /* open ptr to process */
   FILE* ptr = popen((char*)command, "r");
 
+  /* read STDOUT */
   if(ptr){
-    int buffer_size = 256;
+    int buffer_size = 100;
     gchar buf[buffer_size];
     while(fgets(buf,buffer_size,ptr)){
-      g_string_append_printf(result,"%s",buf);
+      g_string_append(result,buf);
     }
     pclose(ptr);
   }
 
+  /* return result */
   return result;
 }
 
