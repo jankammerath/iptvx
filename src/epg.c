@@ -49,8 +49,10 @@ struct channel{
 	bool isDefault;
 	GString* name;
 	GString* url;
+	GString* urlShell;
 	GString* epgUrl;
 	GString* epgFile;
+	GString* epgShell;
 	GString* logoFile;
 	GArray* programmeList;
 } typedef channel;
@@ -295,14 +297,46 @@ void iptvx_epg_load_channel(channel* current){
 	}
 
 	/* define the cache file for epg */
-	char* cacheFile = g_strrstr(epg_url,"/")+1;
+	char* cacheFile;
+
+	/* check if the url is defined and use 
+		the filename defined in there */
+	if(current->epgUrl->len > 1){
+		cacheFile = g_strrstr(epg_url,"/")+1;
+	}else{
+		/* use the name of the epg file if defined */
+		if(current->epgFile->len > 1){
+			/* define disk epg file */
+			char epg_file[256];
+			time_t now = time(NULL);
+			struct tm *t = localtime(&now);
+			strftime(epg_file,sizeof(epg_file)-1,(char*)current->epgFile,t);
+
+			/* set cache file to disk epg file */
+			cacheFile = epg_file;
+		}else{
+			/* if not, define it from the name */
+			cacheFile = (char*)current->name;
+		}
+	}
+
+	/* define the full path of the epg file */
 	char* cacheFilePath = g_strjoin("","data/epg/",cacheFile,NULL);
 
 	GString* xmltv = g_string_new(NULL);
 	if(!util_file_exists(cacheFilePath)){
-		/* file doesn't exist, we need to fetch it */
-		xmltv = util_download_string(epg_url);
+		/* fetch url if defined */
+		if(current->epgUrl->len > 0){
+			/* file doesn't exist, we need to fetch it */
+			xmltv = util_download_string(epg_url);	
+		}
 
+		/* fetch xmltv epg from shell if defined */
+		if(current->epgShell->len > 0){
+			GString* shell_xmltv = util_shell_exec(current->epgShell);
+			xmltv = g_string_new(shell_xmltv->str);
+		}
+		
 		/* finally flush the xmltv to disk cache */
 		file_put_contents(g_string_new(cacheFilePath),xmltv);
 	}else{
@@ -375,6 +409,7 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 			/* get the config channel element */
 			config_setting_t *element = config_setting_get_elem(channels, i);
 
+			current.name = g_string_new("");
 			GString* channelName = g_string_new("");
 			if (config_setting_lookup_string(element,"name",(const char**)&channelName)) {
             	current.name = channelName;
@@ -387,23 +422,39 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
             }
 
             GString* channelUrl = g_string_new("");
+			current.url = g_string_new("");
 			if (config_setting_lookup_string(element,"url",(const char**)&channelUrl)) {
             	current.url = channelUrl;
             }
 
+            GString* channelUrlShell = g_string_new("");
+			current.urlShell = g_string_new("");
+			if (config_setting_lookup_string(element,"urlShell",(const char**)&channelUrlShell)) {
+            	current.urlShell = channelUrlShell;
+            }
+
             GString* logoFile = g_string_new("");
+			current.logoFile = g_string_new("");
 			if (config_setting_lookup_string(element,"logoFile",(const char**)&logoFile)) {
             	current.logoFile = logoFile;
             }
 
             GString* epgUrl = g_string_new("");
+			current.epgUrl = g_string_new("");
 			if (config_setting_lookup_string(element,"epgUrl",(const char**)&epgUrl)) {
             	current.epgUrl = epgUrl;
             }
 
             GString* epgFile = g_string_new("");
+			current.epgFile = g_string_new("");
 			if (config_setting_lookup_string(element,"epgFile",(const char**)&epgFile)) {
             	current.epgFile = epgFile;
+            }
+
+            GString* epgShell = g_string_new("");
+			current.epgShell = g_string_new("");
+			if (config_setting_lookup_string(element,"epgShell",(const char**)&epgShell)) {
+            	current.epgShell = epgShell;
             }
 
             /* append channel to list */

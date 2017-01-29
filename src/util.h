@@ -28,6 +28,13 @@
 #define UTIL_H
 
 /*
+  Executes a shell command and returns stdout
+  @param      command     the shell command to execute
+  @return                 the STDOUT of the command
+*/
+GString* util_shell_exec(GString* command);
+
+/*
    Checks if a file exists on disk
    @param   fileName    the file path to check for
    @return              true when the file exists, otherwise false

@@ -33,6 +33,28 @@
 #include <glib.h>
 
 /*
+  Executes a shell command and returns stdout
+  @param      command     the shell command to execute
+  @return                 the STDOUT of the command
+*/
+GString* util_shell_exec(GString* command){
+  GString* result = g_string_new("");
+
+  FILE* ptr = popen((char*)command, "r");
+
+  if(ptr){
+    int buffer_size = 256;
+    gchar buf[buffer_size];
+    while(fgets(buf,buffer_size,ptr)){
+      g_string_append_printf(result,"%s",buf);
+    }
+    pclose(ptr);
+  }
+
+  return result;
+}
+
+/*
    Checks if a file exists on disk
    @param   fileName    the file path to check for
    @return              true when the file exists, otherwise false
