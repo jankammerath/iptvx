@@ -33,6 +33,13 @@ app.epg = {
       }
    },
 
+   /* returns the complete epg data */
+   getEpgData: function(){
+      if(typeof(iptvx)=="object"){
+         return iptvx.epg;
+      } 
+   },
+
    /* gets the current channel and its current show */
    getCurrentChannelShow: function(){
       var result = new Object();
@@ -74,6 +81,7 @@ app.epg = {
       return result;
    },
 
+   /* checks the status of the epg */
    checkStatus: function(){
       var result = false;
 
@@ -85,6 +93,9 @@ app.epg = {
 
             /* tell the control to listen */
             app.control.listen();
+
+            /* tell the list to listen */
+            app.list.listen();
 
             /* show the control */
             app.control.toggle();

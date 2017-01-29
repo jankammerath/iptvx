@@ -50,7 +50,8 @@ struct channel{
 	GString* name;
 	GString* url;
 	GString* epgUrl;
-	GString* logoUrl;
+	GString* epgFile;
+	GString* logoFile;
 	GArray* programmeList;
 } typedef channel;
 
@@ -87,8 +88,8 @@ GString* iptvx_epg_get_json(){
 
 		json_object_object_add(j_chan,"name",
 			json_object_new_string((char*)chan->name));
-		json_object_object_add(j_chan,"logoUrl",
-			json_object_new_string((char*)chan->logoUrl));
+		json_object_object_add(j_chan,"logoFile",
+			json_object_new_string((char*)chan->logoFile));
 
 		/* json array with the programme */
 		json_object* j_prog_array = json_object_new_array();
@@ -236,35 +237,25 @@ void iptvx_epg_load_channel(channel* current){
 
 	/* if cache folder needs to be created, 
 		we also need to create epg and logo */
-	if (stat("cache", &st) == -1) {
-    	mkdir("cache", 0700);
-    	mkdir("cache/epg", 0700);
-    	mkdir("cache/logo", 0700);
+	if (stat("data", &st) == -1) {
+    	mkdir("data", 0700);
+    	mkdir("data/epg", 0700);
+    	mkdir("data/logo", 0700);
 	}
 
 	/* but also ensure to create each of the others */
-	if (stat("cache/epg", &st) == -1) {
-		mkdir("cache/epg", 0700);
+	if (stat("data/epg", &st) == -1) {
+		mkdir("data/epg", 0700);
 	}
 
 	/* for logo as well */
-	if (stat("cache/logo", &st) == -1) {
-		mkdir("cache/logo", 0700);
-	}
-
-	/* define the cache file for the logo */
-	GString* logoUrl = g_string_new((char*)current->logoUrl);
-	char* logoCacheFile = g_strrstr(logoUrl->str,"/")+1;
-	char* logoCacheFilePath = g_strjoin("","cache/logo/",logoCacheFile,NULL);
-
-	/* download the logo when its not there */
-	if(!util_file_exists(logoCacheFilePath)){
-		// util_download_file(logoUrl->str,logoCacheFilePath);
+	if (stat("data/logo", &st) == -1) {
+		mkdir("data/logo", 0700);
 	}
 
 	/* define the cache file for epg */
 	char* cacheFile = g_strrstr(epg_url,"/")+1;
-	char* cacheFilePath = g_strjoin("","cache/epg/",cacheFile,NULL);
+	char* cacheFilePath = g_strjoin("","data/epg/",cacheFile,NULL);
 
 	GString* xmltv = g_string_new(NULL);
 	if(!util_file_exists(cacheFilePath)){
@@ -352,14 +343,19 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
             	current.url = channelUrl;
             }
 
-            GString* logoUrl = g_string_new("");
-			if (config_setting_lookup_string(element,"logoUrl",(const char**)&logoUrl)) {
-            	current.logoUrl = logoUrl;
+            GString* logoFile = g_string_new("");
+			if (config_setting_lookup_string(element,"logoFile",(const char**)&logoFile)) {
+            	current.logoFile = logoFile;
             }
 
             GString* epgUrl = g_string_new("");
 			if (config_setting_lookup_string(element,"epgUrl",(const char**)&epgUrl)) {
             	current.epgUrl = epgUrl;
+            }
+
+            GString* epgFile = g_string_new("");
+			if (config_setting_lookup_string(element,"epgFile",(const char**)&epgFile)) {
+            	current.epgFile = epgFile;
             }
 
             /* append channel to list */

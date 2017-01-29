@@ -24,9 +24,45 @@ app.list = {
 		
 	},
 
+	listen: function(){
+		/* launch first update */
+		app.list.update();
+
+		/* update from epg every second */
+		setInterval(app.list.update,1000);
+	},
+
+	update: function(){
+		var now = Date.now() / 1000;
+		var epgData = app.epg.getEpgData();
+		var listHtml = "";
+
+		for(var c=0;c<epgData.length;c++){
+			var chan = epgData[c];
+			var showTitle = "";
+
+			for(var p=0;p<chan.programmeList.length;p++){
+				var programme = chan.programmeList[p];
+				if(programme.start <= now && programme.stop >= now){
+					showTitle = programme.title;
+				}
+			}
+
+			listHtml += '<div class="channel">'
+						+ '<div class="channellogo" '
+						+ 'style="background-image:url(../data/logo/'+chan.logoFile+');">'
+						+ '</div>'
+						+ '<div class="channelname">'
+						+ chan.name
+						+ '</div><div class="channelshow">'
+						+ showTitle
+						+ '</div></div>';
+		}
+		$("#list").html(listHtml);
+	},
+
 	toggle: function(forceOut = false){
-		if(app.list.visible == true
-			|| forceOut == true){
+		if(app.list.visible == true || forceOut == true){
 			/* fade out to bottom */
 			$("#list").animate({
 				opacity: 0,
