@@ -127,7 +127,12 @@ void iptvx_js_sendkey(int keyCode){
   char scriptKeyEvent[512];
 
   char keyName[2];
-  keyName[0] = (char)keyCode;
+  if(keyCode == 13){
+    keyName[0] = '0';
+  }else{
+    keyName[0] = (char)keyCode;
+  }
+
   keyName[1] = '\0';
   sprintf(scriptKeyEvent,"var e = new Event(\"keydown\");"
         "e.key=\"%s\";e.keyCode=%d;"

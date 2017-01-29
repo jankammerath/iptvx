@@ -29,6 +29,11 @@ app.list = {
 	handleKey: function(keyCode){
 		var epgData = app.epg.getEpgData();
 
+		/* enter key */
+		if(keyCode == 13 && app.list.selectedChannel >= 0){
+			app.epg.switchChannel(app.list.selectedChannel);
+		}
+
 		/* up key */
 		if(keyCode == 38){
 			if(app.list.selectedChannel == 0){

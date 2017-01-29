@@ -25,6 +25,16 @@ app.epg = {
       app.epg.waitUntilReady();
    },
 
+   /* forces application to switch to defined channel */
+   switchChannel: function(channelId){
+      if(typeof(iptvx)=="object"){
+         /* check if defined channel within range */
+         if(channelId >= 0 && channelId < iptvx.epg.length){
+            app.exec("switch-channel "+channelId);
+         }
+      }
+   },
+
    waitUntilReady: function(){
       /* check the status of the epg */
       app.epg.ready = app.epg.checkStatus();
