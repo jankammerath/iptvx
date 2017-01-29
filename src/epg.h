@@ -54,8 +54,31 @@ GString* iptvx_epg_get_json();
 */
 int iptvx_epg_get_current_channel_id();
 
+/*
+   Sets the current channel id
+   @param      channelId      the channel to set as current
+*/
+void iptvx_epg_set_current_channel_id(int channelId);
+
+/*
+   Gets the current channel
+   @return     ptr to the current channel struct
+*/
+channel* iptvx_epg_get_current_channel();
+
+/*
+   Initialises EPG and loads XMLTV files
+   @param      cfg                     Config struct from libconfig holding channel config
+   @param      statusUpdateCallback    Callback to call when status changes (e.g. finish)
+*/
 bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*));
+
+/* 
+   Gets the default channel as defined in config
+   @return     ptr to the channel struct
+*/
 channel* iptvx_epg_get_default_channel();
+
 void iptvx_epg_load_channel(GString* channelName);
 void iptvx_epg_load();
 

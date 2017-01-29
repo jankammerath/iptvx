@@ -59,6 +59,14 @@ void iptvx_video_play(libvlc_video_lock_cb lock, libvlc_video_unlock_cb unlock,
 	libvlc_media_player_play (mp);
 }
 
+/*
+	Stops current playback
+*/
+void iptvx_video_stop(){
+	/* tell vlc to stop current playback */
+	libvlc_media_player_stop (mp);
+}
+
 void iptvx_video_free(){
 	/* terminate the whole thing */
 	libvlc_media_player_stop (mp);

@@ -140,6 +140,38 @@ int iptvx_epg_get_current_channel_id(){
 	return iptvx_epg_current_channel;
 }
 
+/*
+	Sets the current channel id
+	@param 		channelId 		the channel to set as current
+*/
+void iptvx_epg_set_current_channel_id(int channelId){
+	/* don't set the val if it exceeds the list */
+	if(channelId < list->len){
+		iptvx_epg_current_channel = channelId;
+	}
+}
+
+/*
+	Gets the current channel
+	@return 		ptr to the current channel struct
+*/
+channel* iptvx_epg_get_current_channel(){
+	channel* result = NULL;
+
+	int c = 0;
+	for(c = 0; c < list->len; c++){
+		if(c == iptvx_epg_current_channel){
+			result = &g_array_index(list,channel,c);
+		}
+	}
+
+	return result;
+}
+
+/* 
+	Gets the default channel as defined in config
+	@return 		ptr to the channel struct
+*/
 channel* iptvx_epg_get_default_channel(){
 	channel* result;
 
@@ -308,7 +340,11 @@ int iptvx_epg_load(void* nothing){
 	return 0;
 }
 
-/* initialise epg */
+/*
+   Initialises EPG and loads XMLTV files
+   @param      cfg                     Config struct from libconfig holding channel config
+   @param      statusUpdateCallback    Callback to call when status changes (e.g. finish)
+*/
 bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 	list = g_array_new (false,false,sizeof(channel));
 

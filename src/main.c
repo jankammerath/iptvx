@@ -58,11 +58,62 @@ void keydown(int keyCode){
 	}
 }
 
+/* 
+	plays a channel's url with the video player 
+	@param		url 		the url to play
+*/
+void channel_video_play(char* url, bool stopCurrent){
+	/* check if required to stop current playback */
+	if(stopCurrent){
+		/* ask video to stop current playback */
+		iptvx_video_free();
+	}
+
+	/* initialise the video playback */
+	iptvx_video_init(url,main_window_width,main_window_height);
+
+	/* start the playback on screen */
+	iptvx_video_play(iptvx_window_lock,iptvx_window_unlock,
+					iptvx_window_display,main_window_context);	
+}
+
 /*
 	Handles retrieval of API control messages
 	@param		message 	the control message as string
 */
 void control_message_received(void* message){
+	/* create new string with control message */
+	GString* controlMessage = g_string_new(message);
+
+	/* defines the argument split char */
+	gchar* splitChar = " ";
+
+	/* control messages can have parameters or 
+		are just a single string with a command 
+		that takes no arguments */
+	if(g_strrstr(controlMessage->str,splitChar) == NULL){
+		/* this is an individual control message 
+			that comes with no arguments attached */
+	}else{
+		/* this is a command with one or multiple 
+			parameters attached; split em up */
+		gchar** ctlMsg = g_strsplit(controlMessage->str,splitChar,-1);
+
+		/* check which command this is */
+		if(g_ascii_strncasecmp(ctlMsg[0],"switch-channel",13)==0){
+			/* this is a channel switch control message,
+				so we need to get the channel number */
+			int chanId = g_ascii_strtoll(ctlMsg[1],NULL,0);
+			iptvx_epg_set_current_channel_id(chanId);
+			channel* newChan = iptvx_epg_get_current_channel();
+			channel_video_play((char*)newChan->url,true);
+
+			/* update JS with new channel */
+			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
+		}
+	}
+
+	/* debug output to check control messages */
 	printf("CONTROL MESSAGE RECEIVED: %s\n",message);
 }
 
@@ -74,19 +125,6 @@ void load_finished(void* webview){
 	/* initialise JS API with webview and callback func */
 	iptvx_js_init(webview,control_message_received);
 	main_js_ready = true;
-}
-
-/* 
-	plays a channel's url with the video player 
-	@param		url 		the url to play
-*/
-void channel_video_play(char* url){
-	/* initialise the video playback */
-	iptvx_video_init(url,main_window_width,main_window_height);
-
-	/* start the playback on screen */
-	iptvx_video_play(iptvx_window_lock,iptvx_window_unlock,
-					iptvx_window_display,main_window_context);	
 }
 
 /* 
@@ -136,7 +174,7 @@ void epg_status_update(void* progress){
 		/* activate video playback by getting
 			the default channel and play it */
 		channel* defaultChannel = iptvx_epg_get_default_channel();
-		channel_video_play((char*)defaultChannel->url);
+		channel_video_play((char*)defaultChannel->url,false);
 	}
 
 	if(main_js_ready){
