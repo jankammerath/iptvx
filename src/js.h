@@ -34,6 +34,12 @@ void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(voi
 void iptvx_js_update_epg_status(int percentage);
 
 /*
+  Signals media state to the js api
+  @param      current_state        defines current media state
+*/
+void iptvx_js_update_state(int current_state);
+
+/*
   Signals the current channel to the JS app
   @param      channel_id        int value with channel list index
 */

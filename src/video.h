@@ -21,15 +21,50 @@
 
 #include <vlc/vlc.h>
 
+/* 
+   initialises video playback and opens media 
+   @param         videofile      the video url to open
+   @param         width          width of the video (to draw)
+   @param         height         height of the video (to draw)
+*/
 void iptvx_video_init(char *videofile, int width, int height);
+
+/* 
+   start the actual video playback 
+   @param      lock        callback to lock the surface
+   @param      unlock         callback to unlock the surface
+   @param      display     display that vlc draws on
+   @param      context     context to draw video in
+*/
 void iptvx_video_play(libvlc_video_lock_cb lock, libvlc_video_unlock_cb unlock, 
 						libvlc_video_display_cb display, void* context);
+
+/*
+   Returns the current state of the media 
+
+   The following are supported:
+
+   0  libvlc_NothingSpecial   
+   1  libvlc_Opening    
+   2  libvlc_Buffering  
+   3  libvlc_Playing    
+   4  libvlc_Paused  
+   5  libvlc_Stopped    
+   6  libvlc_Ended   
+   7  libvlc_Error 
+
+   @return        the status value as int
+*/
+int iptvx_video_get_state();
 
 /*
    Stops current playback
 */
 void iptvx_video_stop();
 
+/*
+   Stops and frees the instance
+*/
 void iptvx_video_free();
 
 #endif

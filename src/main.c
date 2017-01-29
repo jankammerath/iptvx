@@ -23,6 +23,7 @@
 #include <stdbool.h>
 #include <libconfig.h>
 #include <glib.h>
+#include <SDL/SDL.h>
 #include "args.h"
 #include "config.h"
 #include "window.h"
@@ -31,6 +32,9 @@
 #include "js.h"
 #include "epg.h"
 #include "keycode.h"
+
+/* application status */
+bool application_active;
 
 /* context of the window */
 void* main_window_context;
@@ -44,9 +48,15 @@ bool main_js_ready;
 bool main_window_ready;
 bool main_epg_ready;
 
+/* the thread polling and pushing updates */
+SDL_Thread* update_thread;
+
 /* handles any key down event */
 void keydown(int keyCode){
 	if(keyCode == 27){
+		/* tells all threads to kill themselves */
+		application_active = false;
+
 		/* termination of application */
 		iptvx_video_free();
 	}else{
@@ -183,8 +193,34 @@ void epg_status_update(void* progress){
 	}
 }
 
+/*
+	Updates the media state from the player to the JS API
+*/
+int update(void* nothing){
+	int media_state;
+
+	/* ensure JS and App is active */
+	while(application_active){
+		if(main_js_ready == true){
+			/* get the current media state */
+			media_state = iptvx_video_get_state();
+
+			/* signal it to the js api */
+			iptvx_js_update_state(media_state);
+
+			/* wait a sec */
+			usleep(200000);
+		}
+	}
+
+	return 0;
+}
+
 /* main application code */
 int main (int argc, char *argv[]){
+	/* set activity indicator to true */
+	application_active = true;
+
 	/* parse input arguments first */
 	struct arguments arguments = iptvx_parse_args(argc,argv);
 
@@ -210,12 +246,18 @@ int main (int argc, char *argv[]){
 		char* overlayApp = iptvx_config_get_overlay_app();
 		iptvx_webkit_start_thread(overlayApp,load_finished);
 
-		/* create the thread for the main window */
+		/* start the thread to update the js api */
+		update_thread = SDL_CreateThread(update,NULL);
+
+		/* create the main window which 
+			will lock this main thread */
 		iptvx_create_window(main_window_width,
 							main_window_height,
 							keydown,window_ready);
 	}
 
+	/* tells all threads to kill themselves */
+	application_active = false;
 
 	return 0;
 }

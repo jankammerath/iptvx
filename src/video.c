@@ -25,7 +25,12 @@ libvlc_media_t *m;
 int video_width;
 int video_height;
 
-/* initialise video playback and open media */
+/* 
+	initialises video playback and opens media 
+	@param			videofile 		the video url to open
+	@param 			width 			width of the video (to draw)
+	@param 			height 			height of the video (to draw)
+*/
 void iptvx_video_init(char *videofile, int width, int height){
 	const char * const vlc_args[] = {
 		"--no-xlib", /* tell VLC to not use Xlib */
@@ -43,7 +48,13 @@ void iptvx_video_init(char *videofile, int width, int height){
 	video_height = height;
 }
 
-/* start the actual video playback */
+/* 
+	start the actual video playback 
+	@param		lock 			callback to lock the surface
+	@param 		unlock 			callback to unlock the surface
+	@param 		display 		display that vlc draws on
+	@param 		context 		context to draw video in
+*/
 void iptvx_video_play(libvlc_video_lock_cb lock, libvlc_video_unlock_cb unlock, 
 						libvlc_video_display_cb display, void* context){	
 	/* give it a little time to start up */
@@ -60,6 +71,35 @@ void iptvx_video_play(libvlc_video_lock_cb lock, libvlc_video_unlock_cb unlock,
 }
 
 /*
+   	Returns the current state of the media 
+
+	The following are supported:
+
+	0	libvlc_NothingSpecial 	
+	1	libvlc_Opening 	
+	2	libvlc_Buffering 	
+	3	libvlc_Playing 	
+	4	libvlc_Paused 	
+	5	libvlc_Stopped 	
+	6	libvlc_Ended 	
+	7	libvlc_Error 
+
+   	@return        the status value as int
+*/
+int iptvx_video_get_state(){
+	int result = 0;
+
+	if(mp != NULL){
+		libvlc_media_t* cmedia = libvlc_media_player_get_media(mp);
+		if(cmedia != NULL){
+			result = libvlc_media_get_state	(cmedia);
+		}
+	}
+
+	return result;
+}
+
+/*
 	Stops current playback
 */
 void iptvx_video_stop(){
@@ -67,6 +107,9 @@ void iptvx_video_stop(){
 	libvlc_media_player_stop (mp);
 }
 
+/*
+   Stops and frees the instance
+*/
 void iptvx_video_free(){
 	/* terminate the whole thing */
 	libvlc_media_player_stop (mp);

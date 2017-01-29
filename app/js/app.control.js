@@ -35,6 +35,9 @@ app.control = {
 
 	/* called by listen and updates from the epg */
 	update: function(){
+		console.log("MEDIA STATE:"+iptvx.state);
+
+		/* get the EPG data */
 		var data = app.epg.getCurrentChannelShow();
 		$("#channelname").html(data.channelName);
 

@@ -77,7 +77,8 @@ void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(voi
    webkit_user_content_manager_register_script_message_handler(user_content, "iptvxexec");
 
    /* define the basic js object */
-   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], channel: 0, "
+   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], "
+                     " channel: 0, state: 0, "
                      " exec: function(cmd){ "
                      " window.webkit.messageHandlers.iptvxexec.postMessage(cmd); "
                      " } "
@@ -95,6 +96,17 @@ void iptvx_js_update_epg_status(int percentage){
   char jsCode[100];
 
   sprintf(jsCode,"iptvx.epgLoaded = %d;",percentage);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
+}
+
+/*
+  Signals media state to the js api
+  @param      current_state        defines current media state
+*/
+void iptvx_js_update_state(int current_state){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.state = %d;",current_state);
   webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
 }
 
