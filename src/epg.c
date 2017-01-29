@@ -179,47 +179,56 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 
 	/* parse from the xmltv string */
 	doc = xmlParseDoc(xmltv->str);
-	cur = xmlDocGetRootElement(doc);
+	if(doc == NULL){
+		/* output an error when parser failed */
+		printf("Unable to parse XMLTV string.\n");
+	}else{
+		/* get the root element */
+		cur = xmlDocGetRootElement(doc);
 
-	/* get all programme nodes */
-	for(progNode = cur->children; progNode != NULL; progNode = progNode->next){
-		if(xmlStrcmp(progNode->name,"programme")==0){
-			/* create prorgramme struct */
-			programme prog;
+		/* get all programme nodes */
+		for(progNode = cur->children; progNode != NULL; progNode = progNode->next){
+			if(xmlStrcmp(progNode->name,"programme")==0){
+				/* create prorgramme struct */
+				programme prog;
 
-			/* get start and stop as string */
-			GString* startTime = g_string_new(xmlGetProp(progNode,"start"));
-			GString* stopTime = g_string_new(xmlGetProp(progNode,"stop"));
-			prog.start = iptvx_epg_get_xmltv_timestamp(startTime);
-			prog.stop = iptvx_epg_get_xmltv_timestamp(stopTime);
+				/* get start and stop as string */
+				GString* startTime = g_string_new(xmlGetProp(progNode,"start"));
+				GString* stopTime = g_string_new(xmlGetProp(progNode,"stop"));
+				prog.start = iptvx_epg_get_xmltv_timestamp(startTime);
+				prog.stop = iptvx_epg_get_xmltv_timestamp(stopTime);
 
-			/* initialise properties */
-			prog.title = g_string_new("");
-			prog.description = g_string_new("");
-			prog.category = g_string_new("");
-			prog.productionDate = 0;
+				/* initialise properties */
+				prog.title = g_string_new("");
+				prog.description = g_string_new("");
+				prog.category = g_string_new("");
+				prog.productionDate = 0;
 
-			/* get programme information */
-			for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
-				if(xmlStrcmp(valNode->name,"title")==0){
-					prog.title = g_string_new(valNode->children->content);
-				}if(xmlStrcmp(valNode->name,"desc")==0){
-					prog.description = g_string_new(valNode->children->content);
-				}if(xmlStrcmp(valNode->name,"category")==0){
-					/* only take first category found */
-					if(prog.category->len == 0){
-						prog.category = g_string_new(valNode->children->content);
+				/* get programme information */
+				for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
+					if(xmlStrcmp(valNode->name,"title")==0){
+						prog.title = g_string_new(valNode->children->content);
+					}if(xmlStrcmp(valNode->name,"desc")==0){
+						prog.description = g_string_new(valNode->children->content);
+					}if(xmlStrcmp(valNode->name,"category")==0){
+						/* only take first category found */
+						if(prog.category->len == 0){
+							prog.category = g_string_new(valNode->children->content);
+						}
+					}if(xmlStrcmp(valNode->name,"date")==0){
+						GString* dateVal = g_string_new(valNode->children->content);
+						prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
 					}
-				}if(xmlStrcmp(valNode->name,"date")==0){
-					GString* dateVal = g_string_new(valNode->children->content);
-					prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
 				}
-			}
 
-			/* flush programme into result */
-			g_array_append_val(result,prog);
+				/* flush programme into result */
+				g_array_append_val(result,prog);
+			}
 		}
 	}
+
+	/* cleanup global libxml */
+	xmlCleanupParser();
 
 	return result;
 }
@@ -271,6 +280,9 @@ void iptvx_epg_load_channel(channel* current){
 
 	/* parse the programme list from the xmltv data */
 	current->programmeList = iptvx_epg_get_programmelist(xmltv);
+
+	/* free the xmltv string and its mem */
+	g_string_free(xmltv,false);
 }
 
 /* initiates the epg load for each channel */
