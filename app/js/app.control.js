@@ -30,12 +30,24 @@ app.control = {
 		app.control.update();
 
 		/* update from epg every second */
-		setInterval(app.control.update,1000);
+		setInterval(app.control.update,500);
 	},
 
 	/* called by listen and updates from the epg */
 	update: function(){
-		console.log("MEDIA STATE:"+iptvx.state);
+		if(typeof(iptvx)=="object"){
+			if(iptvx.state == 3){
+				/* is playing, hide load info */
+				$("#status").hide();
+			}if(iptvx.state == 0 
+				|| iptvx.state == 1
+				|| iptvx.state == 2){
+				/* is waiting, opening or buffering
+					so we show the load indicator */
+				$("#status").html("&nbsp;");
+				$("#status").show();
+			}		
+		}
 
 		/* get the EPG data */
 		var data = app.epg.getCurrentChannelShow();
@@ -92,14 +104,6 @@ app.control = {
 			}
 			$("#shownext").html(nextProgrammeHtml);
 		}
-	},
-
-	formatTime: function(dateObj){
-		var result = "";
-
-
-
-		return result;
 	},
 
 	/* toggles the control ui */

@@ -30,7 +30,12 @@ app.epg = {
       if(typeof(iptvx)=="object"){
          /* check if defined channel within range */
          if(channelId >= 0 && channelId < iptvx.epg.length){
+            /* call switch command */
             app.exec("switch-channel "+channelId);
+
+            /* activate status indiactor */
+            $("#status").html("&nbsp;");
+            $("#status").show();
          }
       }
    },
