@@ -167,6 +167,23 @@ channel* iptvx_epg_get_current_channel(){
 		}
 	}
 
+	/* check if the current channel has an empty URL 
+		and requires us to fetch its URL from a script 
+		that is defined in the 'urlShell' variable */
+	if(result != NULL){
+		if(result->url->len == 0 && result->urlShell->len > 0){
+			GString* shell_url = util_shell_exec(result->urlShell);
+
+			/* 	!!! FIX ME, PLEASE !!! 
+
+				this is screwed big time: as it seems there is 
+				an issue with the gstring actually being a char ptr 
+
+			*/
+			result->url = (void*)shell_url->str;
+		}
+	}
+
 	return result;
 }
 
