@@ -70,6 +70,9 @@ int iptvx_create_window(int width, int height,
     /* set window terminate to false */
     window_terminate = false;
 
+    /* defines if fullscreen is active */
+    bool is_fullscreen = false;
+
     /* initialise the SDL lib */
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) == -1){
         printf("Unable to initialize SDL\n");
@@ -79,8 +82,8 @@ int iptvx_create_window(int width, int height,
     ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
     ctx.mutex = SDL_CreateMutex();
 
-    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF /* | SDL_FULLSCREEN | SDL_SWSURFACE */;
-    screen = SDL_SetVideoMode(width, height, 32, options);
+    int sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF /* | SDL_FULLSCREEN | SDL_SWSURFACE */;
+    screen = SDL_SetVideoMode(width, height, 32, sdl_video_options);
     if(!screen){
         printf("Unable to set video mode for SDL\n");
     }
@@ -104,6 +107,13 @@ int iptvx_create_window(int width, int height,
                     break;
                 case SDL_KEYDOWN:
                     keyPressed = event.key.keysym.sym;
+
+                    /* toggle fullscreen when 'f' is pressed
+                        which is SDL_KeyCode 102 */
+                    if(keyPressed == 102){
+                        SDL_WM_ToggleFullScreen(screen);
+                    }
+
                     (*keyDownCallback)(keyPressed);
                     break;
             }

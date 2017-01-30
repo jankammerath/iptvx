@@ -244,7 +244,8 @@ int main (int argc, char *argv[]){
 
 		/* start the webkit thread */
 		char* overlayApp = iptvx_config_get_overlay_app();
-		iptvx_webkit_start_thread(overlayApp,load_finished);
+		iptvx_webkit_start_thread(overlayApp,main_window_width,
+								main_window_height,load_finished);
 
 		/* start the thread to update the js api */
 		update_thread = SDL_CreateThread(update,NULL);

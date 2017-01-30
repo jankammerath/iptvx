@@ -23,6 +23,6 @@
 
 extern void* iptvx_get_overlay_ptr();
 extern void* iptvx_get_overlay_ready_ptr();
-extern void iptvx_webkit_start_thread(char *file,void (*loadFinishedCallbackFunc)(void*));
+extern void iptvx_webkit_start_thread(char *file,int width, int height,void (*loadFinishedCallbackFunc)(void*));
 
 #endif

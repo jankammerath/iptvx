@@ -27,6 +27,9 @@ static GtkWidget *iptvx_gtk_window;
 static GtkWidget *iptvx_gtk_webview;
 static bool iptvx_webkit_ready;
 
+int iptvx_webkit_width;
+int iptvx_webkit_height;
+
 struct png_data{
     unsigned char* data;
     unsigned int length;
@@ -112,7 +115,8 @@ int iptvx_webkit_start(void* file){
 
 	gtk_init(NULL,NULL);
 	iptvx_gtk_window = gtk_offscreen_window_new ();
-	gtk_window_set_default_size(GTK_WINDOW(iptvx_gtk_window), 1280, 720);
+	gtk_window_set_default_size(GTK_WINDOW(iptvx_gtk_window), 
+                            iptvx_webkit_width, iptvx_webkit_height);
 	
   /* create user content manager and web view with it 
     which is required to be able to fire js and retrieve 
@@ -135,8 +139,10 @@ int iptvx_webkit_start(void* file){
 	gtk_main ();
 }
 
-void iptvx_webkit_start_thread(char *file,void (*loadFinishedCallbackFunc)(void*)){
+void iptvx_webkit_start_thread(char *file,int width, int height, void (*loadFinishedCallbackFunc)(void*)){
   iptvx_webkit_ready = false;
+  iptvx_webkit_width = width;
+  iptvx_webkit_height = height;
   loadFinishedCallback = loadFinishedCallbackFunc;
   webkit_thread = SDL_CreateThread(iptvx_webkit_start,file);
 }
