@@ -220,8 +220,6 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 		/* get the root element */
 		cur = xmlDocGetRootElement(doc);
 
-		printf("docroot picked up\n");
-
 		/* get all programme nodes */
 		for(progNode = cur->children; progNode != NULL; progNode = progNode->next){
 			if(xmlStrcmp(progNode->name,"programme")==0){
