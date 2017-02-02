@@ -40,6 +40,7 @@ body{
   background-color:#000;
   opacity:0.9;
   padding:5px;
+  z-index:0;
 }
 
 #status{
@@ -64,6 +65,7 @@ body{
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   background: linear-gradient(to bottom, #0e0d40 0%,#171563 100%);  
+  z-index:1;
 }
 
 #list{
@@ -212,4 +214,118 @@ body{
   font-weight:bold;
   margin-right: 20px;
   width: 50px;
+}
+
+#epg{
+  margin-top:30px;
+  opacity:0;
+  top:-500px;
+}
+
+#epghead{
+  padding:5px 10px 5px 10px;
+  height: 35px;
+  background-color: #131152;
+  background: linear-gradient(to right, #15135a 0%,#0c0b35 100%);
+  font-size:15px;
+  box-sizing:border-box;
+}
+
+#epgdate{
+  float:right;
+}
+
+#epgcal{
+  overflow:hidden;
+}
+
+#epgcalhead{
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0px 0px 0px 100px;
+  border-bottom: 2px solid #403f6e;
+  width:500000px;
+}
+
+#epgcalbody{
+  width:500000px;
+}
+
+.epgcalheaditem{
+  height: 40px;
+  box-sizing: border-box;
+  padding: 5px 5px 5px 15px;
+  width: 170px;  
+  display:inline-block;
+}
+
+#epgcaldate{
+  width: 100px;
+  display: inline-block;  
+  white-space: nowrap;
+}
+
+.epgcalhour{
+  width: 100px;
+  box-sizing: border-box;
+  height: 60px;
+  padding: 5px 10px 5px 10px;
+  text-align: right;
+  font-size: 17px;
+  border-bottom: 2px solid rgba(64, 63, 110, 0.2);
+  border-right: 2px solid rgba(64, 63, 110, 0.2);
+  color: #615f9c;
+  vertical-align: top;
+}
+
+.epgcalchannel{
+  box-sizing:border-box;
+  width:165px;
+  display:inline-block;
+  white-space: nowrap;
+  vertical-align: top;
+  position:relative;
+}
+
+.epgcalchannelbackground{
+  position:absolute;
+  top:0px;
+  left:0px;
+}
+
+.epgcalchannelhour{
+  height:60px;
+  position:relative;
+}
+
+.epgcalchannelhour:before{
+  position:absolute;
+  height:28px;
+  width:165px;
+  top:0px;
+  background-color: rgba(59, 57, 97, 0.26);
+  content:"";
+}
+
+.epgcalchannelhour:after{
+  position:absolute;
+  height:28px;
+  width:165px;
+  top:30px;
+  background-color: rgba(59, 57, 97, 0.26);
+  content:"";
+}
+
+.epgcalprogramme{
+  position: absolute;
+  left: 0px;
+  top: 15px;
+  background-color: rgba(57, 55, 101, 0.42);
+  box-sizing: border-box;
+  padding: 0px 10px 10px 10px;
+  width: 165px;
+  border: 1px solid rgb(63, 62, 105);
+  font-size: 15px;
+  overflow: hidden;
+  height: 25px;  
 }

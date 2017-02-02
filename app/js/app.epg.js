@@ -25,6 +25,80 @@ app.epg = {
       app.epg.waitUntilReady();
    },
 
+   /* renders epg calendar */
+   render: function(){
+      if(typeof(iptvx)=="object"){
+         /* get current date values */
+         var now = Date.now;
+         var hour = new Date().getHours();
+
+         /* set up the header */
+         $("#epgdate").html(new Date().toDateString());
+
+         var calDateHtml = "";
+         var days = 0;
+         var hoursCount = app.epg.getDisplayHoursCount();
+         for(var h=hour;h<(hour+hoursCount);h++){
+            var hourVal = h-(24*days);
+            if(hourVal > 23){
+               hourVal = 0;
+               days++;
+            }
+
+            var hourText = String(hourVal);
+            if(hourText.length == 1){
+               hourText = "0"+String(hourVal);
+            }
+            hourText = hourText+":00";
+
+            calDateHtml += "<div class=\"epgcalhour\">"
+                        + hourText + "</div>";
+         }
+         $("#epgcaldate").html(calDateHtml);
+
+         /* go through channels */
+         var channelHeadHtml = "";
+         for(var c=0;c<iptvx.epg.length;c++){
+            var chan = iptvx.epg[c];
+
+            /* set up channel heads */
+            channelHeadHtml += "<div class=\"epgcalheaditem\">"
+                              + chan.name + "</div>";
+         }
+         $("#epgcalhead").html(channelHeadHtml);
+      }
+   },
+
+   /* gets the number of hours ahead the epg should display */
+   getDisplayHoursCount: function(){
+      var result = 48;
+      var now = Date.now;
+      var max = app.epg.getMaxDate();
+      var hours = (max - now)/3600;
+      if(hours > result){
+         result = hours;
+      }
+
+      return result;
+   },
+
+   /* get the maximum date stored in the epg */
+   getMaxDate: function(){
+      var result = Date.now+172800;
+
+      if(typeof(iptvx)=="object"){
+         for(var c=0;c<iptvx.epg.length;c++){
+            for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
+               if(iptvx.epg[c].programmeList[p].stop > result){
+                  result = iptvx.epg[c].programmeList[p].stop;
+               }
+            }
+         }
+      }
+
+      return result;
+   },
+
    /* forces application to switch to defined channel */
    switchChannel: function(channelId){
       if(typeof(iptvx)=="object"){
@@ -126,6 +200,9 @@ app.epg = {
 
             /* show the control */
             app.control.toggle();
+
+            /* render the epg */
+            app.epg.render();
          }else{
             if(iptvx.epgLoaded > 0){
                $("#status").html(iptvx.epgLoaded);
@@ -135,5 +212,29 @@ app.epg = {
       }
 
       return result;
+   },
+
+   /* toggles the epg ui */
+   toggle: function(forceOut = false){
+      if(app.epg.visible == true
+         || forceOut == true){
+         /* fade out to bottom */
+         $("#epg").animate({
+            opacity: 0,
+            top: $("#epg").outerHeight()*-1
+         }, 500);
+
+         /* set indicator to false */
+         app.epg.visible = false;
+      }else{
+         /* fade in from bottom */
+         $("#epg").animate({
+            opacity: 0.8,
+            top: 0
+         }, 500);
+
+         /* set indicator to true */
+         app.epg.visible = true;
+      }
    }
 }

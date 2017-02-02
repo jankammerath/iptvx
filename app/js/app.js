@@ -43,14 +43,23 @@ var app = {
 			if(app.epg.ready){
 				/* control ui toggle with spacebar (32) */
 				if(keyCode == 32){
+					app.epg.toggle(true);
 					app.list.toggle(true);
 					app.control.toggle();
 				}
 
 				/* list ui toggle with shift (16) */
 				if(keyCode == 16){
+					app.epg.toggle(true);
 					app.control.toggle(true);
 					app.list.toggle();
+				}
+
+				/* epg ui toggle with alt (18) */
+				if(keyCode == 18){
+					app.list.toggle(true);
+					app.control.toggle(true);
+					app.epg.toggle();
 				}
 
 				/* only handle keys when no ui is present to handle */
@@ -130,6 +139,15 @@ var app = {
 		var statusTop = $(window).innerHeight()/2-$("#status").outerHeight()/2;
 		$("#status").css("left",statusLeft+"px");
 		$("#status").css("top",statusTop+"px");
+
+		var epgWidth = $(window).innerWidth()-60;
+		if(epgWidth>800){epgWidth=800;}
+		var epgHeight = $(window).innerHeight()-100;
+		$("#epg").css("width",epgWidth+"px");
+		$("#epg").css("height",epgHeight+"px");
+		var epgLeft = $(window).innerWidth()/2-$("#epg").outerWidth()/2;
+		$("#epg").css("left",epgLeft+"px");
+		$("#epgcalbody").css("height",$("#epg").innerHeight()-75);
 	}
 }
 
