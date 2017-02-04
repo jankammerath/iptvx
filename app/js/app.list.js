@@ -22,7 +22,27 @@ app.list = {
 
 	/* initialises the programme list */
 	init: function(){
-		
+		app.list.adjustSize();
+	},
+
+	/* adjusts size of the list */
+	adjustSize: function(){
+		var cur_height = $("#list").outerHeight();
+		var max_height = $(window).innerHeight()-100;
+		if(cur_height > max_height){
+			$("#list").css("height",max_height+"px");
+
+			/* scroll to the currently active element */
+			var activeTopPos = $(".activechannel").offset().top;
+			if(activeTopPos < 50){
+				activeTopPos = 0;
+			}
+
+			var curScrollPos = $("#list").scrollTop();
+			if(curScrollPos != activeTopPos){
+				$("#list").scrollTop(activeTopPos);
+			}
+		}
 	},
 
 	/* handles key input when present */
@@ -51,14 +71,22 @@ app.list = {
 				app.list.selectedChannel++;
 			}
 		}
+
+		/* render selected channel */
+		$(".channel").removeClass("activechannel");
+		$("#listchannel"+app.list.selectedChannel).addClass("activechannel");
+
+		/* adjust size which also scrolls 
+			to the currently active channel */
+		app.list.adjustSize();
 	},
 
 	listen: function(){
 		/* launch first update */
 		app.list.update();
 
-		/* update from epg every 200ms */
-		setInterval(app.list.update,200);
+		/* update from epg every minute */
+		setInterval(app.list.update,60000);
 	},
 
 	update: function(){
@@ -86,7 +114,7 @@ app.list = {
 				app.list.selectedChannel = activeChannel;
 			}
 
-			listHtml += '<div class="channel'+activeClass+'">'
+			listHtml += '<div id="listchannel'+c+'" class="channel'+activeClass+'">'
 						+ '<div class="channellogo" '
 						+ 'style="background-image:url(../data/logo/'+chan.logoFile+');">'
 						+ '</div>'
@@ -97,6 +125,9 @@ app.list = {
 						+ '</div></div>';
 		}
 		$("#list").html(listHtml);
+
+		/* adjust the size when needed */
+		app.list.adjustSize();
 	},
 
 	toggle: function(forceOut = false){

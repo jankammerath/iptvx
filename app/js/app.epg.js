@@ -128,7 +128,7 @@ app.epg = {
             for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
                var prog = iptvx.epg[c].programmeList[p];
                if(prog.stop > now_ts){
-                  var height = ((prog.stop-prog.start)/60)*4;
+                  var height = (((prog.stop-prog.start)/60)*4)-2;
                   var top = ((prog.start-now_ts)/60)*4;
 
                   if(top < 0){

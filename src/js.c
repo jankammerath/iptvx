@@ -138,19 +138,11 @@ void iptvx_js_set_epg_data(GString* epg_data){
 void iptvx_js_sendkey(int keyCode){
   char scriptKeyEvent[512];
 
-  char keyName[2];
-  if(keyCode == 13){
-    keyName[0] = '0';
-  }else{
-    keyName[0] = (char)keyCode;
-  }
-
-  keyName[1] = '\0';
   sprintf(scriptKeyEvent,"var e = new Event(\"keydown\");"
-        "e.key=\"%s\";e.keyCode=%d;"
+        "e.key=\"\";e.keyCode=%d;"
         "e.which=%d;e.altKey=false;e.ctrlKey=false;"
         "e.shiftKey=false;e.metaKey=false;e.bubbles=true;"
-        "window.dispatchEvent(e);",keyName,keyCode,keyCode);
+        "window.dispatchEvent(e);",keyCode,keyCode);
 
   webkit_web_view_run_javascript(js_view,scriptKeyEvent,NULL,NULL,NULL);
 }
