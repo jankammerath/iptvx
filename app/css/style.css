@@ -220,6 +220,7 @@ body{
   margin-top:30px;
   opacity:0;
   top:-500px;
+  overflow:hidden;
 }
 
 #epghead{
@@ -249,6 +250,7 @@ body{
 
 #epgcalbody{
   width:500000px;
+  overflow-y:hidden;
 }
 
 .epgcalheaditem{
@@ -268,7 +270,7 @@ body{
 .epgcalhour{
   width: 100px;
   box-sizing: border-box;
-  height: 60px;
+  height: 120px;
   padding: 5px 10px 5px 10px;
   text-align: right;
   font-size: 17px;
@@ -294,13 +296,13 @@ body{
 }
 
 .epgcalchannelhour{
-  height:60px;
+  height:120px;
   position:relative;
 }
 
 .epgcalchannelhour:before{
   position:absolute;
-  height:28px;
+  height:56px;
   width:165px;
   top:0px;
   background-color: rgba(59, 57, 97, 0.26);
@@ -309,9 +311,9 @@ body{
 
 .epgcalchannelhour:after{
   position:absolute;
-  height:28px;
+  height:56px;
   width:165px;
-  top:30px;
+  top:60px;
   background-color: rgba(59, 57, 97, 0.26);
   content:"";
 }
@@ -319,7 +321,6 @@ body{
 .epgcalprogramme{
   position: absolute;
   left: 0px;
-  top: 15px;
   background-color: rgba(57, 55, 101, 0.42);
   box-sizing: border-box;
   padding: 0px 10px 10px 10px;
@@ -328,4 +329,16 @@ body{
   font-size: 15px;
   overflow: hidden;
   height: 25px;  
+}
+
+.epgcalprogrammetitle{
+  margin-top: 5px;
+}
+
+.epgcalprogrammedescription{
+  white-space: normal;
+  font-size: 10px;
+  margin-top: 10px;
+  opacity: 0.5;
+  line-height: 15px;
 }

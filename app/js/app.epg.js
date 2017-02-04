@@ -29,7 +29,7 @@ app.epg = {
    render: function(){
       if(typeof(iptvx)=="object"){
          /* get current date values */
-         var now = Date.now;
+         var now_ts = Date.now()/1000;
          var hour = new Date().getHours();
 
          /* set up the header */
@@ -79,15 +79,29 @@ app.epg = {
 
             channelHtml += "<div class=\"epgcalchannelprogramme\">";
             for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
-               if(iptvx.epg[c].programmeList[p].stop > now){
-                  var prog = iptvx.epg[c].programmeList[p];
-                  var height = (prog.stop-prog.start)/60;
-                  var top = (prog.start-now)/60;
+               var prog = iptvx.epg[c].programmeList[p];
+               if(prog.stop > now_ts){
+                  var height = ((prog.stop-prog.start)/60)*2;
+                  var top = ((prog.start-now_ts)/60)*2;
+
+                  if(top < 0){
+                     height = height + top;
+                     top = 0;
+                  }
 
                   channelHtml += "<div class=\"epgcalprogramme\" "
-                                 +" style=\"height:"+height+"px;top:"+top+"px\">"
-                                 + prog.title
-                                 + "</div>";
+                                 +" style=\"height:"+height+"px;top:"+top+"px\">";
+
+                  if(height >= 25){
+                     var descText = prog.description.replace(/\n/g , "<br />");
+
+                     channelHtml += "<div class=\"epgcalprogrammetitle\">" 
+                                 + prog.title + "</div>"
+                                 + "<div class=\"epgcalprogrammedescription\">" 
+                                 + descText + "</div>";
+                  }
+
+                  channelHtml += "</div>";
                }
             }
 
@@ -95,8 +109,11 @@ app.epg = {
          }
 
          var epgHtml = "<div id=\"epgcalhead\">" + channelHeadHtml + "</div>"
-                     + "<div id=\"epgcalbody\"><div id=\"epgcaldate\">"
-                     + calDateHtml + "</div>"+channelHtml+"</div>;"
+                     + "<div id=\"epgcalbody\">"
+                     + calDateHtml + channelHtml 
+                     + "</div>";
+
+         $("#epgcal").html(epgHtml);
       }
    },
 
