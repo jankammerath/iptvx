@@ -73,6 +73,11 @@ var app = {
 				if(app.list.visible){
 					app.list.handleKey(keyCode);
 				}
+
+				/* allow epg to handle keys */
+				if(app.epg.visible){
+					app.epg.handleKey(keyCode);
+				}
 			}
 			
 			/* output the debug message */

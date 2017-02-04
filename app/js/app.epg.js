@@ -25,6 +25,55 @@ app.epg = {
       app.epg.waitUntilReady();
    },
 
+   /* handles scrolling epg */
+   handleKey: function(keyCode){
+      var vertSteps = 120; 
+
+      if(keyCode == 39){
+         /* key is RIGHT */
+         var hlist = $(".epgcalheaditem");
+         var clist = $(".epgcalchannel");
+
+         if($(".epgcalchannel:visible").length>4){
+            var moved = false;
+            for(var c=0;c<clist.length;c++){
+               if($(clist[c]).is(":visible") == true
+                  && moved == false){
+                  $(clist[c]).hide();
+                  $(hlist[c]).hide();
+                  moved = true;
+               }
+            }
+         }
+      }if(keyCode == 37){
+         /* key is LEFT */
+         var hlist = $(".epgcalheaditem");
+         var clist = $(".epgcalchannel");
+
+         if($(".epgcalchannel:hidden").length>0){
+            var moved = false;
+            for(var c=clist.length-1;c>=0;c--){
+               if($(clist[c]).is(":visible") == false
+                  && moved == false){
+                  $(clist[c]).show();
+                  $(hlist[c]).show();
+                  moved = true;
+               }
+            } 
+         }        
+      }if(keyCode == 38){
+         /* key is UP */
+         var calTop = $("#epgcalbody").position().top;
+         if(calTop < 40){
+            $("#epgcalbody").css("top",(calTop+vertSteps)+"px");
+         }
+      }if(keyCode == 40){
+         /* key is DOWN */
+         var calTop = $("#epgcalbody").position().top;
+         $("#epgcalbody").css("top",(calTop-vertSteps)+"px");
+      }
+   },
+
    /* renders epg calendar */
    render: function(){
       if(typeof(iptvx)=="object"){
@@ -63,7 +112,11 @@ app.epg = {
 
             /* set up channel heads */
             channelHeadHtml += "<div class=\"epgcalheaditem\">"
-                              + chan.name + "</div>";
+                              + "<div class=\"epgcalheaditemlogo\" "
+                              + "style=\"background-image:url('../data/logo/"
+                              + chan.logoFile + "');\"></div>"
+                              + "<div class=\"epgcalheaditemtext\">"
+                              + chan.name + "</div></div>";
          }
          
          var channelHtml = "";
@@ -75,8 +128,8 @@ app.epg = {
             for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
                var prog = iptvx.epg[c].programmeList[p];
                if(prog.stop > now_ts){
-                  var height = ((prog.stop-prog.start)/60)*2;
-                  var top = ((prog.start-now_ts)/60)*2;
+                  var height = ((prog.stop-prog.start)/60)*4;
+                  var top = ((prog.start-now_ts)/60)*4;
 
                   if(top < 0){
                      height = height + top;
@@ -271,7 +324,7 @@ app.epg = {
       }else{
          /* fade in from bottom */
          $("#epg").animate({
-            opacity: 0.8,
+            opacity: 0.95,
             top: 0
          }, 500);
 
