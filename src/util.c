@@ -78,7 +78,7 @@ bool util_file_exists(char* fileName){
    @param   content     the content to write into the file
 */
 void file_put_contents(GString* file, GString* content){
-	FILE *fp = fopen(file->str, "ab");
+	FILE *fp = fopen(file->str, "wt");
     if (fp != NULL){
         fputs(content->str, fp);
         fclose(fp);
@@ -93,24 +93,19 @@ void file_put_contents(GString* file, GString* content){
 GString* file_get_contents(GString* file){
 	GString* result;
 
-	char * buffer = 0;
-	long length;
-	FILE * f = fopen (file->str, "rb");
+  char *out;
+  GError *e=NULL;
+  GIOChannel *f  = g_io_channel_new_file(file->str, "r", &e);
+  if (!f) {
+      fprintf(stderr, "failed to open file '%s'.\n", file);
+      return NULL;
+  }
+  if (g_io_channel_read_to_end(f, &out, NULL, &e) != G_IO_STATUS_NORMAL){
+      fprintf(stderr, "found file '%s' but couldn't read it.\n", file);
+      return NULL;
+  }
 
-	if (f){
-	  fseek (f, 0, SEEK_END);
-	  length = ftell (f);
-	  
-	  fseek (f, 0, SEEK_SET);
-	  buffer = malloc (length);
-
-	  if (buffer){
-	    fread (buffer, 1, length, f);
-	  }
-	  fclose (f);
-	}	
-
-	result = g_string_new(buffer);
+	result = g_string_new(out);
 }
 
 /*
