@@ -223,7 +223,6 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 
 	/* check if negative and multiply offset by -1 */
 	if(xmltvDate->str[15] == '+'){
-		printf("Offset is +%d\n",tz_offset);
 		tz_offset = tz_offset * -1;
 	}
 
