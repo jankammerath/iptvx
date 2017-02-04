@@ -213,8 +213,25 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 
 	struct tm timeStruct;
 
-	strptime(xmltvDate->str,"%Y%m%d%H%M%S %z",&timeStruct);
-	result = timegm(&timeStruct)-3600;
+	/* only parse the time and fix the timezone separately.
+		we'll be using GMT time here and only calculate 
+		the offset manually so that the epoch time is created
+		out of the GMT time of the programme */
+	strptime(xmltvDate->str,"%Y%m%d%H%M%S",&timeStruct);
+	GString* gstr_tz_offset = util_substr(xmltvDate,16,2);
+	int tz_offset = g_ascii_strtoll(gstr_tz_offset->str,NULL,0);
+
+	/* check if negative and multiply offset by -1 */
+	if(xmltvDate->str[15] == '+'){
+		printf("Offset is +%d\n",tz_offset);
+		tz_offset = tz_offset * -1;
+	}
+
+	/* add the timezone offset to the hour */
+	timeStruct.tm_hour = timeStruct.tm_hour+tz_offset;
+
+	/* make epoch from GMT tm struct */
+	result = timegm(&timeStruct);
 
 	return result;
 }

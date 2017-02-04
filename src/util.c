@@ -33,6 +33,28 @@
 #include <glib.h>
 
 /*
+  Gets a portion of the string (sub string)
+  @param      str       the string to take portion off
+  @param      index     position on where to start
+  @param      len       length of how much to take
+  @return               the portion result string
+*/
+GString* util_substr(GString *str, int index, int len){
+  GString* result = g_string_new("");
+
+  int c;
+  int pos;
+  for(c=0;c<len;c++){
+    pos = index + c;
+    if(pos < str->len){
+      g_string_append_c(result,str->str[pos]);
+    }
+  }
+
+  return result;
+}
+
+/*
   Executes a shell command and returns stdout
   @param      command     the shell command to execute
   @return                 the STDOUT of the command

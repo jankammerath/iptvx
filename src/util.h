@@ -28,6 +28,15 @@
 #define UTIL_H
 
 /*
+  Gets a portion of the string (sub string)
+  @param      str       the string to take portion off
+  @param      index     position on where to start
+  @param      len       length of how much to take
+  @return               the portion result string
+*/
+GString* util_substr(GString *str, int index, int len);
+
+/*
   Executes a shell command and returns stdout
   @param      command     the shell command to execute
   @return                 the STDOUT of the command
