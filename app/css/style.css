@@ -289,33 +289,9 @@ body{
   position:relative;
 }
 
-.epgcalchannelbackground{
-  position:absolute;
-  top:0px;
-  left:0px;
-}
-
 .epgcalchannelhour{
   height:120px;
   position:relative;
-}
-
-.epgcalchannelhour:before{
-  position:absolute;
-  height:56px;
-  width:165px;
-  top:0px;
-  background-color: rgba(59, 57, 97, 0.26);
-  content:"";
-}
-
-.epgcalchannelhour:after{
-  position:absolute;
-  height:56px;
-  width:165px;
-  top:60px;
-  background-color: rgba(59, 57, 97, 0.26);
-  content:"";
 }
 
 .epgcalprogramme{

@@ -71,13 +71,7 @@ app.epg = {
             var chan = iptvx.epg[c];
 
             channelHtml += "<div class=\"epgcalchannel\">"
-                        + "<div class=\"epgcalchannelbackground\">";
-            for(var h=hour;h<(hour+hoursCount);h++){
-               channelHtml += "<div class=\"epgcalchannelhour\"></div>";
-            }       
-            channelHtml += "</div>";
-
-            channelHtml += "<div class=\"epgcalchannelprogramme\">";
+                        + "<div class=\"epgcalchannelprogramme\">";
             for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
                var prog = iptvx.epg[c].programmeList[p];
                if(prog.stop > now_ts){
