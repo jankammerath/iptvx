@@ -32,15 +32,12 @@ app.list = {
 		if(cur_height > max_height){
 			$("#list").css("height",max_height+"px");
 
-			/* scroll to the currently active element */
-			var activeTopPos = $(".activechannel").offset().top;
-			if(activeTopPos < 50){
-				activeTopPos = 0;
-			}
-
-			var curScrollPos = $("#list").scrollTop();
-			if(curScrollPos != activeTopPos){
-				$("#list").scrollTop(activeTopPos);
+			var clist = $("#list .channel");
+			for(var c=0;c<clist.length;c++){
+				if($(clist[c]).hasClass("activechannel")){
+					var elm_h = $(clist[c]).outerHeight()+10;
+					$("#list").scrollTop(c*elm_h);
+				}
 			}
 		}
 	},

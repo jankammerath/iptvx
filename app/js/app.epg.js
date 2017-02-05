@@ -64,13 +64,23 @@ app.epg = {
       }if(keyCode == 38){
          /* key is UP */
          var calTop = $("#epgcalbody").position().top;
-         if(calTop < 40){
+         var minTop = 70;
+         if(calTop < minTop){
             $("#epgcalbody").css("top",(calTop+vertSteps)+"px");
+         }else{
+            $("#epgcalbody").css("top",minTop+"px");
          }
       }if(keyCode == 40){
          /* key is DOWN */
          var calTop = $("#epgcalbody").position().top;
-         $("#epgcalbody").css("top",(calTop-vertSteps)+"px");
+         calTop = (calTop-vertSteps);
+         var calHeight = ($("#epgcalbody").height()-$("#epg").height()+2)*-1;
+         
+         if(calTop < calHeight){
+            $("#epgcalbody").css("top",calHeight+"px");
+         }else{
+            $("#epgcalbody").css("top",calTop+"px");
+         }
       }
    },
 

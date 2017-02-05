@@ -41,6 +41,13 @@ var app = {
 
 			/* only handle keys when epg is ready */
 			if(app.epg.ready){
+				/* disable all ui with backspace (8) */
+				if(keyCode == 8){
+					app.epg.toggle(true);
+					app.list.toggle(true);
+					app.control.toggle(true);
+				}
+
 				/* control ui toggle with spacebar (32) */
 				if(keyCode == 32){
 					app.epg.toggle(true);

@@ -74,6 +74,7 @@ body{
   width: 250px;
   padding:10px;
   overflow-y:scroll;
+  position:fixed;
 }
 
 #list .channel{
@@ -83,13 +84,14 @@ body{
   text-overflow: ellipsis;
   border-radius: 5px;
   padding: 10px;
+  position:relative;
 }
 
 #list .channel .channellogo{
   width: 60px;
   height: 60px;
   margin-right: 10px;
-  background-size: 50px auto;
+  background-size: 50px 50px;
   background-repeat: no-repeat;
   float: left;
   background-position:center center;
