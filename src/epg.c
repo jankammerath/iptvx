@@ -402,7 +402,7 @@ int iptvx_epg_load(void* nothing){
 		iptvx_epg_load_channel(current);
 
 		/* update percentage status */
-		iptvx_epg_percentage_loaded = ((c / list->len) * 100);
+		iptvx_epg_percentage_loaded = (int)((float)((float)c / (float)list->len) * 100);
 		epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
 	}
 
