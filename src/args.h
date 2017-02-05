@@ -21,13 +21,17 @@
 
 #include <stdbool.h>
 
-struct arguments
-{
-  char *input_video_file;
-  char *input_html_file;
-  bool sufficient;
+/* struct containing arguments */
+struct arguments{ 
+  char* configFile;
 };
 
+/*
+  Parses the arguments
+  @param    argc      argument count
+  @param    argv      char array with arguments
+  @return             a struct with argument information
+*/
 extern struct arguments iptvx_parse_args(int argc, char *argv[]);
 
 #endif
