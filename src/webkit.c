@@ -51,21 +51,33 @@ void iptvx_webkit_enable_devtool(bool enableTool){
   enableWebKitInspector = enableTool;
 }
 
-/* returns overlay png data link */
+/* 
+  returns overlay png data link 
+  @return       pointer to PNG data
+*/
 void* iptvx_get_overlay_ptr(){
   return &overlay_data;
 }
 
-/* returns ptr to bool indicating if busy */
+/* 
+  returns ptr to bool indicating if busy
+  @return        true when budy, otherwise false
+*/
 bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
 }
 
+/*
+  function to write PNG data into GArray
+*/
 static cairo_status_t iptvx_webkit_snapshot_write_png (void *closure, const unsigned char *data, unsigned int length){
   g_byte_array_append (closure, data, length);
   return CAIRO_STATUS_SUCCESS;
 }
 
+/*
+  callback when snapshot of window finished
+*/
 static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsyncResult *res,char *destfile)
 {
   GError *err = NULL;
@@ -96,6 +108,9 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
+/*
+  Callback when load of webkit finished
+*/
 static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoadEvent status, char *destfile) {
   if (status != WEBKIT_LOAD_FINISHED) {
   	iptvx_webkit_ready = false;
@@ -110,6 +125,10 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
+/*
+  starts webkit
+  @param    file      the file to open
+*/
 int iptvx_webkit_start(void* file){
 	iptvx_webkit_ready = false;
 
@@ -139,6 +158,13 @@ int iptvx_webkit_start(void* file){
 	gtk_main ();
 }
 
+/*
+  starts webkit thread
+  @param    file                          char ptr with the file path to the html app
+  @param    width                         int defining the width of the webkit window
+  @param    height                        int defining the height of the webkit window
+  @param    loadFinishedCallbackFunc      ptr to func to call when load finished
+*/
 void iptvx_webkit_start_thread(char *file,int width, int height, void (*loadFinishedCallbackFunc)(void*)){
   iptvx_webkit_ready = false;
   iptvx_webkit_width = width;
