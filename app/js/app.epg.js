@@ -141,11 +141,6 @@ app.epg = {
                   var height = (((prog.stop-prog.start)/60)*4)-2;
                   var top = ((prog.start-now_ts)/60)*4;
 
-                  if(top < 0){
-                     height = height + top;
-                     top = 0;
-                  }
-
                   channelHtml += "<div class=\"epgcalprogramme\" "
                                  +" style=\"height:"+height+"px;top:"+top+"px\">";
 

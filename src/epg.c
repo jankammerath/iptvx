@@ -349,8 +349,6 @@ void iptvx_epg_load_channel(channel* current){
 		if(current->epgFile->len > 1){
 			/* define disk epg file */
 			char epg_file[256];
-			time_t now = time(NULL);
-			struct tm *t = localtime(&now);
 			strftime(epg_file,sizeof(epg_file)-1,(char*)current->epgFile,t);
 
 			/* set cache file to disk epg file */
