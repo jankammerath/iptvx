@@ -377,8 +377,11 @@ void iptvx_epg_load_channel(channel* current){
 			xmltv = util_shell_exec(current->epgShell);
 		}
 		
-		/* finally flush the xmltv to disk cache */
-		file_put_contents(g_string_new(cacheFilePath),xmltv);
+		/* finally flush the xmltv to disk cache
+			when the data is not empty */
+		if(xmltv != NULL && xmltv->len > 0){
+			file_put_contents(g_string_new(cacheFilePath),xmltv);
+		}
 	}else{
 		/* file exists, we'll get it */
 		xmltv = file_get_contents(g_string_new(cacheFilePath));

@@ -159,8 +159,11 @@ int util_curl_write_bytearray(char* in, uint size, uint nmemb, GByteArray* out){
   @param        url             The url to download
   @param        write_func      The function to use for writing
   @param        write_data      The data to write into
+  @return                       True when successfull, otherwise false
 */
-void curl_download_url(char* url, void* write_func, void* write_data){
+bool curl_download_url(char* url, void* write_func, void* write_data){
+  bool result = false;
+
   /* curl types */
   CURL *curl;
   CURLcode res;
@@ -188,18 +191,29 @@ void curl_download_url(char* url, void* write_func, void* write_data){
     /* execute the query */
     res = curl_easy_perform(curl);
 
-      /* check for any errors */ 
-      if(res != CURLE_OK){
-          fprintf(stderr, "cURL failed for '%s':\n%s\n", 
-              url, curl_easy_strerror(res));
-      }
- 
-      /* cleanup curl */ 
-      curl_easy_cleanup(curl);
+    long http_code = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+    if(http_code == 200){
+      result = true;
+    }else{
+      /* output error message */
+      printf("HTTP %d for '%s'\n",http_code,url);
+    }
+
+    /* check for any errors */ 
+    if(res != CURLE_OK){
+        fprintf(stderr, "cURL failed for '%s':\n%s\n", 
+            url, curl_easy_strerror(res));
+    }
+
+    /* cleanup curl */ 
+    curl_easy_cleanup(curl);
   }
 
   /* cleanup global curl */
   curl_global_cleanup();  
+
+  return result;
 }
 
 /*
@@ -209,8 +223,13 @@ void curl_download_url(char* url, void* write_func, void* write_data){
 */
 void* util_download_file(char* url, char* filePath){
   FILE* file = fopen(filePath, "w");
-  curl_download_url(url,NULL,file);
+  bool http_result = curl_download_url(url,NULL,file);
   fclose(file);
+
+  if(!http_result){
+    /* delete file on failure */
+    unlink(filePath);
+  }
 }
 
 /*
@@ -221,7 +240,10 @@ void* util_download_file(char* url, char* filePath){
 GString* util_download_string(char* url){
 	GString* result = g_string_new("");
 
-  curl_download_url(url,util_curl_write_string,result);
+  bool http_result = curl_download_url(url,util_curl_write_string,result);
+  if(!http_result){
+    result = g_string_new("");
+  }
 
  	return result;
 }
