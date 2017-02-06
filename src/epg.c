@@ -309,12 +309,16 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 	return result;
 }
 
-/* loads the epg of the defined channel */
-void iptvx_epg_load_channel(channel* current){
+/*
+   Loads the defined channel epg for the defined time
+   @param            current           current channel to load
+   @param            epg_time          time to get epg for
+*/
+void iptvx_epg_load_channel(channel* current, time_t epg_time){
 	/* create EPG url for today */
 	char epg_url[256];
-	time_t now = time(NULL);
-	struct tm *t = localtime(&now);
+
+	struct tm *t = localtime(&epg_time);
 	strftime(epg_url,sizeof(epg_url)-1,(char*)current->epgUrl,t);
 
 	/* ensure the cache path exists */
@@ -401,7 +405,7 @@ int iptvx_epg_load(void* nothing){
 		channel* current = &g_array_index(list,channel,c);
 
 		/* start the thread to capture xmltv epg */
-		iptvx_epg_load_channel(current);
+		iptvx_epg_load_channel(current,time(NULL));
 
 		/* update percentage status */
 		iptvx_epg_percentage_loaded = (int)((float)((float)c / (float)list->len) * 100);

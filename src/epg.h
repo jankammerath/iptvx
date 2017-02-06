@@ -79,7 +79,13 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*));
 */
 channel* iptvx_epg_get_default_channel();
 
-void iptvx_epg_load_channel(GString* channelName);
+/*
+   Loads the defined channel epg for the defined time
+   @param            current           current channel to load
+   @param            epg_time          time to get epg for
+*/
+void iptvx_epg_load_channel(channel* current, time_t epg_time);
+
 void iptvx_epg_load();
 
 #endif
