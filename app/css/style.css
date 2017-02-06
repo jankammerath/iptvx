@@ -307,7 +307,7 @@ body{
 .epgcalhour{
   width: 100px;
   box-sizing: border-box;
-  height: 200px;
+  height: 240px;
   padding: 5px 10px 5px 10px;
   text-align: right;
   font-size: 17px;
@@ -323,11 +323,6 @@ body{
   display:inline-block;
   white-space: nowrap;
   vertical-align: top;
-  position:relative;
-}
-
-.epgcalchannelhour{
-  height:240px;
   position:relative;
 }
 

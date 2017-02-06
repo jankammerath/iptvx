@@ -86,9 +86,7 @@ app.epg = {
 
    /* renders epg calendar */
    render: function(){
-      if(typeof(iptvx)=="object"){
-         /* get current date values */
-         var now_ts = Date.now()/1000;
+      if(typeof(iptvx)=="object"){         
          var hour = new Date().getHours();
 
          /* set up the header */
@@ -129,17 +127,31 @@ app.epg = {
                               + chan.name + "</div></div>";
          }
          
+         var now_ts = Date.now()/1000;
+
+         /* we need the timestamp at the beginning of 
+            the hour which means we substract the total 
+            seconds passed since the beginning */
+         var now_date = new Date();
+         now_ts = now_ts-(now_date.getMinutes()*60)-now_date.getSeconds();
+
          var channelHtml = "";
          for(var c=0;c<iptvx.epg.length;c++){
             var chan = iptvx.epg[c];
 
             channelHtml += "<div class=\"epgcalchannel\">"
                         + "<div class=\"epgcalchannelprogramme\">";
-            for(var p=0;p<iptvx.epg[c].programmeList.length;p++){
-               var prog = iptvx.epg[c].programmeList[p];
+            for(var p=0;p<chan.programmeList.length;p++){
+               var prog = chan.programmeList[p];
+
                if(prog.stop > now_ts){
                   var height = (((prog.stop-prog.start)/60)*4)-2;
                   var top = ((prog.start-now_ts)/60)*4;
+
+                  if(top < 0){
+                     height = height+top;
+                     top = 0;
+                  }
 
                   channelHtml += "<div class=\"epgcalprogramme\" "
                                  +" style=\"height:"+height+"px;top:"+top+"px\">";
