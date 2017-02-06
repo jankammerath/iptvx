@@ -127,12 +127,11 @@ app.epg = {
                               + chan.name + "</div></div>";
          }
          
-         var now_ts = Date.now()/1000;
-
          /* we need the timestamp at the beginning of 
             the hour which means we substract the total 
             seconds passed since the beginning */
          var now_date = new Date();
+         var now_ts = Date.now()/1000;
          now_ts = now_ts-(now_date.getMinutes()*60)-now_date.getSeconds();
 
          var channelHtml = "";

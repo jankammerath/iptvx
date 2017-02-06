@@ -39,6 +39,11 @@ var app = {
 		$(window).keydown(function(event){
 			var keyCode = event.which;
 
+			/* hash key toggles debug */
+			if(keyCode == 35){
+				$("#debuginfo").toggle();
+			}
+
 			/* only handle keys when epg is ready */
 			if(app.epg.ready){
 				/* disable all ui with backspace (8) */
