@@ -148,6 +148,9 @@ app.epg = {
                   var height = (((prog.stop-prog.start)/60)*4)-2;
                   var top = ((prog.start-now_ts)/60)*4;
 
+                  /* titles of items at the beginning would not be 
+                     shown if the show is already on. We change
+                     the height so that they begin on the top. */
                   if(top < 0){
                      height = height+top;
                      top = 0;
