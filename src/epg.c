@@ -53,6 +53,7 @@ struct channel{
 	GString* epgUrl;
 	GString* epgFile;
 	GString* epgShell;
+	GString* epgInterval;
 	GString* logoFile;
 	GArray* programmeList;
 } typedef channel;
@@ -496,6 +497,12 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 			current.epgShell = g_string_new("");
 			if (config_setting_lookup_string(element,"epgShell",(const char**)&epgShell)) {
             	current.epgShell = epgShell;
+            }
+
+            GString* epgInterval = g_string_new("");
+			current.epgInterval = g_string_new("");
+			if (config_setting_lookup_string(element,"epgShell",(const char**)&epgInterval)) {
+            	current.epgInterval = epgInterval;
             }
 
             /* append channel to list */

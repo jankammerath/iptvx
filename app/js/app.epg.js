@@ -64,8 +64,8 @@ app.epg = {
       }if(keyCode == 38){
          /* key is UP */
          var calTop = $("#epgcalbody").position().top;
-         var minTop = 70;
-         if(calTop < minTop){
+         var minTop = 76;
+         if(calTop < minTop && (calTop+vertSteps) < minTop){
             $("#epgcalbody").css("top",(calTop+vertSteps)+"px");
          }else{
             $("#epgcalbody").css("top",minTop+"px");
