@@ -61,6 +61,9 @@ struct channel{
 /* the channel list */
 GArray* list;
 
+/* define how many hours are to be stored */
+int iptvx_epg_storage_hours;
+
 /* defines current channel */
 int iptvx_epg_current_channel;
 
@@ -70,6 +73,15 @@ int iptvx_epg_percentage_loaded;
 
 /* status update callback */
 void (*epgStatusUpdateCallback)(void*);
+
+/*
+	Defines how many hours of programme 
+	to be stored in the epg data
+	@param 			hours 			int defining the hours
+*/
+void iptvx_epg_set_storage_hours(int hours){
+	iptvx_epg_storage_hours = hours;
+}
 
 /*
 	Returns all channel and epg info as JSON string
@@ -90,9 +102,9 @@ GString* iptvx_epg_get_json(){
 		json_object* j_chan = json_object_new_object();
 
 		json_object_object_add(j_chan,"name",
-			json_object_new_string((char*)chan->name));
+			json_object_new_string(chan->name->str));
 		json_object_object_add(j_chan,"logoFile",
-			json_object_new_string((char*)chan->logoFile));
+			json_object_new_string(chan->logoFile->str));
 
 		/* json array with the programme */
 		json_object* j_prog_array = json_object_new_array();
@@ -174,14 +186,7 @@ channel* iptvx_epg_get_current_channel(){
 	if(result != NULL){
 		if(result->url->len == 0 && result->urlShell->len > 0){
 			GString* shell_url = util_shell_exec(result->urlShell);
-
-			/* 	!!! FIX ME, PLEASE !!! 
-
-				this is screwed big time: as it seems there is 
-				an issue with the gstring actually being a char ptr 
-
-			*/
-			result->url = (void*)shell_url->str;
+			result->url->str = shell_url->str;
 		}
 	}
 
@@ -249,7 +254,7 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 	doc = xmlParseDoc(xmltv->str);
 	if(doc == NULL){
 		/* output an error when parser failed */
-		printf("Unable to parse XMLTV string.\n");
+		printf("Unable to parse XMLTV string:\n%s\n",xmltv->str);
 	}else{
 		/* get the root element */
 		cur = xmlDocGetRootElement(doc);
@@ -319,7 +324,7 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time){
 	char epg_url[256];
 
 	struct tm *t = localtime(&epg_time);
-	strftime(epg_url,sizeof(epg_url)-1,(char*)current->epgUrl,t);
+	strftime(epg_url,sizeof(epg_url)-1,current->epgUrl->str,t);
 
 	/* ensure the cache path exists */
 	struct stat st = {0};
@@ -354,13 +359,13 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time){
 		if(current->epgFile->len > 1){
 			/* define disk epg file */
 			char epg_file[256];
-			strftime(epg_file,sizeof(epg_file)-1,(char*)current->epgFile,t);
+			strftime(epg_file,sizeof(epg_file)-1,current->epgFile->str,t);
 
 			/* set cache file to disk epg file */
 			cacheFile = epg_file;
 		}else{
 			/* if not, define it from the name */
-			cacheFile = (char*)current->name;
+			cacheFile = current->name->str;
 		}
 	}
 
@@ -391,13 +396,27 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time){
 	}
 
 	/* parse the programme list from the xmltv data */
-	current->programmeList = iptvx_epg_get_programmelist(xmltv);
+	if(current->programmeList){
+		/* set the program list when array is null */
+		current->programmeList = iptvx_epg_get_programmelist(xmltv);
+	}else{
+		/* append this programme list when array is not null */
+		GArray* plist = iptvx_epg_get_programmelist(xmltv);
+
+		int p;
+		for(p = 0; p<plist->len;p++){
+			programme* new_prog = &g_array_index(plist,programme,p);
+			g_array_append_val(current->programmeList,new_prog);
+		}
+	}
 
 	/* free the xmltv string and its mem */
 	g_string_free(xmltv,false);
 }
 
-/* initiates the epg load for each channel */
+/* 
+	initiates the epg load for each channel 
+*/
 int iptvx_epg_load(void* nothing){
 	int c = 0;
 	for(c = 0; c < list->len; c++){
@@ -418,6 +437,25 @@ int iptvx_epg_load(void* nothing){
 	epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
 
 	return 0;
+}
+
+/*
+	Reads a string config value from setting
+	@param 			element 			the config element to read from
+	@param 			setting_name 		the config setting to read
+	@return 							the string result or empty string
+*/
+GString* iptvx_epg_config_get_string(config_setting_t* element, char* setting_name){
+	GString* result = g_string_new("");
+
+	char* config_val = "";
+	if (config_setting_lookup_string(element,setting_name,
+							(const char**)&config_val)) {
+		/* create GString with result value */
+		result = g_string_new(config_val);
+	}
+
+	return result;
 }
 
 /*
@@ -455,59 +493,22 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 			/* get the config channel element */
 			config_setting_t *element = config_setting_get_elem(channels, i);
 
-			current.name = g_string_new("");
-			GString* channelName = g_string_new("");
-			if (config_setting_lookup_string(element,"name",(const char**)&channelName)) {
-            	current.name = channelName;
-            }
-
+			/* get channel default setting */
             int channelDefault = 0;
             current.isDefault = false;
 			if (config_setting_lookup_bool(element,"default",&channelDefault)) {
             	current.isDefault = (bool)channelDefault;
             }
 
-            GString* channelUrl = g_string_new("");
-			current.url = g_string_new("");
-			if (config_setting_lookup_string(element,"url",(const char**)&channelUrl)) {
-            	current.url = channelUrl;
-            }
-
-            GString* channelUrlShell = g_string_new("");
-			current.urlShell = g_string_new("");
-			if (config_setting_lookup_string(element,"urlShell",(const char**)&channelUrlShell)) {
-            	current.urlShell = channelUrlShell;
-            }
-
-            GString* logoFile = g_string_new("");
-			current.logoFile = g_string_new("");
-			if (config_setting_lookup_string(element,"logoFile",(const char**)&logoFile)) {
-            	current.logoFile = logoFile;
-            }
-
-            GString* epgUrl = g_string_new("");
-			current.epgUrl = g_string_new("");
-			if (config_setting_lookup_string(element,"epgUrl",(const char**)&epgUrl)) {
-            	current.epgUrl = epgUrl;
-            }
-
-            GString* epgFile = g_string_new("");
-			current.epgFile = g_string_new("");
-			if (config_setting_lookup_string(element,"epgFile",(const char**)&epgFile)) {
-            	current.epgFile = epgFile;
-            }
-
-            GString* epgShell = g_string_new("");
-			current.epgShell = g_string_new("");
-			if (config_setting_lookup_string(element,"epgShell",(const char**)&epgShell)) {
-            	current.epgShell = epgShell;
-            }
-
-            GString* epgInterval = g_string_new("");
-			current.epgInterval = g_string_new("");
-			if (config_setting_lookup_string(element,"epgShell",(const char**)&epgInterval)) {
-            	current.epgInterval = epgInterval;
-            }
+            /* get numerous string setting values */
+			current.name = iptvx_epg_config_get_string(element,"name");
+			current.url = iptvx_epg_config_get_string(element,"url");
+			current.urlShell = iptvx_epg_config_get_string(element,"urlShell");
+			current.logoFile = iptvx_epg_config_get_string(element,"logoFile");
+			current.epgUrl = iptvx_epg_config_get_string(element,"epgUrl");
+			current.epgFile = iptvx_epg_config_get_string(element,"epgFile");
+			current.epgShell = iptvx_epg_config_get_string(element,"epgShell");
+			current.epgInterval = iptvx_epg_config_get_string(element,"epgInterval");
 
             /* append channel to list */
             g_array_append_val(list,current);

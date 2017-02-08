@@ -43,6 +43,13 @@ struct channel{
 } typedef channel;
 
 /*
+   Defines how many hours of programme 
+   to be stored in the epg data
+   @param         hours          int defining the hours
+*/
+void iptvx_epg_set_storage_hours(int hours);
+
+/*
    Returns all channel and epg info as JSON string
    @return     JSON string with all EPG info
 */
@@ -86,6 +93,9 @@ channel* iptvx_epg_get_default_channel();
 */
 void iptvx_epg_load_channel(channel* current, time_t epg_time);
 
-void iptvx_epg_load();
+/* 
+   initiates the epg load for each channel 
+*/
+int iptvx_epg_load(void* nothing);
 
 #endif

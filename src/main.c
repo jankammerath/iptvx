@@ -116,7 +116,7 @@ void control_message_received(void* message){
 			int chanId = g_ascii_strtoll(ctlMsg[1],NULL,0);
 			iptvx_epg_set_current_channel_id(chanId);
 			channel* newChan = iptvx_epg_get_current_channel();
-			channel_video_play((char*)newChan->url,true);
+			channel_video_play(newChan->url->str,true);
 
 			/* update JS with new channel */
 			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
@@ -184,7 +184,7 @@ void epg_status_update(void* progress){
 		/* activate video playback by getting
 			the default channel and play it */
 		channel* defaultChannel = iptvx_epg_get_default_channel();
-		channel_video_play((char*)defaultChannel->url,false);
+		channel_video_play(defaultChannel->url->str,false);
 	}
 
 	if(main_js_ready){
@@ -232,6 +232,10 @@ int main (int argc, char *argv[]){
 
 		main_window_width = iptvx_config_get_setting_int("width",1280);
 		main_window_height = iptvx_config_get_setting_int("height",720);
+
+		/* get the hours to store in the epg */
+		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
+		iptvx_epg_set_storage_hours(epg_hours);
 
 		/* initialise the epg */
 		config_t* cfg = iptvx_get_config();

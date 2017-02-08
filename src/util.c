@@ -63,7 +63,7 @@ GString* util_shell_exec(GString* command){
   GString* result = g_string_new("");
 
   /* open ptr to process */
-  FILE* ptr = popen((char*)command, "r");
+  FILE* ptr = popen(command->str, "r");
 
   /* read STDOUT */
   if(ptr){
@@ -101,10 +101,10 @@ bool util_file_exists(char* fileName){
 */
 void file_put_contents(GString* file, GString* content){
 	FILE *fp = fopen(file->str, "wt");
-    if (fp != NULL){
-        fputs(content->str, fp);
-        fclose(fp);
-    }
+  if (fp != NULL){
+    fputs(content->str, fp);
+    fclose(fp);
+  }
 }
 
 /*
@@ -113,21 +113,19 @@ void file_put_contents(GString* file, GString* content){
    @return              the contents of the file
 */
 GString* file_get_contents(GString* file){
-	GString* result;
-
   char *out;
   GError *e=NULL;
   GIOChannel *f  = g_io_channel_new_file(file->str, "r", &e);
   if (!f) {
-      fprintf(stderr, "failed to open file '%s'.\n", file);
-      return NULL;
+    fprintf(stderr, "failed to open file '%s'.\n", file);
+    return NULL;
   }
   if (g_io_channel_read_to_end(f, &out, NULL, &e) != G_IO_STATUS_NORMAL){
-      fprintf(stderr, "found file '%s' but couldn't read it.\n", file);
-      return NULL;
+    fprintf(stderr, "found file '%s' but couldn't read it.\n", file);
+    return NULL;
   }
 
-	result = g_string_new(out);
+	return g_string_new(out);
 }
 
 /*
