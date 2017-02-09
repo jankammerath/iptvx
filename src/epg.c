@@ -119,8 +119,12 @@ GString* iptvx_epg_get_json(){
 
 			json_object_object_add(j_prog,"title",
 				json_object_new_string(prog->title->str));
-			json_object_object_add(j_prog,"description",
-				json_object_new_string(prog->description->str));
+
+			if(prog->description->len > 0){
+				json_object_object_add(j_prog,"description",
+						json_object_new_string(prog->description->str));
+			}
+
 			json_object_object_add(j_prog,"category",
 				json_object_new_string(prog->category->str));
 			json_object_object_add(j_prog,"start",
@@ -282,20 +286,20 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 					for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
 						if(xmlStrcmp(valNode->name,"title")==0){
 							if(valNode->children != NULL){
-								prog.title = g_string_new(valNode->children->content);
+								prog.title = g_string_new((char*)valNode->children->content);
 							}
 						}if(xmlStrcmp(valNode->name,"desc")==0){
 							if(valNode->children != NULL){
-								prog.description = g_string_new(valNode->children->content);
+								prog.description = g_string_new((char*)valNode->children->content);
 							}
 						}if(xmlStrcmp(valNode->name,"category")==0){
 							/* only take first category found */
 							if(prog.category->len == 0 && valNode->children != NULL){
-								prog.category = g_string_new(valNode->children->content);
+								prog.category = g_string_new((char*)valNode->children->content);
 							}
 						}if(xmlStrcmp(valNode->name,"date")==0){
 							if(valNode->children != NULL){
-								GString* dateVal = g_string_new(valNode->children->content);
+								GString* dateVal = g_string_new((char*)valNode->children->content);
 								prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
 							}
 						}
@@ -396,18 +400,13 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time){
 	}
 
 	/* parse the programme list from the xmltv data */
-	if(current->programmeList){
-		/* set the program list when array is null */
-		current->programmeList = iptvx_epg_get_programmelist(xmltv);
-	}else{
-		/* append this programme list when array is not null */
-		GArray* plist = iptvx_epg_get_programmelist(xmltv);
+	GArray* plist = iptvx_epg_get_programmelist(xmltv);
 
-		int p;
-		for(p = 0; p<plist->len;p++){
-			programme* new_prog = &g_array_index(plist,programme,p);
-			g_array_append_val(current->programmeList,new_prog);
-		}
+	/* append the programme data to the existing array */
+	int p;
+	for(p = 0; p<plist->len;p++){
+		programme* new_prog = &g_array_index(plist,programme,p);
+		g_array_append_val(current->programmeList,*new_prog);
 	}
 
 	/* free the xmltv string and its mem */
@@ -509,6 +508,9 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 			current.epgFile = iptvx_epg_config_get_string(element,"epgFile");
 			current.epgShell = iptvx_epg_config_get_string(element,"epgShell");
 			current.epgInterval = iptvx_epg_config_get_string(element,"epgInterval");
+
+			/* initialise programme array */
+			current.programmeList = g_array_new(false,false,sizeof(programme));
 
             /* append channel to list */
             g_array_append_val(list,current);

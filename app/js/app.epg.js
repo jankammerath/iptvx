@@ -159,7 +159,11 @@ app.epg = {
                                  +" style=\"height:"+height+"px;top:"+top+"px\">";
 
                   if(height >= 25){
-                     var descText = prog.description.replace(/\n/g , "<br />");
+                     var descText = "";
+
+                     if(typeof(prog.description)=="string"){
+                        descText = prog.description.replace(/\n/g, "<br />");
+                     }
 
                      channelHtml += "<div class=\"epgcalprogrammetitle\">" 
                                  + prog.title + "</div>"
