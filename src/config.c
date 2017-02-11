@@ -155,12 +155,12 @@ char* iptvx_config_get_overlay_app(){
 			actually get the full dir */
 		if(appFile[0] != '/'){
 			/* we need to create the full file path */
-			char* appDir;
-			char buff[PATH_MAX+1];
-
-    		appDir = getcwd(buff,PATH_MAX+1);
+    		char* appDir = realpath(appFile,NULL);
     		if(appDir != NULL) {
-        		result = g_strjoin("/",appDir,appFile,NULL);
+        		result = appDir;
+    		}else{
+    			printf("Application configuration problem:\n"
+    					"Failed to determine path of '%s'\n",appFile);
     		}
 		}
 	}
