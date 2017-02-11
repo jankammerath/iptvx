@@ -22,7 +22,7 @@
 const char *argp_program_version = "iptvx 0.3 alpha";
 const char *argp_program_bug_address = "<dev@iptvx.org>";
 static char args_doc[] = "";
-static char doc[] = "iptvx -- An IPTV client and server system";
+static char doc[] = "iptvx -- An IPTV player and recorder";
 static struct argp_option options[] = { };
 
 struct arguments{ 
