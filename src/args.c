@@ -35,7 +35,12 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     case ARGP_KEY_NO_ARGS:
       break; 
     case ARGP_KEY_END:
-    	// argp_usage(state);
+    	/* print application banner */
+      printf("%s\n\n"
+        "You are using version '%s'\n"
+        "Please file bugs in the issue tracking:\n%s\n\n",
+        doc,argp_program_version,
+        "https://github.com/jankammerath/iptvx/issues");
     	break;
     default: 
       return ARGP_ERR_UNKNOWN; 

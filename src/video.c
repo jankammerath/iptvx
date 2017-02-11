@@ -34,6 +34,7 @@ int video_height;
 void iptvx_video_init(char *videofile, int width, int height){
 	const char * const vlc_args[] = {
 		"--no-xlib", /* tell VLC to not use Xlib */
+		"--quiet" /* don't throw all the stuff into STDOUT */
 	};
 
 	/* create the VLC instance */

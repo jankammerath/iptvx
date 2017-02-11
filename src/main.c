@@ -122,9 +122,6 @@ void control_message_received(void* message){
 			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
 		}
 	}
-
-	/* debug output to check control messages */
-	printf("CONTROL MESSAGE RECEIVED: %s\n",message);
 }
 
 /*

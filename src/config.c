@@ -50,13 +50,26 @@ config_t* iptvx_get_config(){
 char* iptvx_get_config_filename(){
 	char* result = "";
 
+	bool configFileFound = false;
+
 	/* check if file is in app directory */
-	char* localconfig = "cfg/iptvx.conf";
-	if(access(localconfig, F_OK) != -1) {
-		/* there is a local config file */
-		result = localconfig;
-	}else{
-		printf("No local config file found ('cfg/iptvx.conf')\n");
+	if(util_file_exists("cfg/iptvx.conf")){
+		result = "cfg/iptvx.conf";
+		configFileFound = true;
+	}if(util_file_exists("~/.iptvx/iptvx.conf")){
+		result = "~/.iptvx/iptvx.conf";
+		configFileFound = true;
+	}if(util_file_exists("/etc/iptvx/iptvx.conf")){
+		result = "/etc/iptvx/iptvx.conf";
+		configFileFound = true;
+	}
+
+	if(!configFileFound){
+		printf("No config file found!\n"
+				"Ensure it's readable in one of the following paths:\n"
+				"./cfg/iptvx.conf\n"
+				"~/.iptvx/iptvx.conf\n"
+				"/etc/iptvx/iptvx.conf\n");
 	}
 
 	return result;
@@ -71,6 +84,22 @@ bool iptvx_config_file_exists(){
 
 	char* configFile = iptvx_get_config_filename();
 	if(configFile[0] != '\0'){
+		result = true;
+	}
+
+	return result;
+}
+
+/*
+	Checks if the current config has channels
+	@return 		true when channels in config, otherwise false
+*/
+bool iptvx_config_has_channels(){
+	bool result = false;
+
+	config_setting_t* root = config_root_setting(&cfg);
+	config_setting_t* channels = config_setting_get_member(root,"channels");
+	if(channels != NULL){
 		result = true;
 	}
 
@@ -99,8 +128,13 @@ bool iptvx_config_init(){
 				config_error_text(&cfg));
 			config_destroy(&cfg);
 		}else{
-			/* config is good */
-			result = true;
+			if(iptvx_config_has_channels()){
+				/* config is good */
+				result = true;
+			}else{
+				/* show an error when there are not channels in config */
+				printf("No channels configured, check your config.\n");
+			}
 		}
 	}
 
