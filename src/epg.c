@@ -246,6 +246,26 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 }
 
 /*
+	Gets the stop time of the last programme stored
+	@param 			channel 		ptr to the channel to check
+	@return 						int value with max epoch stored
+*/
+int iptvx_epg_get_max_time(channel* current){
+	int result = 0;
+
+	int p;
+	for(p=0;p<current->programmeList->len;p++){
+		programme* cur_prog = &g_array_index(current->programmeList,programme,p);	
+
+		if(cur_prog->stop > result){
+			result = cur_prog->stop;
+		}	
+	}	
+
+	return result;
+}
+
+/*
 	Checks if the current epg already contains
 	the programme passed as parameter
 	@param 			current 		channel to check programme of
@@ -344,10 +364,11 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 
 /*
    Loads the defined channel epg for the defined time
-   @param            current           current channel to load
-   @param            epg_time          time to get epg for
+   @param            current           	current channel to load
+   @param            epg_time          	time to get epg for
+   @param 			 overwrite_cache	true when cache should be ignored
 */
-void iptvx_epg_load_channel(channel* current, time_t epg_time){
+void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_cache){
 	/* create EPG url for today */
 	char epg_url[256];
 
@@ -400,6 +421,14 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time){
 	/* define the full path of the epg file */
 	char* cacheFilePath = g_strjoin("","data/epg/",cacheFile,NULL);
 
+	/* check if cache should be ignored which means 
+		existing file will be deleted */
+	if(overwrite_cache){
+		if(util_file_exists(cacheFilePath)){
+			util_delete_file(cacheFilePath);
+		}
+	}
+
 	GString* xmltv = g_string_new(NULL);
 	if(!util_file_exists(cacheFilePath)){
 		/* fetch url if defined */
@@ -451,7 +480,7 @@ int iptvx_epg_load(void* nothing){
 		channel* current = &g_array_index(list,channel,c);
 
 		/* start the thread to capture xmltv epg */
-		iptvx_epg_load_channel(current,time(NULL));
+		iptvx_epg_load_channel(current,time(NULL),false);
 
 		/* update percentage status */
 		iptvx_epg_percentage_loaded = (int)((float)((float)c / (float)list->len) * 100);
@@ -474,8 +503,20 @@ int iptvx_epg_load(void* nothing){
 
 			int d;
 			for(d = 0; d < days; d++){
-				iptvx_epg_load_channel(current,time(NULL)+(d*86400));
+				iptvx_epg_load_channel(current,time(NULL)+(d*86400),false);
 				additional_epg_data_count++;
+			}
+		}else{
+			/* this is a static file with a variable amount of 
+				hours of programme included. We update the file 
+				when the cached one does not include the amount 
+				of hours defined in config */
+			int max_epg_time = time(NULL)+(iptvx_epg_storage_hours*3600);
+			int max_stored = iptvx_epg_get_max_time(current);
+
+			if(max_stored < max_epg_time){
+				/* fetch epg data again */
+				iptvx_epg_load_channel(current,time(NULL),true);
 			}
 		}
 	}

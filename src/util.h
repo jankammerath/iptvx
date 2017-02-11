@@ -28,6 +28,12 @@
 #define UTIL_H
 
 /*
+  Deletes a file from disk
+  @param    fileName    file path of the file to delete
+*/
+void util_delete_file(char* fileName);
+
+/*
   Gets a portion of the string (sub string)
   @param      str       the string to take portion off
   @param      index     position on where to start
