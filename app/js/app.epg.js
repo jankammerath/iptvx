@@ -19,6 +19,7 @@
 app.epg = {
    visible: false,
    ready: false,
+   lastRenderSize: 0,
 
 	init: function(){
       /* keep checking until epg ready */
@@ -319,14 +320,39 @@ app.epg = {
             /* show the control */
             app.control.toggle();
 
+            /* set the size of the epg */
+            app.epg.lastRenderSize = app.epg.getEpgSize();
+
             /* render the epg */
             app.epg.render();
+
+            /* watch the epg size every second
+               to check for potential updates */
+            setInterval(function(){
+               if(app.epg.lastRenderSize != app.epg.getEpgSize()){
+                  /* update with new size */
+                  app.epg.lastRenderSize = app.epg.getEpgSize();
+
+                  /* start renderer */
+                  app.epg.render();
+               }
+            },1000);
          }else{
             if(iptvx.epgLoaded > 0){
                $("#status").html(iptvx.epgLoaded);
             }
             $("#status").show();
          }
+      }
+
+      return result;
+   },
+
+   getEpgSize: function(){
+      var result = 0;
+
+      if(typeof(iptvx)=="object"){
+         result = JSON.stringify(iptvx.epg).length;
       }
 
       return result;

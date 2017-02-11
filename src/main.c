@@ -164,8 +164,6 @@ void epg_status_update(void* progress){
 
 	/* mark ready when 100 percent reached */
 	if(progressVal == 100){
-		main_epg_ready = true;
-
 		/* we need to wait for js to come up as 
 			otherwise it'll not get the notification 
 			that the epg is ready */
@@ -177,14 +175,23 @@ void epg_status_update(void* progress){
 		/* signal complete epg data */
 		GString* epg_data = iptvx_epg_get_json();
 		iptvx_js_set_epg_data(epg_data);
+		
+		/* only start the initial channel playback 
+			when the epg was not ready before as otherwise 
+			it might interrupt existing playback when 
+			the epg just received updates */
+		if(!main_epg_ready){
+			/* set epg ready to true */
+			main_epg_ready = true;
 
-		/* signal current channel */
-		iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
+			/* signal current channel */
+			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
 
-		/* activate video playback by getting
-			the default channel and play it */
-		channel* defaultChannel = iptvx_epg_get_default_channel();
-		channel_video_play(defaultChannel->url->str,false);
+			/* activate video playback by getting
+				the default channel and play it */
+			channel* defaultChannel = iptvx_epg_get_default_channel();
+			channel_video_play(defaultChannel->url->str,false);
+		}
 	}
 
 	if(main_js_ready){

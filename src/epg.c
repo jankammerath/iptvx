@@ -245,6 +245,30 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 	return result;
 }
 
+/*
+	Checks if the current epg already contains
+	the programme passed as parameter
+	@param 			current 		channel to check programme of
+	@param 			programme 		programme to check for existance
+	@return 						true when exists otherwise false
+*/
+bool iptvx_epg_contains_programme(channel* current, programme* prog){
+	bool result = false;
+
+	int p;
+	for(p=0;p<current->programmeList->len;p++){
+		/* get the programme from the list */
+		programme* cur_prog = &g_array_index(current->programmeList,programme,p);	
+
+		/* check if its the same as the one provided */
+		if(cur_prog->start == prog->start && cur_prog->stop == prog->stop){
+			result = true;
+		}	
+	}
+
+	return result;
+}
+
 /* parses the programmes from xmltv and returns it as 
 	a GArray holding programme structs */
 GArray* iptvx_epg_get_programmelist(GString* xmltv){
@@ -406,7 +430,11 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time){
 	int p;
 	for(p = 0; p<plist->len;p++){
 		programme* new_prog = &g_array_index(plist,programme,p);
-		g_array_append_val(current->programmeList,*new_prog);
+
+		/* only insert programme when not yet present */
+		if(!iptvx_epg_contains_programme(current,new_prog)){
+			g_array_append_val(current->programmeList,*new_prog);
+		}
 	}
 
 	/* free the xmltv string and its mem */
@@ -433,6 +461,27 @@ int iptvx_epg_load(void* nothing){
 	/* update status indicators */
 	iptvx_epg_ready = true;
 	iptvx_epg_percentage_loaded = 100;
+	epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
+
+	/* process daily epg files */
+	int additional_epg_data_count = 0;
+	for(c = 0; c < list->len; c++){
+		channel* current = &g_array_index(list,channel,c);
+		if(g_strcmp0(current->epgInterval->str,"daily")==0){
+			/* load epg data for each day until we hit 
+				the storage limit defined in the config */
+			int days = (int)((float)iptvx_epg_storage_hours/(float)24);
+
+			int d;
+			for(d = 0; d < days; d++){
+				iptvx_epg_load_channel(current,time(NULL)+(d*86400));
+				additional_epg_data_count++;
+			}
+		}
+	}
+
+	/* fire up callback when additional data 
+		was captured for the coming days */
 	epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
 
 	return 0;
