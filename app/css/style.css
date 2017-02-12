@@ -221,7 +221,7 @@ body{
 }
 
 #epg{
-  margin-top:30px;
+  margin-top:10px;
   opacity:0;
   top:-500px;
   overflow:hidden;

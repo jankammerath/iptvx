@@ -157,14 +157,8 @@ var app = {
 		$("#status").css("left",statusLeft+"px");
 		$("#status").css("top",statusTop+"px");
 
-		var epgWidth = $(window).innerWidth()-60;
-		if(epgWidth>800){epgWidth=800;}
-		var epgHeight = $(window).innerHeight()-100;
-		$("#epg").css("width",epgWidth+"px");
-		$("#epg").css("height",epgHeight+"px");
-		var epgLeft = $(window).innerWidth()/2-$("#epg").outerWidth()/2;
-		$("#epg").css("left",epgLeft+"px");
-		$("#epgcalbody").css("height",$("#epg").innerHeight()-75);
+		/* call epg resize */
+		app.epg.resize();
 	}
 }
 

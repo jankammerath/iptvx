@@ -20,10 +20,32 @@ app.epg = {
    visible: false,
    ready: false,
    lastRenderSize: 0,
+   channelVisisbleCount: 4,
 
 	init: function(){
       /* keep checking until epg ready */
       app.epg.waitUntilReady();
+   },
+
+   resize: function(){
+      /* calculate width based on window 
+         inner width and how many channels
+         actually fully fit the window at once */
+      var epgWidth = $(window).innerWidth()-20;
+      app.epg.channelVisisbleCount = Math.floor((epgWidth-100)/175);
+      epgWidth = (100+(app.epg.channelVisisbleCount*175));
+      $("#epg").css("width",epgWidth+"px");
+
+      /* calculate height of the epg */
+      var epgHeight = $(window).innerHeight()-20;
+      $("#epg").css("height",epgHeight+"px");
+
+      /* define position of the epg */
+      var epgLeft = $(window).innerWidth()/2-$("#epg").outerWidth()/2;
+      $("#epg").css("left",epgLeft+"px");
+
+      /* calculate height of the epg body */
+      $("#epgcalbody").css("height",$("#epg").innerHeight()-75);
    },
 
    /* handles scrolling epg */
@@ -35,7 +57,7 @@ app.epg = {
          var hlist = $(".epgcalheaditem");
          var clist = $(".epgcalchannel");
 
-         if($(".epgcalchannel:visible").length>4){
+         if($(".epgcalchannel:visible").length>app.epg.channelVisisbleCount){
             var moved = false;
             for(var c=0;c<clist.length;c++){
                if($(clist[c]).is(":visible") == true
