@@ -140,6 +140,10 @@ char* iptvx_config_get_data_dir(){
 		mkdir(epgFolder, 0777);
 	}
 
+	/* free folder variables */
+	free(epgFolder);
+	free(logoFolder);
+
 	return result;
 }
 

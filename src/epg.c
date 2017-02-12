@@ -253,6 +253,9 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 	/* make epoch from GMT tm struct */
 	result = timegm(&timeStruct);
 
+	/* free the offset gstring */
+	g_string_free(gstr_tz_offset,true);
+
 	return result;
 }
 
@@ -330,6 +333,10 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 				prog.start = iptvx_epg_get_xmltv_timestamp(startTime);
 				prog.stop = iptvx_epg_get_xmltv_timestamp(stopTime);
 
+				/* free the date text strings */
+				g_string_free(startTime,true);
+				g_string_free(stopTime,true);
+
 				/* initialise properties */
 				prog.title = g_string_new("");
 				prog.description = g_string_new("");
@@ -341,21 +348,25 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 					for(valNode = progNode->children; valNode != NULL; valNode = valNode->next){
 						if(xmlStrcmp(valNode->name,"title")==0){
 							if(valNode->children != NULL){
+								g_string_free(prog.title,true);
 								prog.title = g_string_new((char*)valNode->children->content);
 							}
 						}if(xmlStrcmp(valNode->name,"desc")==0){
 							if(valNode->children != NULL){
+								g_string_free(prog.description,true);
 								prog.description = g_string_new((char*)valNode->children->content);
 							}
 						}if(xmlStrcmp(valNode->name,"category")==0){
 							/* only take first category found */
 							if(prog.category->len == 0 && valNode->children != NULL){
+								g_string_free(prog.category,true);
 								prog.category = g_string_new((char*)valNode->children->content);
 							}
 						}if(xmlStrcmp(valNode->name,"date")==0){
 							if(valNode->children != NULL){
 								GString* dateVal = g_string_new((char*)valNode->children->content);
 								prog.productionDate = g_ascii_strtoll(dateVal->str,NULL,0);
+								g_string_free(dateVal,true);
 							}
 						}
 					}
@@ -365,6 +376,9 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 				}
 			}
 		}
+
+		/* free the xml doc */
+		xmlFreeDoc(doc);
 	}
 
 	/* cleanup global libxml */
@@ -378,7 +392,7 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
    @param            current           	current channel to load
    @param            epg_time          	time to get epg for
    @param 			 overwrite_cache	true when cache should be ignored
-*/
+*/ 
 void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_cache){
 	/* create EPG url for today */
 	char epg_url[256];
@@ -412,6 +426,9 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 	char* epgCacheDir = g_strjoin("/",epg_data_dir->str,"epg",NULL);
 	char* cacheFilePath = g_strjoin("/",epgCacheDir,cacheFile,NULL);
 
+	/* free cache dir var and cache file var */
+	free(epgCacheDir);
+	
 	/* check if cache should be ignored which means 
 		existing file will be deleted */
 	if(overwrite_cache){
@@ -424,23 +441,34 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 	if(!util_file_exists(cacheFilePath)){
 		/* fetch url if defined */
 		if(current->epgUrl->len > 0){
+			/* free string before re-assigning */
+			g_string_free(xmltv,true);
+
 			/* file doesn't exist, we need to fetch it */
 			xmltv = util_download_string(epg_url);	
 		}
 
 		/* fetch xmltv epg from shell if defined */
 		if(current->epgShell->len > 0){
+			/* free string before re-assigning */
+			g_string_free(xmltv,true);
+
+			/* fetch new string from shell exec */
 			xmltv = util_shell_exec(current->epgShell);
 		}
 		
 		/* finally flush the xmltv to disk cache
 			when the data is not empty */
 		if(xmltv != NULL && xmltv->len > 0){
-			file_put_contents(g_string_new(cacheFilePath),xmltv);
+			GString* gs_cache_file_path = g_string_new(cacheFilePath);
+			file_put_contents(gs_cache_file_path,xmltv);
+			g_string_free(gs_cache_file_path,true);
 		}
 	}else{
 		/* file exists, we'll get it */
-		xmltv = file_get_contents(g_string_new(cacheFilePath));
+		GString* gs_cache_file_path = g_string_new(cacheFilePath);
+		xmltv = file_get_contents(gs_cache_file_path);
+		g_string_free(gs_cache_file_path,true);
 	}
 
 	/* parse the programme list from the xmltv data */
@@ -457,8 +485,11 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 		}
 	}
 
+	/* free the temporary programme array */
+	g_array_free(plist,true);
+
 	/* free the xmltv string and its mem */
-	g_string_free(xmltv,false);
+	g_string_free(xmltv,true);
 }
 
 /* 
@@ -531,6 +562,9 @@ GString* iptvx_epg_config_get_string(config_setting_t* element, char* setting_na
 	char* config_val = "";
 	if (config_setting_lookup_string(element,setting_name,
 							(const char**)&config_val)) {
+		/* free original val */
+		g_string_free(result,true);
+
 		/* create GString with result value */
 		result = g_string_new(config_val);
 	}

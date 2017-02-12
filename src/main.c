@@ -122,6 +122,9 @@ void control_message_received(void* message){
 			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
 		}
 	}
+
+	/* free control message */
+	g_string_free(controlMessage,true);
 }
 
 /*
@@ -172,6 +175,9 @@ void epg_status_update(void* progress){
 		/* signal complete epg data */
 		GString* epg_data = iptvx_epg_get_json();
 		iptvx_js_set_epg_data(epg_data);
+
+		/* free epg data string */
+		g_string_free(epg_data,true);
 		
 		/* only start the initial channel playback 
 			when the epg was not ready before as otherwise 
@@ -273,6 +279,9 @@ int main (int argc, char *argv[]){
 			/* throw an error when we don't have the app */
 			printf("App path not found or inaccessible\n");
 		}
+
+		/* free overlay app string */
+		g_string_free(gs_overlay_app,true);
 	}else{
 		/* throw an error when config not initialised */
 		printf("Failed to initialise the configuration\n");

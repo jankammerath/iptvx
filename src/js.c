@@ -129,6 +129,7 @@ void iptvx_js_set_epg_data(GString* epg_data){
   GString* jsCode = g_string_new("");
   g_string_printf(jsCode,"iptvx.epg = %s;",epg_data->str);
   webkit_web_view_run_javascript(js_view,jsCode->str,NULL,NULL,NULL);
+  g_string_free(jsCode,true);
 }
 
 /*

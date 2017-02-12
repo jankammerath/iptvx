@@ -25,6 +25,7 @@ SDL_Thread *webkit_thread;
 
 static GtkWidget *iptvx_gtk_window;
 static GtkWidget *iptvx_gtk_webview;
+static WebKitUserContentManager* user_content_mgr;
 static bool iptvx_webkit_ready;
 
 int iptvx_webkit_width;
@@ -140,7 +141,7 @@ int iptvx_webkit_start(void* file){
   /* create user content manager and web view with it 
     which is required to be able to fire js and retrieve 
     messages from the js interface */
-  WebKitUserContentManager* user_content_mgr = webkit_user_content_manager_new();
+  user_content_mgr = webkit_user_content_manager_new();
   iptvx_gtk_webview = webkit_web_view_new_with_user_content_manager(user_content_mgr);
 
 	gtk_container_add (GTK_CONTAINER (iptvx_gtk_window), iptvx_gtk_webview);
