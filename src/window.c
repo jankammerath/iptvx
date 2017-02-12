@@ -43,9 +43,16 @@ struct sdl_context{
     SDL_mutex *mutex;
 } typedef sdl_context;
 
+/* defines a window size */
+struct window_size{
+    int width;
+    int height;
+} typedef window_size;
+
 /* window variables */
 SDL_Thread *window_thread;
 bool window_terminate;
+bool window_fullscreen;
 sdl_context ctx;
 
 /* ptr to rendered data */
@@ -54,6 +61,39 @@ bool* overlay_ready;
 
 /* local storage */
 GByteArray* current_overlay;
+
+/*
+    Initialises window and graphics library
+*/
+void iptvx_window_init(){
+    /* initialise the SDL lib */
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) == -1){
+        printf("Unable to initialize SDL\n");
+    }
+}
+
+/*
+    Defines whether to start window in fullscreen or not
+    @param      fullscreen_val      true when in full, false to be windowed
+*/
+void iptvx_window_set_fullscreen(bool fullscreen_val){
+    window_fullscreen = fullscreen_val;
+}
+
+/*
+    Returns the preferred window size
+    @return         window size with width and height
+*/
+window_size iptvx_window_get_size(){
+    window_size result;
+
+    /* get the current video values */
+    const SDL_VideoInfo* info = SDL_GetVideoInfo(); 
+    result.width = info->current_w; 
+    result.height = info->current_h; 
+
+    return result;
+}
 
 /*
     defines the overlay data
@@ -84,16 +124,17 @@ int iptvx_create_window(int width, int height,
     /* defines if fullscreen is active */
     bool is_fullscreen = false;
 
-    /* initialise the SDL lib */
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) == -1){
-        printf("Unable to initialize SDL\n");
-    }
-
     /* create the SDL surface */
     ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
     ctx.mutex = SDL_CreateMutex();
 
-    int sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_RESIZABLE | SDL_DOUBLEBUF /* | SDL_FULLSCREEN | SDL_SWSURFACE */;
+    /* alternatively SDL_SWSURFACE can be used for CPU rendering */
+    int sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_RESIZABLE | SDL_DOUBLEBUF; 
+
+    if(window_fullscreen){
+        sdl_video_options ^= SDL_FULLSCREEN;
+    }
+
     screen = SDL_SetVideoMode(width, height, 32, sdl_video_options);
     if(!screen){
         printf("Unable to set video mode for SDL\n");

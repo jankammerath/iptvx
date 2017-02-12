@@ -28,6 +28,29 @@ struct sdl_context
     SDL_mutex *mutex;
 } typedef sdl_context;
 
+/* defines a window size */
+struct window_size{
+    int width;
+    int height;
+} typedef window_size;
+
+/*
+    Initialises window and graphics library
+*/
+void iptvx_window_init();
+
+/*
+    Defines whether to start window in fullscreen or not
+    @param      fullscreen_val      true when in full, false to be windowed
+*/
+void iptvx_window_set_fullscreen(bool fullscreen_val);
+
+/*
+    Returns the preferred window size
+    @return         window size with width and height
+*/
+window_size iptvx_window_get_size();
+
 /*
     defines the overlay data
     @param      overlay_ptr         pointer to PNG data

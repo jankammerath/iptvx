@@ -240,8 +240,19 @@ int main (int argc, char *argv[]){
 		main_window_ready = false;
 		main_epg_ready = false;
 
-		main_window_width = iptvx_config_get_setting_int("width",1280);
-		main_window_height = iptvx_config_get_setting_int("height",720);
+		/* initialise window */
+		iptvx_window_init();
+
+		/* get preferred video size */
+		window_size win_size = iptvx_window_get_size();
+
+		/* define window size */
+		main_window_width = iptvx_config_get_setting_int("width",win_size.width);
+		main_window_height = iptvx_config_get_setting_int("height",win_size.height);
+
+		/* get fullscreen setting */
+		bool window_fullscreen = iptvx_config_get_setting_bool("fullscreen",true);
+		iptvx_window_set_fullscreen(window_fullscreen);
 
 		/* get the hours to store in the epg */
 		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
