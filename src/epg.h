@@ -43,6 +43,12 @@ struct channel{
 } typedef channel;
 
 /*
+   Sets the data directory to store epg cache and logo files
+   @param      data_dir       path of the directory for the data
+*/
+void iptvx_epg_set_data_dir(char* data_dir);
+
+/*
    Defines how many hours of programme 
    to be stored in the epg data
    @param         hours          int defining the hours

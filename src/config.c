@@ -32,6 +32,9 @@
 #include <libconfig.h>
 #include <unistd.h>
 #include <glib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 config_t cfg;
 
@@ -107,6 +110,40 @@ bool iptvx_config_has_channels(){
 }
 
 /*
+	Gets the directory to store the data in
+	@return 		dir name of where to store data in
+*/
+char* iptvx_config_get_data_dir(){
+	char* result = "";
+	char* epgFolder = "";
+	char* logoFolder = "";
+
+	if (!config_lookup_string(&cfg, "data", (const char **)&result)){
+		/* config setting not preset, default is './data' */
+		result = "data";
+	}
+
+	/* define the epg and logo folder */
+	epgFolder = g_strjoin("/",result,"epg/",NULL);
+	logoFolder = g_strjoin("/",result,"logo/",NULL);
+
+	/* check if the directories exist */
+	struct stat st = {0};
+	if (stat(result, &st) == -1) {
+		/* data dir does not exists, create it */
+		mkdir(result, 0777);
+	}if (stat(logoFolder, &st) == -1) {
+		/* logo dir does not exists, create it */
+		mkdir(logoFolder, 0777);
+	}if (stat(epgFolder, &st) == -1) {
+		/* epg dir does not exists, create it */
+		mkdir(epgFolder, 0777);
+	}
+
+	return result;
+}
+
+/*
    Initialises the configuration
    @return           true when ok, otherwise false
 */
@@ -129,8 +166,15 @@ bool iptvx_config_init(){
 			config_destroy(&cfg);
 		}else{
 			if(iptvx_config_has_channels()){
-				/* config is good */
-				result = true;
+				char* data_dir = iptvx_config_get_data_dir();
+				GString* gs_data_dir = g_string_new(data_dir);
+				if(gs_data_dir->len > 0){
+					/* config is good */
+					result = true;
+				}else{
+					printf("Data directory not present "
+							"or cannot be created.\n");
+				}
 			}else{
 				/* show an error when there are not channels in config */
 				printf("No channels configured, check your config.\n");
@@ -162,6 +206,9 @@ char* iptvx_config_get_overlay_app(){
     			printf("Application configuration problem:\n"
     					"Failed to determine path of '%s'\n",appFile);
     		}
+		}else{
+			/* it's an absolute path, just use it */
+			result = (char*)appFile;
 		}
 	}
 

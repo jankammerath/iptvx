@@ -61,6 +61,9 @@ struct channel{
 /* the channel list */
 GArray* list;
 
+/* path of epg data directory */
+GString* epg_data_dir;
+
 /* define how many hours are to be stored */
 int iptvx_epg_storage_hours;
 
@@ -73,6 +76,14 @@ int iptvx_epg_percentage_loaded;
 
 /* status update callback */
 void (*epgStatusUpdateCallback)(void*);
+
+/*
+	Sets the data directory to store epg cache and logo files
+	@param 		data_dir 		path of the directory for the data
+*/
+void iptvx_epg_set_data_dir(char* data_dir){
+	epg_data_dir = g_string_new(data_dir);
+}
 
 /*
 	Defines how many hours of programme 
@@ -375,27 +386,6 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 	struct tm *t = localtime(&epg_time);
 	strftime(epg_url,sizeof(epg_url)-1,current->epgUrl->str,t);
 
-	/* ensure the cache path exists */
-	struct stat st = {0};
-
-	/* if cache folder needs to be created, 
-		we also need to create epg and logo */
-	if (stat("data", &st) == -1) {
-    	mkdir("data", 0700);
-    	mkdir("data/epg", 0700);
-    	mkdir("data/logo", 0700);
-	}
-
-	/* but also ensure to create each of the others */
-	if (stat("data/epg", &st) == -1) {
-		mkdir("data/epg", 0700);
-	}
-
-	/* for logo as well */
-	if (stat("data/logo", &st) == -1) {
-		mkdir("data/logo", 0700);
-	}
-
 	/* define the cache file for epg */
 	char* cacheFile;
 
@@ -419,7 +409,8 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 	}
 
 	/* define the full path of the epg file */
-	char* cacheFilePath = g_strjoin("","data/epg/",cacheFile,NULL);
+	char* epgCacheDir = g_strjoin("/",epg_data_dir->str,"epg",NULL);
+	char* cacheFilePath = g_strjoin("/",epgCacheDir,cacheFile,NULL);
 
 	/* check if cache should be ignored which means 
 		existing file will be deleted */

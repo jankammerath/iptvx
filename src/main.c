@@ -241,6 +241,10 @@ int main (int argc, char *argv[]){
 		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
 		iptvx_epg_set_storage_hours(epg_hours);
 
+		/* get the data directory for the epg */
+		char* epg_dir = iptvx_config_get_data_dir();
+		iptvx_epg_set_data_dir(epg_dir);
+
 		/* initialise the epg */
 		config_t* cfg = iptvx_get_config();
 		iptvx_epg_init(cfg,epg_status_update);
@@ -252,8 +256,9 @@ int main (int argc, char *argv[]){
 
 		/* start the webkit thread */
 		char* overlayApp = iptvx_config_get_overlay_app();
-		if(strlen(overlayApp) > 0){
-			iptvx_webkit_start_thread(overlayApp,main_window_width,
+		GString* gs_overlay_app = g_string_new(overlayApp);
+		if(gs_overlay_app->len > 0){
+			iptvx_webkit_start_thread(gs_overlay_app->str,main_window_width,
 									main_window_height,load_finished);
 
 			/* start the thread to update the js api */
@@ -264,7 +269,13 @@ int main (int argc, char *argv[]){
 			iptvx_create_window(main_window_width,
 								main_window_height,
 								keydown,window_ready);
+		}else{
+			/* throw an error when we don't have the app */
+			printf("App path not found or inaccessible\n");
 		}
+	}else{
+		/* throw an error when config not initialised */
+		printf("Failed to initialise the configuration\n");
 	}
 
 	/* tells all threads to kill themselves */

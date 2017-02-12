@@ -38,6 +38,12 @@
 config_t* iptvx_get_config();
 
 /*
+   Gets the directory to store the data in
+   @return     dir name of where to store data in
+*/
+char* iptvx_config_get_data_dir();
+
+/*
    Initialises the configuration
    @return           true when ok, otherwise false
 */
@@ -54,6 +60,12 @@ bool iptvx_config_file_exists();
    @return           the config file name and path
 */
 char* iptvx_get_config_filename();
+
+/*
+   Gets the directory to store the data in
+   @return     dir name of where to store data in
+*/
+char* iptvx_config_get_data_dir();
 
 /* 
    Gets the overlay app file
