@@ -21,7 +21,7 @@
 #include <JavaScriptCore/JavaScript.h>
 
 WebKitWebView* js_view;
-void (*controlMessageCallback)(void*);
+void (*control_message_callback)(void*);
 
 static void iptvx_control_message_received_cb (WebKitUserContentManager *manager,
                                                  WebKitJavascriptResult *message,
@@ -50,7 +50,7 @@ static void iptvx_control_message_received_cb (WebKitUserContentManager *manager
       JSStringRelease (js_str_value);
 
       /* execute the callback for the control message */
-      controlMessageCallback(str_value);
+      control_message_callback(str_value);
    } else {
       printf("Unexpected JS API message return value\n");
    }
@@ -61,11 +61,11 @@ static void iptvx_control_message_received_cb (WebKitUserContentManager *manager
 /*
    Initialises the JavaScript API interface
    @param   webview                          the webview to work on
-   @param   controlMessageCallbackFunc       callback func when control msgs arrive
+   @param   control_message_callback_func    callback func when control msgs arrive
 */
-void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(void*)){
+void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(void*)){
    /* define the control message callback */
-   controlMessageCallback = controlMessageCallbackFunc;
+   control_message_callback = control_message_callback_func;
 
    /* set global js webview variable */
    js_view = webView;

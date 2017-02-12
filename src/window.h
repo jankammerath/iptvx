@@ -39,10 +39,11 @@ void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr);
     creates the main window for this application 
     @param          width               defines width of the window
     @param          height              defines height of the window
-    @param          keyDownCallback     callback func when key down event
-    @param          startPlayCallback   callback func to call when playback can start
+    @param          keydown_callback     callback func when key down event
+    @param          startplay_callback   callback func to call when playback can start
 */
-int iptvx_create_window(int width, int height,void (*keyDownCallback)(int),void (*startPlayCallback)(void*));
+int iptvx_create_window(int width, int height,
+    void (*keydown_callback)(int),void (*startplay_callback)(void*));
 
 /*
     locks the window surface and mutex

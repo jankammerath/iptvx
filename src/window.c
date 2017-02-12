@@ -69,12 +69,12 @@ void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr){
     creates the main window for this application 
     @param          width               defines width of the window
     @param          height              defines height of the window
-    @param          keyDownCallback     callback func when key down event
-    @param          startPlayCallback   callback func to call when playback can start
+    @param          keydown_callback     callback func when key down event
+    @param          startplay_callback   callback func to call when playback can start
 */
 int iptvx_create_window(int width, int height, 
-                    void (*keyDownCallback)(int),
-                    void (*startPlayCallback)(void*) ){
+                    void (*keydown_callback)(int),
+                    void (*startplay_callback)(void*) ){
     SDL_Surface *screen, *overlay;
     SDL_Event event;
 
@@ -103,7 +103,7 @@ int iptvx_create_window(int width, int height,
     SDL_WM_SetCaption("iptvx",0);
 
     /* exec callback to call for player */
-    (*startPlayCallback)(&ctx);
+    (*startplay_callback)(&ctx);
 
     while(!window_terminate){
         int keyPressed;
@@ -125,7 +125,7 @@ int iptvx_create_window(int width, int height,
                         SDL_WM_ToggleFullScreen(screen);
                     }
 
-                    (*keyDownCallback)(keyPressed);
+                    (*keydown_callback)(keyPressed);
                     break;
             }
 

@@ -39,16 +39,16 @@ static png_data overlay_data;
 GByteArray* png_byte_data;
 GByteArray* old_png_byte_data;
 
-void (*loadFinishedCallback)(void*);
+void (*load_finished_callback)(void*);
 
-bool enableWebKitInspector;
+bool enable_webkit_inspector;
 
 /*
   Defines whether the dev tool should be enabled or not
-  @param    enableTool    true to enable, false to disable
+  @param    enable_tool    true to enable, false to disable
 */
-void iptvx_webkit_enable_devtool(bool enableTool){
-  enableWebKitInspector = enableTool;
+void iptvx_webkit_enable_devtool(bool enable_tool){
+  enable_webkit_inspector = enable_tool;
 }
 
 /* 
@@ -118,7 +118,7 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
   }
 
   /* fire callback when load finished */
-  (*loadFinishedCallback)(webview);
+  (*load_finished_callback)(webview);
 
   webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
@@ -163,12 +163,12 @@ int iptvx_webkit_start(void* file){
   @param    file                          char ptr with the file path to the html app
   @param    width                         int defining the width of the webkit window
   @param    height                        int defining the height of the webkit window
-  @param    loadFinishedCallbackFunc      ptr to func to call when load finished
+  @param    load_finished_callback_func      ptr to func to call when load finished
 */
-void iptvx_webkit_start_thread(char *file,int width, int height, void (*loadFinishedCallbackFunc)(void*)){
+void iptvx_webkit_start_thread(char *file,int width, int height, void (*load_finished_callback_func)(void*)){
   iptvx_webkit_ready = false;
   iptvx_webkit_width = width;
   iptvx_webkit_height = height;
-  loadFinishedCallback = loadFinishedCallbackFunc;
+  load_finished_callback = load_finished_callback_func;
   webkit_thread = SDL_CreateThread(iptvx_webkit_start,file);
 }

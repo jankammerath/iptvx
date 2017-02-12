@@ -75,7 +75,7 @@ bool iptvx_epg_ready;
 int iptvx_epg_percentage_loaded;
 
 /* status update callback */
-void (*epgStatusUpdateCallback)(void*);
+void (*epg_status_update_callback)(void*);
 
 /*
 	Sets the data directory to store epg cache and logo files
@@ -475,13 +475,13 @@ int iptvx_epg_load(void* nothing){
 
 		/* update percentage status */
 		iptvx_epg_percentage_loaded = (int)((float)((float)c / (float)list->len) * 100);
-		epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
+		epg_status_update_callback(&iptvx_epg_percentage_loaded);
 	}
 
 	/* update status indicators */
 	iptvx_epg_ready = true;
 	iptvx_epg_percentage_loaded = 100;
-	epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
+	epg_status_update_callback(&iptvx_epg_percentage_loaded);
 
 	/* process daily epg files */
 	int additional_epg_data_count = 0;
@@ -514,7 +514,7 @@ int iptvx_epg_load(void* nothing){
 
 	/* fire up callback when additional data 
 		was captured for the coming days */
-	epgStatusUpdateCallback(&iptvx_epg_percentage_loaded);
+	epg_status_update_callback(&iptvx_epg_percentage_loaded);
 
 	return 0;
 }
@@ -550,7 +550,7 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 	iptvx_epg_current_channel = 0;
 
 	/* assign the local callback function */
-	epgStatusUpdateCallback = statusUpdateCallback;
+	epg_status_update_callback = statusUpdateCallback;
 
 	/* init status indicators */
 	iptvx_epg_ready = false;

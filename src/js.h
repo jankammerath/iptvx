@@ -23,9 +23,9 @@
 /*
    Initialises the JavaScript API interface
    @param   webview                          the webview to work on
-   @param   controlMessageCallbackFunc       callback func when control msgs arrive
+   @param   control_message_callback_func    callback func when control msgs arrive
 */
-void iptvx_js_init(WebKitWebView* webView,void (*controlMessageCallbackFunc)(void*));
+void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(void*));
 
 /*
   Signals current epg status to the js app

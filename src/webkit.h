@@ -38,8 +38,8 @@ extern void* iptvx_get_overlay_ready_ptr();
   @param    file                          char ptr with the file path to the html app
   @param    width                         int defining the width of the webkit window
   @param    height                        int defining the height of the webkit window
-  @param    loadFinishedCallbackFunc      ptr to func to call when load finished
+  @param    load_finished_callback_func   ptr to func to call when load finished
 */
-extern void iptvx_webkit_start_thread(char *file,int width, int height,void (*loadFinishedCallbackFunc)(void*));
+extern void iptvx_webkit_start_thread(char *file,int width, int height,void (*load_finished_callback_func)(void*));
 
 #endif
