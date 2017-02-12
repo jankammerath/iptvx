@@ -84,7 +84,7 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
   GError *err = NULL;
   cairo_surface_t *surface = webkit_web_view_get_snapshot_finish(WEBKIT_WEB_VIEW(webview),res,&err);
   if (err) {
-    printf("An error happened generating the snapshot: %s\n",err->message);
+    printf("Failed generating the snapshot: %s\n",err->message);
   }
 
   iptvx_webkit_ready = false;

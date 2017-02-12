@@ -148,7 +148,8 @@ int iptvx_create_window(int width, int height,
         if(overlay_ready){
             png_data* overlay_png_ref = (png_data*)overlay_data;
             g_byte_array_free(current_overlay,false);
-            current_overlay = g_byte_array_new_take(overlay_png_ref->data,overlay_png_ref->length);
+            current_overlay = g_byte_array_new_take(overlay_png_ref->data,
+                                                    overlay_png_ref->length);
         }
 
         if(current_overlay->data != NULL){
