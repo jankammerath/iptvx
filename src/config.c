@@ -175,6 +175,9 @@ bool iptvx_config_init(){
 					printf("Data directory not present "
 							"or cannot be created.\n");
 				}
+
+				/* free the string */
+				g_string_free(gs_data_dir,true);
 			}else{
 				/* show an error when there are not channels in config */
 				printf("No channels configured, check your config.\n");
