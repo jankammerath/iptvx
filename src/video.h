@@ -29,6 +29,18 @@
 */
 void iptvx_video_init(char *videofile, int width, int height);
 
+/*
+   Sets the audio volume of the playback in percent
+   @param         percent        percentage value of the audio volume
+*/
+void iptvx_video_set_volume(int percentage);
+
+/*
+   Gets the current audio volume of the playback in percent
+   @return     current audio volume in percent
+*/
+int iptvx_video_get_volume();
+
 /* 
    start the actual video playback 
    @param      lock        callback to lock the surface

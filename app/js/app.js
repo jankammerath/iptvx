@@ -26,6 +26,9 @@ var app = {
 	/* control ui object */
 	control: {},
 
+	/* handles volume timeout */
+	volumeTimeout: {},
+
 	/* initialises the app */
 	init: function(){
 		/* attach global error handler */
@@ -44,6 +47,16 @@ var app = {
 				$("#debuginfo").toggle();
 			}
 
+			/* 	43 = increase volume,
+				45 = decrease volume */
+			if(typeof(iptvx)=="object"){ 
+				if(keyCode == 43){
+					app.adjustVolume(iptvx.volume+10);
+				}if(keyCode == 45){
+					app.adjustVolume(iptvx.volume-10);
+				}
+			}
+
 			/* only handle keys when epg is ready */
 			if(app.epg.ready){
 				/* disable all ui with backspace (8) */
@@ -51,6 +64,7 @@ var app = {
 					app.epg.toggle(true);
 					app.list.toggle(true);
 					app.control.toggle(true);
+					$("#volume").fadeOut();
 				}
 
 				/* control ui toggle with spacebar (32) */
@@ -100,6 +114,37 @@ var app = {
 		app.epg.init();
 		app.control.init();
 		app.list.init();
+	},
+
+	/* adjusts playback volume and shows ui for it */
+	adjustVolume: function(volumeValue){
+		/* clear any current timeout for fade out */
+		clearTimeout(app.volumeTimeout);
+
+		/* ensure volume not going below 0 */
+		if(volumeValue < 0){
+			volumeValue = 0;
+		}
+
+		/* call volume update */
+		app.exec("set-volume "+volumeValue);
+
+		/* update volume ui */
+		if(volumeValue == 0){
+			$("#volume").removeClass("volumenormal");
+			$("#volume").addClass("volumemute");
+		}else{
+			$("#volume").removeClass("volumemute");
+			$("#volume").addClass("volumenormal");
+		}
+		var volumePercent = 60*(volumeValue/150);
+		$("#volumevalue").css("width",volumePercent+"px");
+		$("#volume").fadeIn();
+
+		/* set fadeout */
+		app.volumeTimeout = setTimeout(function(){
+			$("#volume").fadeOut();
+		},2000);
 	},
 
 	attachErrorHandler: function(){

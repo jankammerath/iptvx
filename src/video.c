@@ -33,8 +33,8 @@ int video_height;
 */
 void iptvx_video_init(char *videofile, int width, int height){
 	const char * const vlc_args[] = {
-		"--no-xlib", /* tell VLC to not use Xlib */
-		"--quiet" /* don't throw all the stuff into STDOUT */
+		"--no-xlib" /* tell VLC to not use Xlib */
+		/* "--quiet" */ /* don't throw all the stuff into STDOUT */
 	};
 
 	/* create the VLC instance */
@@ -47,6 +47,23 @@ void iptvx_video_init(char *videofile, int width, int height){
 	/* configure width and height of the video */
 	video_width = width;
 	video_height = height;
+}
+
+/*
+	Sets the audio volume of the playback in percent
+	@param         percent        percentage value of the audio volume
+*/
+void iptvx_video_set_volume(int percentage){
+	/* pass volume to libvlc */
+	libvlc_audio_set_volume(mp,percentage);
+}
+
+/*
+	Gets the current audio volume of the playback in percent
+	@return 		current audio volume in percent
+*/
+int iptvx_video_get_volume(){
+	return libvlc_audio_get_volume(mp);
 }
 
 /* 

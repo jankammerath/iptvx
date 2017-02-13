@@ -28,6 +28,12 @@
 void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(void*));
 
 /*
+  Updates the volume info in the JS api
+  @param      percentage        current volume percentage
+*/
+void iptvx_js_update_volume(int percentage);
+
+/*
   Signals current epg status to the js app
   @param      percentage        int percentage value of progress
 */

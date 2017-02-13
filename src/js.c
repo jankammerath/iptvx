@@ -78,7 +78,7 @@ void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(
 
    /* define the basic js object */
    char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], "
-                     " channel: 0, state: 0, "
+                     " channel: 0, state: 0, volume: 100, "
                      " exec: function(cmd){ "
                      " window.webkit.messageHandlers.iptvxexec.postMessage(cmd); "
                      " } "
@@ -86,6 +86,17 @@ void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(
 
    /* fire the js object definition */
    webkit_web_view_run_javascript(js_view,jsObject,NULL,NULL,NULL);
+}
+
+/*
+  Updates the volume info in the JS api
+  @param      percentage        current volume percentage
+*/
+void iptvx_js_update_volume(int percentage){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.volume = %d;",percentage);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);  
 }
 
 /*

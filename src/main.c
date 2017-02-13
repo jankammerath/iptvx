@@ -121,6 +121,25 @@ void control_message_received(void* message){
 			/* update JS with new channel */
 			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
 		}
+
+		if(g_ascii_strncasecmp(ctlMsg[0],"set-volume",10)==0){
+			/* this is a channel switch control message,
+				so we need to get the channel number */
+			int volume_percent = g_ascii_strtoll(ctlMsg[1],NULL,0);
+
+			/* set vol max to 150 percent */
+			if(volume_percent > 150){
+				volume_percent = 150;
+			}if(volume_percent < 0){
+				volume_percent = 0;
+			}
+
+			/* set volume to desired value */
+			iptvx_video_set_volume(volume_percent);
+
+			/* update play and js */
+			iptvx_js_update_volume(volume_percent);
+		}
 	}
 
 	/* free control message */
