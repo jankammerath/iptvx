@@ -172,7 +172,7 @@ int iptvx_create_window(int width, int height,
 
             /* handle pressed keys */
             switch(keyPressed){
-                case SDLK_ESCAPE:
+                case SDLK_END:
                     window_terminate = true;
                     break;
             }

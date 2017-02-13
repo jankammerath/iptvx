@@ -53,7 +53,7 @@ SDL_Thread* update_thread;
 
 /* handles any key down event */
 void keydown(int keyCode){
-	if(keyCode == 27){
+	if(keyCode == 279){
 		/* tells all threads to kill themselves */
 		application_active = false;
 
