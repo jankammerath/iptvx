@@ -88,6 +88,14 @@ var app = {
 					app.epg.toggle();
 				}
 
+				/* search ui toggle with ctl (17) */
+				if(keyCode == 17){
+					app.list.toggle(true);
+					app.control.toggle(true);
+					app.epg.toggle(true);
+				}
+
+
 				/* only handle keys when no ui is present to handle */
 				if(app.list.visible == false && app.epg.visible == false){
 					/* switch channel with up (38) and down (40) */

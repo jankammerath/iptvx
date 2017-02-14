@@ -21,10 +21,21 @@ app.epg = {
    ready: false,
    lastRenderSize: 0,
    channelVisisbleCount: 4,
+   renderStartTs: 0,
 
 	init: function(){
       /* keep checking until epg ready */
       app.epg.waitUntilReady();
+   },
+
+   renderProgress: function(){
+      var now_ts = Date.now()/1000;
+      var min_passed = (((now_ts-app.epg.renderStartTs)/60)*4);
+      $("#epgcalprogress").css("height",min_passed+"px");
+
+      /* render current time HH:MM into text */
+      $("#epgcalprogresstext").html(new Date().toTimeString()
+                              .split(' ')[0].substring(0,5));
    },
 
    resize: function(){
@@ -157,6 +168,9 @@ app.epg = {
          var now_ts = Date.now()/1000;
          now_ts = now_ts-(now_date.getMinutes()*60)-now_date.getSeconds();
 
+         /* set the var indicating where the cal starts */
+         app.epg.renderStartTs = now_ts;
+
          var channelHtml = "";
          for(var c=0;c<iptvx.epg.length;c++){
             var chan = iptvx.epg[c];
@@ -203,6 +217,9 @@ app.epg = {
 
          var epgHtml = "<div id=\"epgcalhead\">" + channelHeadHtml + "</div>"
                      + "<div id=\"epgcalbody\">"
+                     + "<div id=\"epgcalprogress\">"
+                     + "<div id=\"epgcalprogresstext\"></div>"
+                     + "</div>"
                      + calDateHtml + channelHtml 
                      + "</div>";
 
@@ -358,6 +375,9 @@ app.epg = {
                   /* start renderer */
                   app.epg.render();
                }
+
+               /* render progress */
+               app.epg.renderProgress();
             },1000);
          }else{
             if(iptvx.epgLoaded > 0){
