@@ -420,6 +420,106 @@ body{
   line-height: 17px;
 }
 
+#find{
+  width:400px;
+  position:fixed;
+  display:none;
+}
+
+#findinput{
+  height:42px;
+  margin:10px;
+  position:relative;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.16);
+}
+
+#findinputtext{
+  display:inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
+  letter-spacing: 2px;
+}
+
+#findinputtext:before {
+  content: "";
+  width: 2px;
+  background-color: #ffffff;
+  height: 30px;
+  opacity: 0.5;
+  display: block;
+  float: right;
+  margin-left:5px;
+  animation: textcursoranimation 0.5s steps(5, start) infinite;
+}
+
+@keyframes textcursoranimation {
+  0% {opacity:0.5;}
+  50% {opacity:0.1;}
+  100% {opacity:0.5;}
+}
+
+#findresult{
+  height:226px;
+  padding: 0px 5px 0px 10px;
+  font-size: 17px;
+  background-image:url('../img/find.svg');
+  background-size: 100px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  overflow-y:scroll;
+}
+
+.founditem{
+  height:70px;
+  overflow: hidden;  
+  background-color:#0e0d40;
+  padding:10px;
+  opacity:0.9;
+  border-radius: 5px;
+  margin-bottom:5px;
+  box-sizing:border-box;
+}
+
+.activefounditem{
+  background-color:#434177;
+}
+
+.foundchannel{
+  display:inline-block;
+  opacity: 0.3;  
+  width:80px;
+  text-align:right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.foundtitle{
+  display:inline-block;
+  width:270px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.foundtext{
+  font-size:15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px;
+}
+
+.founditemdesc{
+  opacity:0.5;
+  display:inline-block;
+  margin-left:10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width:250px;
+}
+
 /* custom webkit scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

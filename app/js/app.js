@@ -64,13 +64,15 @@ var app = {
 					app.epg.toggle(true);
 					app.list.toggle(true);
 					app.control.toggle(true);
+					app.find.toggle(true);
 					$("#volume").fadeOut();
 				}
 
-				/* control ui toggle with spacebar (32) */
-				if(keyCode == 32){
+				/* control ui toggle with alt (18) */
+				if(keyCode == 18){
 					app.epg.toggle(true);
 					app.list.toggle(true);
+					app.find.toggle(true);
 					app.control.toggle();
 				}
 
@@ -78,13 +80,15 @@ var app = {
 				if(keyCode == 16){
 					app.epg.toggle(true);
 					app.control.toggle(true);
+					app.find.toggle(true);
 					app.list.toggle();
 				}
 
-				/* epg ui toggle with alt (18) */
-				if(keyCode == 18){
+				/* epg ui toggle with tab (9) */
+				if(keyCode == 9){
 					app.list.toggle(true);
 					app.control.toggle(true);
+					app.find.toggle(true);
 					app.epg.toggle();
 				}
 
@@ -93,6 +97,7 @@ var app = {
 					app.list.toggle(true);
 					app.control.toggle(true);
 					app.epg.toggle(true);
+					app.find.toggle();
 				}
 
 
@@ -111,6 +116,11 @@ var app = {
 				/* allow epg to handle keys */
 				if(app.epg.visible){
 					app.epg.handleKey(keyCode);
+				}
+
+				/* allow find to handle keys */
+				if(app.find.visible){
+					app.find.handleKey(keyCode);
 				}
 			}
 			
@@ -209,6 +219,9 @@ var app = {
 		var statusTop = $(window).innerHeight()/2-$("#status").outerHeight()/2;
 		$("#status").css("left",statusLeft+"px");
 		$("#status").css("top",statusTop+"px");
+
+		/* call find resize */
+		app.find.resize();
 
 		/* call epg resize */
 		app.epg.resize();

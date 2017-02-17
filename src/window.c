@@ -160,9 +160,9 @@ int iptvx_create_window(int width, int height,
                 case SDL_KEYDOWN:
                     keyPressed = event.key.keysym.sym;
 
-                    /* toggle fullscreen when 'f' is pressed
-                        which is SDL_KeyCode 102 */
-                    if(keyPressed == 102){
+                    /* toggle fullscreen when '^' is pressed
+                        which is SDL_KeyCode 94 */
+                    if(keyPressed == 94){
                         SDL_WM_ToggleFullScreen(screen);
                     }
 
