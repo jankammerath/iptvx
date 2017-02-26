@@ -44,7 +44,15 @@ app.control = {
 				|| iptvx.state == 2){
 				/* is waiting, opening or buffering
 					so we show the load indicator */
+				$("#status").removeClass("statusoffline");
+				$("#status").addClass("statusloading");
 				$("#status").html("&nbsp;");
+				$("#status").show();
+			}if(iptvx.state == 7){
+				/* there is an error with the playback */
+				$("#status").html("No Signal");
+				$("#status").removeClass("statusloading");
+				$("#status").addClass("statusoffline");
 				$("#status").show();
 			}		
 		}

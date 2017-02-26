@@ -48,12 +48,29 @@ body{
   position: fixed;
   width: 90px;
   height: 90px;
-  background-image: url(../img/loadcircle.svg);
   display: none;
   box-sizing: border-box;
-  padding: 30px 0px 30px 0px;
   color: #3d3c61;
   text-align: center;
+}
+
+.statusloading{
+  background-image: url(../img/loadcircle.svg);
+  padding: 30px 0px 30px 0px;
+}
+
+.statusoffline{
+  background-image: url(../img/nosignal.svg);
+  background-size: 90px auto;
+  animation: statusofflineblink 1s steps(5, start) infinite;
+  padding:82px 0px 30px 0px;
+  background-repeat: no-repeat;
+}
+
+@keyframes statusofflineblink {
+  0% {opacity:0.3;}
+  50% {opacity:0.8;}
+  100% {opacity:0.3;}
 }
 
 #volume{
