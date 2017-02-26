@@ -50,7 +50,7 @@ app.control = {
 				$("#status").show();
 			}if(iptvx.state == 7){
 				/* there is an error with the playback */
-				$("#status").html("No Signal");
+				$("#status").html("NO SIGNAL");
 				$("#status").removeClass("statusloading");
 				$("#status").addClass("statusoffline");
 				$("#status").show();
