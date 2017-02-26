@@ -102,10 +102,12 @@ var app = {
 
 
 				/* only handle keys when no ui is present to handle */
-				if(app.list.visible == false && app.epg.visible == false){
+				if(app.list.visible == false 
+					&& app.epg.visible == false
+					&& app.find.visible == false){
 					/* switch channel with up (38) and down (40) */
-					if(keyCode == 38){app.exec("channel-prev");}
-					if(keyCode == 40){app.exec("channel-next");}
+					if(keyCode == 38){app.epg.zapChannel(false);}
+					if(keyCode == 40){app.epg.zapChannel(true);}
 				}
 
 				/* allow list to handle keys */

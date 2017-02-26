@@ -272,6 +272,29 @@ app.epg = {
       }
    },
 
+   /* switches to next or previous channel */
+   zapChannel: function(switchNext){
+      if(typeof(iptvx)=="object"){
+         if(switchNext){
+            /* switch to next */
+            if(iptvx.channel == (iptvx.epg.length-1)){
+               /* already last channel, go first */
+               app.epg.switchChannel(0);
+            }else{
+               app.epg.switchChannel(iptvx.channel+1);
+            }
+         }else{
+            /* switch to previous */
+            if(iptvx.channel == 0){
+               /* already last channel, go first */
+               app.epg.switchChannel(iptvx.epg.length-1);
+            }else{
+               app.epg.switchChannel(iptvx.channel-1);
+            }
+         }
+      }
+   },
+
    waitUntilReady: function(){
       /* check the status of the epg */
       app.epg.ready = app.epg.checkStatus();
