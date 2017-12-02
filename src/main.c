@@ -63,7 +63,9 @@ void keydown(int keyCode){
 		/* forward key after converting from SDL to JS */
 		if(main_js_ready){
 			/* only when JS API alive */
-			iptvx_js_sendkey(keycode_convert_sdl_to_js(keyCode));
+			int convertedKeyCode = keycode_convert_sdl_to_js(keyCode);
+			g_idle_add((GSourceFunc)iptvx_js_sendkey,
+					GINT_TO_POINTER(convertedKeyCode));
 		}		
 	}
 }
@@ -119,7 +121,9 @@ void control_message_received(void* message){
 			channel_video_play(newChan->url->str,true);
 
 			/* update JS with new channel */
-			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
+			int currentChannelId = iptvx_epg_get_current_channel_id();
+			g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
+							GINT_TO_POINTER(currentChannelId));
 		}
 
 		if(g_ascii_strncasecmp(ctlMsg[0],"set-volume",10)==0){
@@ -135,10 +139,12 @@ void control_message_received(void* message){
 			}
 
 			/* set volume to desired value */
-			iptvx_video_set_volume(volume_percent);
+			g_idle_add((GSourceFunc)iptvx_video_set_volume,
+							GINT_TO_POINTER(volume_percent));
 
 			/* update play and js */
-			iptvx_js_update_volume(volume_percent);
+			g_idle_add((GSourceFunc)iptvx_js_update_volume,
+							GINT_TO_POINTER(volume_percent));
 		}
 	}
 
@@ -191,12 +197,9 @@ void epg_status_update(void* progress){
 			sleep(1);
 		}
 
-		/* signal complete epg data */
+		/* signal complete epg data, string will be freed inside */
 		GString* epg_data = iptvx_epg_get_json();
-		iptvx_js_set_epg_data(epg_data);
-
-		/* free epg data string */
-		g_string_free(epg_data,true);
+		g_idle_add((GSourceFunc)iptvx_js_set_epg_data,epg_data);
 		
 		/* only start the initial channel playback 
 			when the epg was not ready before as otherwise 
@@ -207,7 +210,9 @@ void epg_status_update(void* progress){
 			main_epg_ready = true;
 
 			/* signal current channel */
-			iptvx_js_set_current_channel(iptvx_epg_get_current_channel_id());
+			int currentChannelId = iptvx_epg_get_current_channel_id();
+			g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
+							GINT_TO_POINTER(currentChannelId));
 
 			/* activate video playback by getting
 				the default channel and play it */
@@ -218,7 +223,8 @@ void epg_status_update(void* progress){
 
 	if(main_js_ready){
 		/* send epg status update to js */
-		iptvx_js_update_epg_status(progressVal);		
+		g_idle_add((GSourceFunc)iptvx_js_update_epg_status,
+							GINT_TO_POINTER(progressVal));		
 	}
 }
 
@@ -235,7 +241,8 @@ int update(void* nothing){
 			media_state = iptvx_video_get_state();
 
 			/* signal it to the js api */
-			iptvx_js_update_state(media_state);
+			g_idle_add((GSourceFunc)iptvx_js_update_state,
+							GINT_TO_POINTER(media_state));
 
 			/* wait a sec */
 			usleep(200000);

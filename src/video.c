@@ -17,6 +17,7 @@
 */
 
 #include <vlc/vlc.h>
+#include <unistd.h>
 
 libvlc_instance_t * inst;
 libvlc_media_player_t *mp;
