@@ -47,12 +47,12 @@ var app = {
 				$("#debuginfo").toggle();
 			}
 
-			/* 	43 = increase volume,
-				45 = decrease volume */
+			/* 	33 = increase volume (pgdown),
+				34 = decrease volume (pgup) */
 			if(typeof(iptvx)=="object"){ 
-				if(keyCode == 43){
+				if(keyCode == 33){
 					app.adjustVolume(iptvx.volume+10);
-				}if(keyCode == 45){
+				}if(keyCode == 34){
 					app.adjustVolume(iptvx.volume-10);
 				}
 			}

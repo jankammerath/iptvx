@@ -74,6 +74,8 @@ char* iptvx_get_config_filename(){
 				"./cfg/iptvx.conf\n"
 				"~/.iptvx/iptvx.conf\n"
 				"/etc/iptvx/iptvx.conf\n");
+	}else{
+		printf("Using config file in '%s'\n",result);
 	}
 
 	return result;

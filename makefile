@@ -3,3 +3,16 @@ CFLAGS = `pkg-config --cflags --libs glib-2.0 webkit2gtk-4.0 libconfig libvlc li
 
 all:
 	$(CC) -g $(CFLAGS) src/*.c -o bin/iptvx
+
+install:
+	cp bin/iptvx /usr/bin/iptvx
+	chmod +x /usr/bin/iptvx
+	mkdir /etc/iptvx
+	cp cfg/iptvx.conf /etc/iptvx/iptvx.conf
+	cp cfg/channels.conf /etc/iptvx/channels.conf
+	chmod 0455 /etc/iptvx -R
+	mkdir /var/iptvx/data
+	mkdir /var/iptvx/data/epg
+	mkdir /var/iptvx/data/logo
+	chmod 4666 /var/iptvx/data -R
+
