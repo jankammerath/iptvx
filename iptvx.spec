@@ -55,3 +55,8 @@ make
 
 %install
 make install
+
+%files
+$(DESTDIR)/bin/
+$(DESTDIR)/app/
+$(DESTDIR)/cfg/
