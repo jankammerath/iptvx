@@ -16,7 +16,7 @@
 
 Name:           iptvx
 Version:        0.5
-Release:        0
+Release:        1
 Summary:		iptv player and streamer
 License:        Apache License 2.0
 Group:          Multimedia
