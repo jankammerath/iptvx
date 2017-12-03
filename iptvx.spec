@@ -61,7 +61,6 @@ make
 install -s -m 755 -D bin/iptvx %{buildroot}/usr/bin/iptvx
 install -m 644 -D cfg/iptvx.conf %{buildroot}/etc/iptvx/iptvx.conf
 install -m 644 -D cfg/channels.conf %{buildroot}/etc/iptvx/channels.conf
-install -m 644 -D -d %{buildroot}/var/iptvx/app
 install -m 644 -D -d %{buildroot}/var/iptvx/data/epg
 install -m 644 -D -d %{buildroot}/var/iptvx/data/logo
 install -m 644 -D app/*.* %{buildroot}/var/iptvx/app
