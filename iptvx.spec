@@ -64,11 +64,9 @@ chmod 755 %{buildroot}/usr/bin/iptvx
 mkdir -p %{buildroot}/etc/iptvx
 cp cfg/iptvx.conf %{buildroot}/etc/iptvx/iptvx.conf
 cp cfg/channels.conf %{buildroot}/etc/iptvx/channels.conf
-chmod 644 %{buildroot}/etc/iptvx/ -R
 mkdir -p %{buildroot}/var/iptvx/data/epg
 mkdir -p %{buildroot}/var/iptvx/data/logo
 cp app %{buildroot}/var/iptvx/ -R
-chmod 666 %{buildroot}/var/iptvx/ -R
 
 %files
 /usr/bin/iptvx
