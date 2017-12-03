@@ -52,7 +52,7 @@ IPTV player and streamer for Linux that allows to play any stream that LibVLC ca
 %setup
 
 %build
-make
+%make_build
 
 %install
 mkdir -p %{buildroot}%{_bindir}
