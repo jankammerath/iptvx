@@ -58,14 +58,14 @@ IPTV player and streamer for Linux that allows to play any stream that LibVLC ca
 make
 
 %install
+mkdir -p %{buildroot}/usr/bin/
 cp bin/iptvx %{buildroot}/usr/bin/iptvx
 chmod 755 %{buildroot}/usr/bin/iptvx
-mkdir %{buildroot}/etc/iptvx
+mkdir -p %{buildroot}/etc/iptvx
 cp cfg/iptvx.conf %{buildroot}/etc/iptvx/iptvx.conf
 cp cfg/channels.conf %{buildroot}/etc/iptvx/channels.conf
-mkdir %{buildroot}/var/iptvx/data
-mkdir %{buildroot}/var/iptvx/data/epg
-mkdir %{buildroot}/var/iptvx/data/logo
+mkdir -p %{buildroot}/var/iptvx/data/epg
+mkdir -p %{buildroot}/var/iptvx/data/logo
 cp app %{buildroot}/var/iptvx/ -R
 
 %files
