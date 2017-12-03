@@ -55,10 +55,10 @@ IPTV player and streamer for Linux that allows to play any stream that LibVLC ca
 %setup
 
 %build
-make %{?_smp_mflags}
+make
 
 %install
-make install %{?_smp_mflags}
+make install
 
 %files
 $(DESTDIR)/bin/
