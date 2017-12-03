@@ -63,7 +63,7 @@ install -m 644 -D cfg/iptvx.conf %{buildroot}/etc/iptvx/iptvx.conf
 install -m 644 -D cfg/channels.conf %{buildroot}/etc/iptvx/channels.conf
 install -m 644 -D -d %{buildroot}/var/iptvx/data/epg
 install -m 644 -D -d %{buildroot}/var/iptvx/data/logo
-install -m 644 -D app %{buildroot}/var/iptvx/app
+cp app %{buildroot}/var/iptvx/ -R
 
 %files
 %{buildroot}/usr/bin/iptvx
