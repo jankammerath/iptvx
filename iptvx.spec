@@ -58,15 +58,12 @@ IPTV player and streamer for Linux that allows to play any stream that LibVLC ca
 make
 
 %install
-install -s -m 755 -o 0 -g 0 bin/iptvx %{buildroot}/usr/bin/iptvx
-install -m 644 -o 0 -g 0 -d %{buildroot}/etc/iptvx
-install -m 644 -o 0 -g 0 cfg/iptvx.conf %{buildroot}/etc/iptvx/iptvx.conf
-install -m 644 -o 0 -g 0 cfg/channels.conf %{buildroot}/etc/iptvx/channels.conf
-install -m 644 -o 0 -g 0 -d %{buildroot}/var/iptvx
-install -m 644 -o 0 -g 0 -d %{buildroot}/var/iptvx/app
-install -m 644 -o 0 -g 0 -d %{buildroot}/var/iptvx/data
-install -m 644 -o 0 -g 0 -d %{buildroot}/var/iptvx/data/epg
-install -m 644 -o 0 -g 0 -d %{buildroot}/var/iptvx/data/logo
+install -s -m 755 -o 0 -g 0 -D bin/iptvx %{buildroot}/usr/bin/iptvx
+install -m 644 -o 0 -g 0 -D cfg/iptvx.conf %{buildroot}/etc/iptvx/iptvx.conf
+install -m 644 -o 0 -g 0 -D cfg/channels.conf %{buildroot}/etc/iptvx/channels.conf
+install -m 644 -o 0 -g 0 -D -d %{buildroot}/var/iptvx/app
+install -m 644 -o 0 -g 0 -D -d %{buildroot}/var/iptvx/data/epg
+install -m 644 -o 0 -g 0 -D -d %{buildroot}/var/iptvx/data/logo
 install -m 644 -o 0 -g 0 -D app/*.* %{buildroot}/var/iptvx/app
 
 %files
