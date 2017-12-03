@@ -34,9 +34,6 @@ BuildRequires:	pkgconfig(sdl)
 BuildRequires:	pkgconfig(SDL_image)
 BuildRequires:	pkgconfig(json-c)
 
-# Define build root
-BuildRoot:      %{_tmppath}/%{name}-%{version}
-
 # Runtime requirements
 Requires:  		pkgconfig(glib-2.0)
 Requires:		pkgconfig(webkit2gtk-4.0)
