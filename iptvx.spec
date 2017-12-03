@@ -55,8 +55,6 @@ IPTV player and streamer for Linux that allows to play any stream that LibVLC ca
 %setup
 
 %build
-echo "Source file: %{name}-%{version}.tar.gz"
-ls -l
 make %{?_smp_mflags}
 
 %install
