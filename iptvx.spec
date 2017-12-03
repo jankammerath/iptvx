@@ -69,6 +69,6 @@ mkdir -p %{buildroot}/var/iptvx/data/logo
 cp app %{buildroot}/var/iptvx/ -R
 
 %files
-%{buildroot}/usr/bin/iptvx
-%{buildroot}/etc/iptvx/
-%{buildroot}/var/iptvx/
+/usr/bin/iptvx
+/etc/iptvx/
+/var/iptvx/
