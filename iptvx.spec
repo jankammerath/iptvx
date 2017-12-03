@@ -66,6 +66,6 @@ install -m 644 -D -d %{buildroot}/var/iptvx/data/logo
 install -m 644 -D app/*.* %{buildroot}/var/iptvx/app
 
 %files
-$(DESTDIR)/bin/
-$(DESTDIR)/app/
-$(DESTDIR)/cfg/
+%{buildroot}/usr/bin/iptvx
+%{buildroot}/etc/iptvx/
+%{buildroot}/var/iptvx/
