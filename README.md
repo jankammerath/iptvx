@@ -2,14 +2,38 @@
 
 IPTV player and streamer for Linux that allows to play any stream that LibVLC can play, offers an overlay based on WebKit using HTML5, JavaScript and CSS and uses XMLTV data for EPG information. It allows the playback of URLs, files and can grab URLs from shell scripts. XMLTV EPG data can be downloaded directly from URLs or grabbed from shell scripts.
 
-## Current status
+## What you can expect
 
-Currently iptvx is still under development and in alpha-phase. Which means that the source code is only available and building might not work on your target system. The only intended users at the moment are software engineers that are capable of understanding the C code.
+The aim of [iptvx](http://iptvx.org/) is to provide a software set-top box for Linux systems. It includes the playback of live TV channels and display of EPG as well as recording functionality. In its current state of development iptvx already provides playback from various sources as well as EPG functionality.
 
-## Screenshots
+### Channel information
 
-The following screenshots can give a slight impression of what the UI looks like.
+Live channel information are obtained from the EPG and constantly updated during runtime. It also shows the upcoming shows as well as title and duration.
 
-![Screenshot of alpha 0.3](https://lh3.googleusercontent.com/w10P4-TBgPzDXn7j21irPDvA_oNAmxg-FYuzapXQKOzdBxcBQWJ4yf2LgRGQU-JB4bt2BUdO_AvrF7gkHx-eLnCrhp6rELX9RAfeGLDnxS3RuvkMnWzNaMaUBP9cg7S1LU7K92dOwYst9oVgBCPUCcZ17QaRtpczFnWga0uZfXpmAyB4GZc-klaUPRXhr5dWW6WLRZb1oIooC81VRYVlttFqpG55GirW_bp-vnOrKBIb4Vm5JMWpyHPgC7q8hlhzkdt144E0tRH7wQSihylcxE1062prrj7QRIPh9pzvQyNdyJj6E7pwzJGW3wL_DCVWvRtIly63HGBppPbfeMuZR7QVVGY1Rfbx-Jldfrb83CuGhPM4GgUQi02LgPtYkAZzxodbXUltCcLonREP0P_hzieIVQTEH1GZ2X6ySVfAtyZTZ-Gs6io8l0HJ2Mo_JAyy3NDhHFI2zHMbtXXVLzvNA_snutBHdFK1JRFsJNvkoBLBTJzPamEWA21xBR1iR09Nvf99_FI9d5E9l_5H5bLrhYj5tZOm3KX5142_jeR1P2hW5vyWexEBJJMv1wSP7rVyoIebn4F6NQPBs2Fas069pmffwBp9KNkQ0nRnBXiJsixQOfNjSM0HPBVoWHLsC_hHI0AdiI8Sda9_x83V7o3tmB-EEhaVpELs-mX71lKN_Q=w1249-h702-no)
+![Programme information from the EPG](/img/programme-info.png)
 
-![Screenshot of alpha 0.3 channel list](https://lh3.googleusercontent.com/k3oWBh9ztI7K9TnLNc8HLlg1aVV0W654b-cs07d2tKbVN92lfvPiZZ2llUHGp8HlZ_h9hBFOHaxcsO-oLZuprSZ2xTTRLkNHSxtGKNfEQ8SeaSL7FsByPVgmSjwDJ2OEn6daEg=w1249-h702-no)
+### Browsing through channels
+
+The channel list allows quick browsing through the channels while displaying the shows currently on at the same time. It also provides a large channel image to quickly identify the channel.
+
+![The channel list for channel selection](/img/channel-list.png)
+
+### Viewing all EPG information
+
+EPG display is large and its designed inspired by TV magazines. Channels are displayed horizontally and their programme vertically by time making it easy to quickly scroll through the programme.
+
+![The main view of the EPG in magazine style](/img/epg-view.png)
+
+### EPG search functionality
+
+The programme search allows to quickly find favorite shows in the future and in the current programme. It eleminates the hassle of browing through the EPG to find interesting shows.
+
+![Search functionality for the EPG](/img/programme-search.png)
+
+## Where to obtain help
+
+If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx](https://github.com/jankammerath/iptvx/wiki) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
+
+## How to install
+
+You can install iptvx either through pre-built packages, by getting a released tarball or by cloning the git repository and then compiling yourself. All information on how to install iptvx can be obtained from the [Installation instructions](https://github.com/jankammerath/iptvx/wiki/Installation).
