@@ -24,6 +24,7 @@ Url:            http://iptvx.org
 Source:         %{name}-%{version}.tar.gz
 
 # Build requirements
+BuildRequires:  obs-build
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:	pkgconfig(webkit2gtk-4.0)
 BuildRequires:	pkgconfig(libconfig)
