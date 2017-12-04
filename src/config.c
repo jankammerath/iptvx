@@ -60,11 +60,11 @@ char* iptvx_get_config_filename(){
 	if(util_file_exists("cfg/iptvx.conf")){
 		result = "cfg/iptvx.conf";
 		configFileFound = true;
-	}if(util_file_exists("~/.iptvx/iptvx.conf")){
-		result = "~/.iptvx/iptvx.conf";
-		configFileFound = true;
 	}if(util_file_exists("/etc/iptvx/iptvx.conf")){
 		result = "/etc/iptvx/iptvx.conf";
+		configFileFound = true;
+	}if(util_file_exists("~/.iptvx/iptvx.conf")){
+		result = "~/.iptvx/iptvx.conf";
 		configFileFound = true;
 	}
 
