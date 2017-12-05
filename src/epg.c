@@ -502,7 +502,7 @@ int iptvx_epg_load(void* nothing){
 		channel* current = &g_array_index(list,channel,c);
 
 		/* start the thread to capture xmltv epg */
-		iptvx_epg_load_channel(current,time(NULL),false);
+		iptvx_epg_load_channel(current,time(NULL)-18000,false);
 
 		/* update percentage status */
 		iptvx_epg_percentage_loaded = (int)((float)((float)c / (float)list->len) * 100);
@@ -538,7 +538,7 @@ int iptvx_epg_load(void* nothing){
 
 			if(max_stored < max_epg_time){
 				/* fetch epg data again */
-				iptvx_epg_load_channel(current,time(NULL),true);
+				iptvx_epg_load_channel(current,time(NULL)-18000,true);
 			}
 		}
 	}
