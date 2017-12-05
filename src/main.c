@@ -245,7 +245,7 @@ int update(void* nothing){
 							GINT_TO_POINTER(media_state));
 
 			/* wait a sec */
-			usleep(200000);
+			usleep(500000);
 		}
 	}
 
