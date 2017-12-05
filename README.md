@@ -20,19 +20,19 @@ The channel list allows quick browsing through the channels while displaying the
 
 ### Viewing all EPG information
 
-EPG display is large and its designed inspired by TV magazines. Channels are displayed horizontally and their programme vertically by time making it easy to quickly scroll through the programme.
+EPG display is large and it's design inspired by TV magazines. Channels are displayed horizontally and their programme vertically by time, making it easy to quickly scroll through the programme.
 
 ![The main view of the EPG in magazine style](/img/epg-view.png)
 
 ### EPG search functionality
 
-The programme search allows to quickly find favorite shows in the future and in the current programme. It eleminates the hassle of browing through the EPG to find interesting shows.
+The programme search allows to quickly find favourite shows in the future and in the current programme. It eleminates the hassle of browsing through the EPG to find interesting shows.
 
 ![Search functionality for the EPG](/img/programme-search.png)
 
 ## Where to obtain help
 
-If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx](https://github.com/jankammerath/iptvx/wiki) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
+If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx wiki](https://github.com/jankammerath/iptvx/wiki) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
 
 ## How to install
 
