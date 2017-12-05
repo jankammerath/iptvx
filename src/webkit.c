@@ -60,6 +60,14 @@ void* iptvx_get_overlay_ptr(){
   return &overlay_data;
 }
 
+/*
+  returns a char* with the current title of the webkit window
+  @return       char* with the title text
+*/
+const char* iptvx_get_overlay_title(){
+  return webkit_web_view_get_title(WEBKIT_WEB_VIEW(iptvx_gtk_webview));
+}
+
 /* 
   returns ptr to bool indicating if busy
   @return        true when budy, otherwise false

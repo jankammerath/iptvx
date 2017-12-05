@@ -89,6 +89,10 @@ app.control = {
 				$("#progresstime").hide();
 			}
 
+			/* set the window title */
+			document.title = data.channelName + ": "
+							+ data.programme.title;
+
 			/* set the programme basic information */
 			$("#showtitle").html(data.programme.title);
 			var showInfo = data.programme.category;

@@ -105,6 +105,14 @@ void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr){
     overlay_ready = ready_ptr;
 }
 
+/*
+    sets the title of the window
+    @param      title               const char defining the title text
+*/
+void iptvx_window_set_title(const char* title){
+    SDL_WM_SetCaption(title,0);
+}
+
 /* 
     creates the main window for this application 
     @param          width               defines width of the window
@@ -128,8 +136,10 @@ int iptvx_create_window(int width, int height,
     ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
     ctx.mutex = SDL_CreateMutex();
 
-    /* alternatively SDL_SWSURFACE can be used for CPU rendering */
-    int sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_RESIZABLE | SDL_DOUBLEBUF; 
+    /* alternatively SDL_SWSURFACE can be used for CPU rendering.
+     * Use SDL_RESIZABLE to make the window resizable.
+     */
+    int sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF; 
 
     if(window_fullscreen){
         sdl_video_options ^= SDL_FULLSCREEN;

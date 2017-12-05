@@ -58,6 +58,12 @@ window_size iptvx_window_get_size();
 */
 void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr);
 
+/*
+    sets the title of the window
+    @param      title               const char defining the title text
+*/
+void iptvx_window_set_title(const char* title);
+
 /* 
     creates the main window for this application 
     @param          width               defines width of the window

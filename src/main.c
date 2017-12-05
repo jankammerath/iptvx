@@ -244,8 +244,12 @@ int update(void* nothing){
 			g_idle_add((GSourceFunc)iptvx_js_update_state,
 							GINT_TO_POINTER(media_state));
 
+			/* get the window title from the overlay
+				and update our actual window rendered */
+			iptvx_window_set_title(iptvx_get_overlay_title());
+
 			/* wait a sec */
-			usleep(500000);
+			usleep(1000000);
 		}
 	}
 

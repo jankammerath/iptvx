@@ -27,6 +27,12 @@
 */
 extern void* iptvx_get_overlay_ptr();
 
+/*
+  returns a char* with the current title of the webkit window
+  @return       char* with the title text
+*/
+const char* iptvx_get_overlay_title();
+
 /* 
   returns ptr to bool indicating if busy
   @return        true when budy, otherwise false
