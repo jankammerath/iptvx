@@ -204,8 +204,7 @@ app.epg = {
 
                      var progStart = new Date(prog.start*1000);
                      var progStartTime = progStart.toTimeString().substring(0,5);
-                     channelHtml += "<div class=\"epgcalprogrammesidebar\" "
-                                 + "style=\"height:" + height + "px\">"
+                     channelHtml += "<div class=\"epgcalprogrammesidebar\">"
                                  + "<div class=\"epgcalprogrammestart\">" 
                                  + progStartTime + "</div></div>"
                                  + "<div class=\"epgcalprogrammetitle\">" 

@@ -62,15 +62,8 @@ body{
 .statusoffline{
   background-image: url(../img/nosignal.svg);
   background-size: 90px auto;
-  animation: statusofflineblink 1s steps(5, start) infinite;
   padding:82px 0px 30px 0px;
   background-repeat: no-repeat;
-}
-
-@keyframes statusofflineblink {
-  0% {opacity:0.3;}
-  50% {opacity:0.8;}
-  100% {opacity:0.3;}
 }
 
 #volume{
@@ -423,6 +416,7 @@ body{
 
 .epgcalprogrammesidebar{
   width:40px;
+  height:30px;
   background-color: rgba(57, 55, 101, 0.6);
   float:left;
   margin-right:10px;
@@ -430,7 +424,7 @@ body{
 
 .epgcalprogrammestart{
   font-size:12px;
-  margin:6px 0px 5px 3px;
+  margin:7px 0px 5px 5px;
 }
 
 .epgcalprogrammetitle{
@@ -447,7 +441,7 @@ body{
   margin-top: 10px;
   opacity: 0.5;
   line-height: 17px;
-  padding:0px 5px 5px 0px;
+  padding:0px 5px 5px 5px;
   overflow:hidden;
 }
 
