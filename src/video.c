@@ -25,6 +25,16 @@ libvlc_media_t *m;
 
 int video_width;
 int video_height;
+bool video_log_output;
+
+/*
+	defines whether log data should be written
+	@param 			output_log 		true will write output, false not
+*/
+void iptvx_video_set_log_output(bool output_log){
+	video_log_output = output_log;
+}
+
 
 /* 
 	initialises video playback and opens media 
@@ -33,13 +43,16 @@ int video_height;
 	@param 			height 			height of the video (to draw)
 */
 void iptvx_video_init(char *videofile, int width, int height){
-	const char * const vlc_args[] = {
-		"--no-xlib" /* tell VLC to not use Xlib */
-		/* "--quiet" */ /* don't throw all the stuff into STDOUT */
+	char* vlc_args[] = {
+		"--no-xlib", "--quiet" /* tell VLC to not use Xlib */
 	};
 
+	if(video_log_output){
+		vlc_args[1] = "";
+	}
+
 	/* create the VLC instance */
-	inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+	inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), (const char* const*)vlc_args);
 
 	/* open the defined media file */
 	m = libvlc_media_new_location(inst,videofile);

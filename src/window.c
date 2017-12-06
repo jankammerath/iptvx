@@ -133,7 +133,8 @@ int iptvx_create_window(int width, int height,
     bool is_fullscreen = false;
 
     /* create the SDL surface */
-    ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
+    int sdl_surface_option = SDL_HWSURFACE; // SDL_SWSURFACE for software
+    ctx.surf = SDL_CreateRGBSurface(sdl_surface_option, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
     ctx.mutex = SDL_CreateMutex();
 
     /* alternatively SDL_SWSURFACE can be used for CPU rendering.

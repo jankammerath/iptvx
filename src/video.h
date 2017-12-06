@@ -21,6 +21,12 @@
 
 #include <vlc/vlc.h>
 
+/*
+   defines whether log data should be written
+   @param         output_log     true will write output, false not
+*/
+void iptvx_video_set_log_output(bool output_log);
+
 /* 
    initialises video playback and opens media 
    @param         videofile      the video url to open

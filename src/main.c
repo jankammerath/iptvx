@@ -284,6 +284,10 @@ int main (int argc, char *argv[]){
 		bool window_fullscreen = iptvx_config_get_setting_bool("fullscreen",true);
 		iptvx_window_set_fullscreen(window_fullscreen);
 
+		/* get log output setting */
+		bool video_log = iptvx_config_get_setting_bool("stream_log_output",false);
+		iptvx_video_set_log_output(video_log);
+
 		/* get the hours to store in the epg */
 		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
 		iptvx_epg_set_storage_hours(epg_hours);
