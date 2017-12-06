@@ -202,7 +202,13 @@ app.epg = {
                         descText = prog.description.replace(/\n/g, "<br />");
                      }
 
-                     channelHtml += "<div class=\"epgcalprogrammetitle\">" 
+                     var progStart = new Date(prog.start*1000);
+                     var progStartTime = progStart.toTimeString().substring(0,5);
+                     channelHtml += "<div class=\"epgcalprogrammesidebar\" "
+                                 + "style=\"height:" + height + "px\">"
+                                 + "<div class=\"epgcalprogrammestart\">" 
+                                 + progStartTime + "</div></div>"
+                                 + "<div class=\"epgcalprogrammetitle\">" 
                                  + prog.title + "</div>"
                                  + "<div class=\"epgcalprogrammedescription\">" 
                                  + descText + "</div>";

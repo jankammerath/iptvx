@@ -414,16 +414,28 @@ body{
   left: 0px;
   background-color: rgba(57, 55, 101, 0.42);
   box-sizing: border-box;
-  padding: 0px 10px 0px 10px;
+  padding: 0px 10px 0px 0px;
   width: 173px;
   border: 1px solid rgb(63, 62, 105);
   font-size: 15px;
   overflow: hidden;
 }
 
+.epgcalprogrammesidebar{
+  width:40px;
+  background-color: rgba(57, 55, 101, 0.6);
+  float:left;
+  margin-right:10px;
+}
+
+.epgcalprogrammestart{
+  font-size:12px;
+  margin:6px 0px 5px 3px;
+}
+
 .epgcalprogrammetitle{
   margin-top: 5px;
-  width:145px;
+  width:105px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;  
@@ -431,10 +443,12 @@ body{
 
 .epgcalprogrammedescription{
   white-space: normal;
-  font-size: 13px;
+  font-size: 11px;
   margin-top: 10px;
   opacity: 0.5;
   line-height: 17px;
+  padding:0px 5px 5px 0px;
+  overflow:hidden;
 }
 
 #find{
