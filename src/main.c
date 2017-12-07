@@ -51,6 +51,23 @@ bool main_epg_ready;
 /* the thread polling and pushing updates */
 SDL_Thread* update_thread;
 
+/* 
+	handles any mouse move, scroll or click event
+	@param 		mouse_event_type	0 = move, 1 = button 
+	@param 		mouse_x 			x pos of the cursor
+	@param 		mouse_y 			y pos of the cursor
+	@param 		mouse_button		0 = left, 1 = middle, 2 = right
+*/
+void mouse_event(int mouse_event_type, int mouse_x, int mouse_y, int mouse_button){	
+	if(mouse_event_type == 0){
+		/* the mouse was moved */
+		// printf("mouse moved to %d,%d\n",mouse_x,mouse_y);
+	}if(mouse_event_type == 1){
+		/* the mouse was clicked */
+		// printf("mouse clicked button #%d to %d,%d\n",mouse_button,mouse_x,mouse_y);
+	}
+}
+
 /* handles any key down event */
 void keydown(int keyCode){
 	if(keyCode == 279){
@@ -317,9 +334,8 @@ int main (int argc, char *argv[]){
 
 			/* create the main window which 
 				will lock this main thread */
-			iptvx_create_window(main_window_width,
-								main_window_height,
-								keydown,window_ready);
+			iptvx_create_window(main_window_width,main_window_height,
+								keydown,mouse_event,window_ready);
 		}else{
 			/* throw an error when we don't have the app */
 			printf("App path not found or inaccessible\n");

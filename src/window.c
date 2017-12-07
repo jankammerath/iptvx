@@ -49,6 +49,12 @@ struct window_size{
     int height;
 } typedef window_size;
 
+/* callback function types */
+typedef void keydown_callback(int keyCode);
+typedef void mouseevent_callback(int mouse_event_type, int mouse_x, 
+                                int mouse_y, int mouse_button);
+typedef void startplay_callback(void*);
+
 /* window variables */
 SDL_Thread *window_thread;
 bool window_terminate;
@@ -121,8 +127,9 @@ void iptvx_window_set_title(const char* title){
     @param          startplay_callback   callback func to call when playback can start
 */
 int iptvx_create_window(int width, int height, 
-                    void (*keydown_callback)(int),
-                    void (*startplay_callback)(void*) ){
+                    keydown_callback* keydown_func,
+                    mouseevent_callback* mouseevent_func,
+                    startplay_callback* startplay_func){
     SDL_Surface *screen, *overlay;
     SDL_Event event;
 
@@ -155,7 +162,7 @@ int iptvx_create_window(int width, int height,
     SDL_WM_SetCaption("iptvx",0);
 
     /* exec callback to call for player */
-    (*startplay_callback)(&ctx);
+    startplay_func(&ctx);
 
     while(!window_terminate){
         int keyPressed;
@@ -168,6 +175,25 @@ int iptvx_create_window(int width, int height,
                 case SDL_QUIT:
                     window_terminate = true;
                     break;
+                case SDL_MOUSEMOTION:
+                    /* the computer mouse was moved 
+
+                    Used as a mask when testing buttons in buttonstate
+                    Button 1:    Left mouse button
+                    Button 2:    Middle mouse button
+                    Button 3:    Right mouse button
+                    Button 4:    Mouse wheel up   (may also be a real button)
+                    Button 5:    Mouse wheel down (may also be a real button)
+
+                    */
+                    mouseevent_func(0,event.motion.x,event.motion.y,
+                                    event.motion.state);
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    /* call the handler for clicks (same as motion above) */
+                    mouseevent_func(1,event.motion.x,event.motion.y,
+                                    event.motion.state);
+                    break;
                 case SDL_KEYDOWN:
                     keyPressed = event.key.keysym.sym;
 
@@ -177,7 +203,7 @@ int iptvx_create_window(int width, int height,
                         SDL_WM_ToggleFullScreen(screen);
                     }
 
-                    (*keydown_callback)(keyPressed);
+                    keydown_func(keyPressed);
                     break;
             }
 

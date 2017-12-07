@@ -34,6 +34,16 @@ struct window_size{
     int height;
 } typedef window_size;
 
+/* callback function types 
+
+  Check the doc on how to use them:
+  http://www.iso-9899.info/wiki/Callback
+*/
+typedef void keydown_callback(int keyCode);
+typedef void mouseevent_callback(int mouse_event_type, int mouse_x, 
+                                int mouse_y, int mouse_button);
+typedef void startplay_callback(void*);
+
 /*
     Initialises window and graphics library
 */
@@ -71,8 +81,10 @@ void iptvx_window_set_title(const char* title);
     @param          keydown_callback     callback func when key down event
     @param          startplay_callback   callback func to call when playback can start
 */
-int iptvx_create_window(int width, int height,
-    void (*keydown_callback)(int),void (*startplay_callback)(void*));
+int iptvx_create_window(int width, int height, 
+                    keydown_callback* keydown_func,
+                    mouseevent_callback* mouseevent_func,
+                    startplay_callback* startplay_func);
 
 /*
     locks the window surface and mutex
