@@ -176,16 +176,7 @@ int iptvx_create_window(int width, int height,
                     window_terminate = true;
                     break;
                 case SDL_MOUSEMOTION:
-                    /* the computer mouse was moved 
-
-                    Used as a mask when testing buttons in buttonstate
-                    Button 1:    Left mouse button
-                    Button 2:    Middle mouse button
-                    Button 3:    Right mouse button
-                    Button 4:    Mouse wheel up   (may also be a real button)
-                    Button 5:    Mouse wheel down (may also be a real button)
-
-                    */
+                    /* the computer mouse was moved */
                     mouseevent_func(0,event.motion.x,event.motion.y,
                                     event.motion.state);
                     break;

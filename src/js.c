@@ -22,6 +22,7 @@
 
 WebKitWebView* js_view;
 void (*control_message_callback)(void*);
+int iptvx_js_api_ready = false;
 
 static void iptvx_control_message_received_cb (WebKitUserContentManager *manager,
                                                  WebKitJavascriptResult *message,
@@ -86,6 +87,9 @@ void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(
 
    /* fire the js object definition */
    webkit_web_view_run_javascript(js_view,jsObject,NULL,NULL,NULL);
+
+   /* set api to ready */
+   iptvx_js_api_ready = true;
 }
 
 /*
@@ -158,4 +162,41 @@ void iptvx_js_sendkey(int keyCode){
         "window.dispatchEvent(e);",keyCode,keyCode);
 
   webkit_web_view_run_javascript(js_view,scriptKeyEvent,NULL,NULL,NULL);
+}
+
+/* 
+  handles any mouse move, scroll or click event
+  @param    mouse_event_type  0 = move, 1 = button 
+  @param    mouse_x       x pos of the cursor
+  @param    mouse_y       y pos of the cursor
+  @param    mouse_button    0 = left, 1 = middle, 2 = right
+*/
+void iptvx_js_sendmouse(GArray* mouse_args){
+  char scriptMouseEvent[512];
+
+  /* only process when api ready */
+  if(iptvx_js_api_ready == true){
+    /*
+      Button 1:    Left mouse button
+      Button 2:    Middle mouse button
+      Button 3:    Right mouse button
+      Button 4:    Mouse wheel up
+      Button 5:    Mouse wheel down
+    */
+    if(mouse_args->data[0] == 0){
+      /* this is a mouse move event */
+      sprintf(scriptMouseEvent,"var e = new Event(\"mousemove\");"
+          "e.clientX=%d;e.clientY=%d;e.button=%d;"
+          "e.cancelable=true;e.bubbles=true;"
+          "window.dispatchEvent(e);",mouse_args->data[1],mouse_args->data[2],mouse_args->data[3]);
+      webkit_web_view_run_javascript(js_view,scriptMouseEvent,NULL,NULL,NULL);
+    }if(mouse_args->data[0] == 1){
+      /* this is a mouse button up event */
+      sprintf(scriptMouseEvent,"var e = new Event(\"mouseup\");"
+          "e.clientX=%d;e.clientY=%d;e.button=%d;"
+          "e.cancelable=true;e.bubbles=true;"
+          "window.dispatchEvent(e);",mouse_args->data[1],mouse_args->data[2],mouse_args->data[3]);
+      webkit_web_view_run_javascript(js_view,scriptMouseEvent,NULL,NULL,NULL);
+    }
+  }
 }

@@ -51,21 +51,16 @@ bool main_epg_ready;
 /* the thread polling and pushing updates */
 SDL_Thread* update_thread;
 
-/* 
-	handles any mouse move, scroll or click event
-	@param 		mouse_event_type	0 = move, 1 = button 
-	@param 		mouse_x 			x pos of the cursor
-	@param 		mouse_y 			y pos of the cursor
-	@param 		mouse_button		0 = left, 1 = middle, 2 = right
-*/
-void mouse_event(int mouse_event_type, int mouse_x, int mouse_y, int mouse_button){	
-	if(mouse_event_type == 0){
-		/* the mouse was moved */
-		// printf("mouse moved to %d,%d\n",mouse_x,mouse_y);
-	}if(mouse_event_type == 1){
-		/* the mouse was clicked */
-		// printf("mouse clicked button #%d to %d,%d\n",mouse_button,mouse_x,mouse_y);
-	}
+/* handles mouse events */
+void mouse_event(int mouse_event_type, int mouse_x, int mouse_y, int mouse_button){
+	GArray* mouseEvent = g_array_new(true,true,4);
+	g_array_append_val(mouseEvent,mouse_event_type);
+	g_array_append_val(mouseEvent,mouse_x);
+	g_array_append_val(mouseEvent,mouse_y);
+	g_array_append_val(mouseEvent,mouse_button);
+
+	g_idle_add_full(G_PRIORITY_DEFAULT_IDLE,
+			(GSourceFunc)iptvx_js_sendmouse,mouseEvent,NULL);
 }
 
 /* handles any key down event */

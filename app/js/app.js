@@ -38,6 +38,14 @@ var app = {
 		$(document).ready(function(){app.resize();});
 		$(window).resize(function(){app.resize();});
 
+		/* attach mouse ups */
+		$(window).mousemove(function(event){
+			$("#debuginfo").html("mouse moved!");
+		});
+		$(window).mouseup(function(event){
+			$("#debuginfo").html("mouse button up!");
+		});
+
 		/* attach key downs */
 		$(window).keydown(function(event){
 			var keyCode = event.which;

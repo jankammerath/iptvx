@@ -63,4 +63,13 @@ void iptvx_js_set_epg_data(GString* epg_data);
 */
 void iptvx_js_sendkey(int keyCode);
 
+/* 
+  handles any mouse move, scroll or click event
+  @param    mouse_event_type  0 = move, 1 = button 
+  @param    mouse_x       x pos of the cursor
+  @param    mouse_y       y pos of the cursor
+  @param    mouse_button    0 = left, 1 = middle, 2 = right
+*/
+void iptvx_js_sendmouse(int mouse_event_type, int mouse_x, int mouse_y, int mouse_button);
+
 #endif
