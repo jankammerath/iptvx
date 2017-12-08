@@ -174,6 +174,11 @@ void iptvx_js_sendkey(int keyCode){
 void iptvx_js_sendmouse(GArray* mouse_args){
   char scriptMouseEvent[512];
 
+  int mouse_event_type = g_array_index(mouse_args,int,0);
+  int mouse_x = g_array_index(mouse_args,int,1);
+  int mouse_y = g_array_index(mouse_args,int,2);
+  int mouse_button = g_array_index(mouse_args,int,3);
+
   /* only process when api ready */
   if(iptvx_js_api_ready == true){
     /*
@@ -183,19 +188,19 @@ void iptvx_js_sendmouse(GArray* mouse_args){
       Button 4:    Mouse wheel up
       Button 5:    Mouse wheel down
     */
-    if(mouse_args->data[0] == 0){
+    if(mouse_event_type == 0){
       /* this is a mouse move event */
       sprintf(scriptMouseEvent,"var e = new Event(\"mousemove\");"
           "e.clientX=%d;e.clientY=%d;e.button=%d;"
           "e.cancelable=true;e.bubbles=true;"
-          "window.dispatchEvent(e);",mouse_args->data[1],mouse_args->data[2],mouse_args->data[3]);
+          "window.dispatchEvent(e);",mouse_x,mouse_y,mouse_button);
       webkit_web_view_run_javascript(js_view,scriptMouseEvent,NULL,NULL,NULL);
-    }if(mouse_args->data[0] == 1){
+    }if(mouse_event_type == 1){
       /* this is a mouse button up event */
       sprintf(scriptMouseEvent,"var e = new Event(\"mouseup\");"
           "e.clientX=%d;e.clientY=%d;e.button=%d;"
           "e.cancelable=true;e.bubbles=true;"
-          "window.dispatchEvent(e);",mouse_args->data[1],mouse_args->data[2],mouse_args->data[3]);
+          "window.dispatchEvent(e);",mouse_x,mouse_y,mouse_button);
       webkit_web_view_run_javascript(js_view,scriptMouseEvent,NULL,NULL,NULL);
     }
   }
