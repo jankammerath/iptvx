@@ -48,6 +48,17 @@ app.mouse = {
 					app.adjustVolume(iptvx.volume-10);
 				}
 			}
+
+			/* scroll EPG with the mouse wheel */
+			if(app.epg.visible == true && (event.button == 4 || event.button == 5)){
+				if(event.button == 4){
+					/* volume up */
+					app.epg.handleKey(38);
+				}if(event.button == 5){
+					/* volume down */
+					app.epg.handleKey(40);
+				}
+			}
 		});
 	},
 
