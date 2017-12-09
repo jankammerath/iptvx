@@ -85,4 +85,10 @@ void iptvx_video_stop();
 */
 void iptvx_video_free();
 
+/*
+   Gets the available audio tracks
+   @return  GArray containing audio tracks
+*/
+GArray* iptvx_video_get_audiotracks();
+
 #endif

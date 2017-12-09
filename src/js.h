@@ -63,6 +63,12 @@ void iptvx_js_set_epg_data(GString* epg_data);
 */
 void iptvx_js_sendkey(int keyCode);
 
+/*
+  Sets the audio track information (name and id)
+  @param    tracklist         GArray with audiotrack structs
+*/
+void iptvx_js_set_audiotracks(GArray* tracklist);
+
 /* 
   handles any mouse move, scroll or click event
   @param    mouse_event_type  0 = move, 1 = button 

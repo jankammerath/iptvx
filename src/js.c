@@ -17,8 +17,15 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <json-c/json.h>
 #include <webkit2/webkit2.h>
 #include <JavaScriptCore/JavaScript.h>
+
+struct audiotrack{
+  int       id;
+  GString*  name;
+  bool      active;
+} typedef audiotrack;
 
 WebKitWebView* js_view;
 void (*control_message_callback)(void*);
@@ -78,7 +85,7 @@ void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(
    webkit_user_content_manager_register_script_message_handler(user_content, "iptvxexec");
 
    /* define the basic js object */
-   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], "
+   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], trackList: [], "
                      " channel: 0, state: 0, volume: 100, "
                      " exec: function(cmd){ "
                      " window.webkit.messageHandlers.iptvxexec.postMessage(cmd); "
@@ -146,6 +153,43 @@ void iptvx_js_set_epg_data(GString* epg_data){
   webkit_web_view_run_javascript(js_view,jsCode->str,NULL,NULL,NULL);
   g_string_free(jsCode,true);
   g_string_free(epg_data,true);
+}
+
+/*
+  Sets the audio track information (name and id)
+  @param    tracklist         GArray with audiotrack structs
+*/
+void iptvx_js_set_audiotracks(GArray* tracklist){
+  if(iptvx_js_api_ready == true){
+    /* the json array with the audio track list */
+    json_object* j_tracklist = json_object_new_array();
+
+    for(int i=0;i<tracklist->len;i++){
+      audiotrack atrack = g_array_index(tracklist,audiotrack,i);
+
+      json_object* j_audiotrack = json_object_new_object();
+      json_object_object_add(j_audiotrack,"name",
+                json_object_new_string(atrack.name->str));
+      json_object_object_add(j_audiotrack,"id",
+                json_object_new_int(atrack.id));
+      if(atrack.active == true){
+        json_object_object_add(j_audiotrack,"active",
+                json_object_new_boolean(atrack.active));
+      }else{
+        json_object_object_add(j_audiotrack,"active",
+                json_object_new_boolean(atrack.active));
+      }
+      json_object_array_add(j_tracklist,j_audiotrack);
+    }
+
+    /* get the json result data as string */
+    GString* tracklist_json = g_string_new
+          (json_object_to_json_string(j_tracklist));
+
+    GString* jsCode = g_string_new("");
+    g_string_printf(jsCode,"iptvx.trackList = %s;",tracklist_json->str);
+    webkit_web_view_run_javascript(js_view,jsCode->str,NULL,NULL,NULL);
+  }
 }
 
 /*

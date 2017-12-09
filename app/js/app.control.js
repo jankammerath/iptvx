@@ -39,6 +39,9 @@ app.control = {
 			if(iptvx.state == 3){
 				/* is playing, hide load info */
 				$("#status").hide();
+
+				/* update video config */
+				app.streamconfig.update();
 			}if(iptvx.state == 0 
 				|| iptvx.state == 1
 				|| iptvx.state == 2){

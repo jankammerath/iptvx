@@ -122,6 +122,11 @@ body{
   z-index:1;
 }
 
+#videoconfig{
+  top:5px;
+  height:50px;
+}
+
 #list{
   left: -370px;
   top: 20px;

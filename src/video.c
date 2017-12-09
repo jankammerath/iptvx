@@ -18,6 +18,7 @@
 
 #include <vlc/vlc.h>
 #include <unistd.h>
+#include <glib.h>
 
 libvlc_instance_t * inst;
 libvlc_media_player_t *mp;
@@ -26,6 +27,12 @@ libvlc_media_t *m;
 int video_width;
 int video_height;
 bool video_log_output;
+
+struct audiotrack{
+	int 		id;
+	GString*	name;
+	bool		active;
+} typedef audiotrack;
 
 /*
 	defines whether log data should be written
@@ -147,4 +154,52 @@ void iptvx_video_free(){
 	libvlc_media_player_stop (mp);
 	libvlc_media_player_release (mp);
 	libvlc_release (inst);	
+}
+
+/*
+	Gets the available audio tracks
+	@return 	GArray containing audio tracks
+*/
+GArray* iptvx_video_get_audiotracks(){
+	GArray* result = g_array_new(false,true,sizeof(audiotrack));
+	int player_state = iptvx_video_get_state();
+
+	/* only get data when playing or paused */
+	if(player_state == 3 || player_state == 4){
+		/* get the currently active track */
+		int active_track_id = libvlc_audio_get_track(mp);
+
+		/* get the number of tracks */
+		int track_count = libvlc_audio_get_track_count(mp);
+
+		if(track_count > 0){
+			/* get the current audio tracks */
+			libvlc_track_description_t* tdesc = libvlc_audio_get_track_description(mp);
+
+			audiotrack track[track_count];
+			track[0].name = g_string_new(tdesc->psz_name);
+			track[0].id = tdesc->i_id;
+			track[0].active = false;
+			if(track[0].id == active_track_id){
+				/* track is currently active */
+				track[0].active = true;
+			}
+
+			g_array_append_val(result,track[0]);
+
+			for(int i=1;i<track_count;i++){
+				tdesc = tdesc->p_next;
+				track[i].name = g_string_new(tdesc->psz_name);
+				track[i].id = tdesc->i_id;
+				track[i].active = false;
+				if(track[i].id == active_track_id){
+					/* track is currently active */
+					track[i].active = true;
+				}
+				g_array_append_val(result,track[i]);
+			}
+		}
+	}
+
+	return result;
 }
