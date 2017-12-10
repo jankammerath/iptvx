@@ -158,6 +158,18 @@ void control_message_received(void* message){
 			g_idle_add((GSourceFunc)iptvx_js_update_volume,
 							GINT_TO_POINTER(volume_percent));
 		}
+
+		if(g_ascii_strncasecmp(ctlMsg[0],"set-audiotrack",10)==0){
+			int track_id = g_ascii_strtoll(ctlMsg[1],NULL,0);
+			g_idle_add((GSourceFunc)iptvx_video_set_audiotrack,
+								GINT_TO_POINTER(track_id));
+		}
+
+		if(g_ascii_strncasecmp(ctlMsg[0],"set-subtitle",10)==0){
+			int subtitle_id = g_ascii_strtoll(ctlMsg[1],NULL,0);
+			g_idle_add((GSourceFunc)iptvx_video_set_subtitle,
+								GINT_TO_POINTER(subtitle_id));
+		}
 	}
 
 	/* free control message */

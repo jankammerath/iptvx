@@ -30,7 +30,7 @@ app.control = {
 		app.control.update();
 
 		/* update from epg every second */
-		setInterval(app.control.update,500);
+		setInterval(app.control.update,200);
 	},
 
 	/* called by listen and updates from the epg */

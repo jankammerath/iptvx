@@ -19,11 +19,17 @@
 app.streamconfig = {
    visible: false,
    animating: false,
+   count: 0,
    selected: 0,
 
    update: function(){
       if(typeof(iptvx)=="object"){
          var html = "";
+
+         /* reset element counter */
+         app.streamconfig.count = iptvx.trackList.length 
+                              + iptvx.subtitleList.length;
+         var trackid = 0;
 
          /* get all audio tracks available */
          for(var i=0;i<iptvx.trackList.length;i++){
@@ -34,13 +40,16 @@ app.streamconfig = {
                classList += " configitemactive";
             }
 
-            if(app.streamconfig.selected == i){
+            if(app.streamconfig.selected == trackid){
                classList += " configitemselected";
             }
 
-            html += "<div class=\""+classList+"\" "
+            html += "<div id=\"track" + trackid + "\" "
+                  + "class=\""+classList+"\" "
+                  + "data-tracktype=\"audiotrack\" "
                   + "data-trackid=\"" + track.id + "\">"
                   + track.name + "</div>";
+            trackid++;
          }
 
          /* get all subtitle tracks available */
@@ -51,9 +60,17 @@ app.streamconfig = {
             if(subtitle.active == true){
                classList += " configitemactive";
             }
-            html += "<div class=\""+classList+"\" "
+
+            if(app.streamconfig.selected == trackid){
+               classList += " configitemselected";
+            }
+
+            html += "<div id=\"track" + trackid + "\" " 
+                  + "class=\""+classList+"\" "
+                  + "data-tracktype=\"subtitle\" "
                   + "data-trackid=\"" + subtitle.id + "\">"
                   + subtitle.name + "</div>";
+            trackid++;
          }
 
          /* smash html into the container */
@@ -62,9 +79,53 @@ app.streamconfig = {
       }
    },
 
+   /* handles switching audio tracks and subtitles */
+   switchTrack: function(){
+      var trackid = 0;
+
+      /* go through all audio tracks to check for selected */
+      for(var i=0;i<iptvx.trackList.length;i++){
+         if(trackid == app.streamconfig.selected){
+            var at_id = $("#track"+trackid).attr("data-trackid");
+            app.exec("set-audiotrack "+at_id);
+         }
+         trackid++;
+      }
+
+      /* go through all subtitles to check for selected */
+      for(var i=0;i<iptvx.subtitleList.length;i++){
+         if(trackid == app.streamconfig.selected){
+            var st_id = $("#track"+trackid).attr("data-trackid");
+            app.exec("set-subtitle "+st_id);
+         }
+         trackid++;
+      }
+   },
+
    /* handles key input */
    handleKey: function(keyCode){
+      /* enter key selects track to switch */
+      if(keyCode == 13){
+         app.streamconfig.switchTrack();
+      }
 
+      /* up key */
+      if(keyCode == 38){
+         if(app.streamconfig.selected == 0){
+            app.streamconfig.selected = app.streamconfig.count-1;
+         }else{
+            app.streamconfig.selected--;
+         }
+      }
+
+      /* down key */
+      if(keyCode == 40){
+         if(app.streamconfig.selected == app.streamconfig.count-1){
+            app.streamconfig.selected = 0;
+         }else{
+            app.streamconfig.selected++;
+         } 
+      }      
    },
 
    /* handles the resize of the document */

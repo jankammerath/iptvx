@@ -36,6 +36,18 @@ void iptvx_video_set_log_output(bool output_log);
 void iptvx_video_init(char *videofile, int width, int height);
 
 /*
+   Sets the audio track to use in playback
+   @param      track_id       id of the audio track in the stream
+*/
+void iptvx_video_set_audiotrack(int track_id);
+
+/*
+   Sets the audio track to use in playback
+   @param      track_id       id of the audio track in the stream
+*/
+void iptvx_video_set_subtitle(int subtitle_id);
+
+/*
    Sets the audio volume of the playback in percent
    @param         percent        percentage value of the audio volume
 */

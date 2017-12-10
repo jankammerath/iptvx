@@ -35,7 +35,7 @@ app.mouse = {
 
 				/* show EPG when click into empty space */
 				if(document.elementFromPoint(event.clientX,event.clientY).tagName == "HTML"
-					&& event.button == 1){
+					&& event.button == 3){
 					/* left mouse click in empty space */
 					app.list.toggle(true);
 					app.find.toggle(true);
