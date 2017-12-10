@@ -19,6 +19,7 @@
 app.streamconfig = {
    visible: false,
    animating: false,
+   selected: 0,
 
    update: function(){
       if(typeof(iptvx)=="object"){
@@ -32,6 +33,11 @@ app.streamconfig = {
             if(track.active == true){
                classList += " configitemactive";
             }
+
+            if(app.streamconfig.selected == i){
+               classList += " configitemselected";
+            }
+
             html += "<div class=\""+classList+"\" "
                   + "data-trackid=\"" + track.id + "\">"
                   + track.name + "</div>";
@@ -54,6 +60,11 @@ app.streamconfig = {
          $("#streamconfig").html(html);
          app.streamconfig.resize();
       }
+   },
+
+   /* handles key input */
+   handleKey: function(keyCode){
+
    },
 
    /* handles the resize of the document */

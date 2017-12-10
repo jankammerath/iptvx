@@ -137,6 +137,11 @@ var app = {
 					app.epg.handleKey(keyCode);
 				}
 
+				/* allow stream config to handle keys */
+				if(app.streamconfig.visible){
+					app.streamconfig.handleKey(keyCode);
+				}
+
 				/* allow find to handle keys */
 				if(app.find.visible){
 					app.find.handleKey(keyCode);
