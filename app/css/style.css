@@ -176,7 +176,7 @@ body{
   width: 60px;
   height: 60px;
   margin-right: 10px;
-  background-size: 50px 50px;
+  background-size: 50px auto;
   background-repeat: no-repeat;
   float: left;
   background-position:center center;
@@ -391,7 +391,7 @@ body{
   border-radius:2px;
   float:left;
   margin-right:10px;
-  background-size: 20px 20px;
+  background-size: 20px auto;
   background-repeat: no-repeat;
   background-position:center center;
 }
