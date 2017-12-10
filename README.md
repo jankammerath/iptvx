@@ -30,6 +30,12 @@ The programme search allows to quickly find favourite shows in the future and in
 
 ![Search functionality for the EPG](/img/programme-search.png)
 
+### Subtitles and audio tracks
+
+Through a menu it is possible to quickly select the audio track and subtitles available within the stream. They can be switched without any interruption of the playback.
+
+![Subtitle and audio track configuration](/img/stream-config.png)
+
 ## Where to obtain help
 
 If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx wiki](https://github.com/jankammerath/iptvx/wiki) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
