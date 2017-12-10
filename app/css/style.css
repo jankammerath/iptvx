@@ -123,8 +123,8 @@ body{
 
 #streamconfig{
   top:20px;
-  right:-300px;
-  width:180px;
+  right:-340px;
+  width:220px;
   padding:0px 5px 10px 10px;
   opacity:0;
 }
@@ -135,6 +135,9 @@ body{
   color:#ffffff;
   background-repeat:no-repeat;
   opacity:0.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .configitemactive{
@@ -143,7 +146,7 @@ body{
 
 #streamconfig .subtitleitem{
   background-size: 22px auto;
-  background-position: 8px 13px;
+  background-position: 8px 11px;
   background-image: url('../img/subtitle.svg');
 }
 

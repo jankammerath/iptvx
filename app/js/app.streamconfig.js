@@ -51,14 +51,13 @@ app.streamconfig = {
 
          /* smash html into the container */
          $("#streamconfig").html(html);
+         app.streamconfig.resize();
       }
    },
 
    /* handles the resize of the document */
    resize: function(){
-      var configTop = ($(window).innerHeight()/2)-($("#streamconfig").outerHeight()/2);
-      if(configTop<0){configTop=10;}
-      $("#streamconfig").css("top",configTop+"px");     
+      /* in case the ui needs to resize */
    },
 
    /* toggles the streamconfig ui */

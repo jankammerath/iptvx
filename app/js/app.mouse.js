@@ -39,6 +39,7 @@ app.mouse = {
 					app.list.toggle(true);
 					app.find.toggle(true);
 					app.control.toggle(true);
+					app.streamconfig.toggle(true);
 					app.epg.toggle();
 				}
 
