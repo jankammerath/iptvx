@@ -20,43 +20,49 @@ app.mouse = {
 	init: function(){
 		/* attach mouse ups */
 		$(window).mousemove(function(event){
-			app.mouse.checkControlHover(event.clientX,event.clientY);
-			app.mouse.checkListHover(event.clientX,event.clientY);
+			/* only check hover when EPG is ready */
+			if(app.epg.ready){
+				app.mouse.checkControlHover(event.clientX,event.clientY);
+				app.mouse.checkListHover(event.clientX,event.clientY);
+			}
 		});
 		$(window).mouseup(function(event){
-			/* allow mouse scroll wheel for channel list */
-			app.mouse.checkChannelScroll(event.clientX,event.clientY,event.button);
+			/* only allow elements when EPG is ready */
+			if(app.epg.ready){
+				/* allow mouse scroll wheel for channel list */
+				app.mouse.checkChannelScroll(event.clientX,event.clientY,event.button);
 
-			/* show EPG when click into empty space */
-			if(document.elementFromPoint(event.clientX,event.clientY).tagName == "HTML"
-				&& event.button == 1){
-				/* left mouse click in empty space */
-				app.list.toggle(true);
-				app.find.toggle(true);
-				app.control.toggle(true);
-				app.epg.toggle();
-			}
-
-			/* adjust volume when scroll wheel is used in empty space */
-			if(document.elementFromPoint(event.clientX,event.clientY).tagName == "HTML"
-				&& (event.button == 4 || event.button == 5)){
-				if(event.button == 4){
-					/* volume up */
-					app.adjustVolume(iptvx.volume+10);
-				}if(event.button == 5){
-					/* volume down */
-					app.adjustVolume(iptvx.volume-10);
+				/* show EPG when click into empty space */
+				if(document.elementFromPoint(event.clientX,event.clientY).tagName == "HTML"
+					&& event.button == 1){
+					/* left mouse click in empty space */
+					app.list.toggle(true);
+					app.find.toggle(true);
+					app.control.toggle(true);
+					app.epg.toggle();
 				}
-			}
 
-			/* scroll EPG with the mouse wheel */
-			if(app.epg.visible == true && (event.button == 4 || event.button == 5)){
-				if(event.button == 4){
-					/* volume up */
-					app.epg.handleKey(38);
-				}if(event.button == 5){
-					/* volume down */
-					app.epg.handleKey(40);
+				/* adjust volume when scroll wheel is used in empty space */
+				if(document.elementFromPoint(event.clientX,event.clientY).tagName == "HTML"
+					&& (event.button == 4 || event.button == 5)){
+					if(event.button == 4){
+						/* volume up */
+						app.adjustVolume(iptvx.volume+10);
+					}if(event.button == 5){
+						/* volume down */
+						app.adjustVolume(iptvx.volume-10);
+					}
+				}
+
+				/* scroll EPG with the mouse wheel */
+				if(app.epg.visible == true && (event.button == 4 || event.button == 5)){
+					if(event.button == 4){
+						/* volume up */
+						app.epg.handleKey(38);
+					}if(event.button == 5){
+						/* volume down */
+						app.epg.handleKey(40);
+					}
 				}
 			}
 		});
