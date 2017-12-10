@@ -21,62 +21,107 @@ app.streamconfig = {
    animating: false,
    count: 0,
    selected: 0,
+   channelId: -1,
+   hash: "",
 
+   /* updates the list if necessary */
    update: function(){
       if(typeof(iptvx)=="object"){
-         var html = "";
-
-         /* reset element counter */
-         app.streamconfig.count = iptvx.trackList.length 
-                              + iptvx.subtitleList.length;
-         var trackid = 0;
-
-         /* get all audio tracks available */
-         for(var i=0;i<iptvx.trackList.length;i++){
-            var track = iptvx.trackList[i];
-
-            var classList = "configitem audiotrackitem";
-            if(track.active == true){
-               classList += " configitemactive";
-            }
-
-            if(app.streamconfig.selected == trackid){
-               classList += " configitemselected";
-            }
-
-            html += "<div id=\"track" + trackid + "\" "
-                  + "class=\""+classList+"\" "
-                  + "data-tracktype=\"audiotrack\" "
-                  + "data-trackid=\"" + track.id + "\">"
-                  + track.name + "</div>";
-            trackid++;
+         /* check if an update is required */
+         var chanId = iptvx.channel;
+         var newCount = iptvx.trackList.length 
+                        + iptvx.subtitleList.length;
+         if(app.streamconfig.channelId != chanId 
+            || app.streamconfig.count != newCount
+            || app.streamconfig.getHash() != app.streamconfig.hash){
+            /* there is an update, so render it */
+            app.streamconfig.render();
          }
-
-         /* get all subtitle tracks available */
-         for(var i=0;i<iptvx.subtitleList.length;i++){
-            var subtitle = iptvx.subtitleList[i];
-
-            var classList = "configitem subtitleitem";
-            if(subtitle.active == true){
-               classList += " configitemactive";
-            }
-
-            if(app.streamconfig.selected == trackid){
-               classList += " configitemselected";
-            }
-
-            html += "<div id=\"track" + trackid + "\" " 
-                  + "class=\""+classList+"\" "
-                  + "data-tracktype=\"subtitle\" "
-                  + "data-trackid=\"" + subtitle.id + "\">"
-                  + subtitle.name + "</div>";
-            trackid++;
-         }
-
-         /* smash html into the container */
-         $("#streamconfig").html(html);
-         app.streamconfig.resize();
       }
+   },
+
+   getHash: function(){
+      var result = iptvx.trackList.length 
+                  + ";" + iptvx.subtitleList.length;
+      var trackid = 0;
+
+      /* go through all audio tracks to check for selected */
+      for(var i=0;i<iptvx.trackList.length;i++){
+         if(iptvx.trackList[i].active == true){
+            result += ";" + trackid;
+         }
+         trackid++;
+      }
+
+      /* go through all subtitles to check for selected */
+      for(var i=0;i<iptvx.subtitleList.length;i++){
+         if(iptvx.subtitleList[i].active == true){
+            result += ";" + trackid;
+         }
+         trackid++;
+      }
+
+      return result;
+   },
+
+   /* renders the track list */
+   render: function(){
+      var html = "";
+
+      /* reset element counter and channel */
+      app.streamconfig.count = iptvx.trackList.length 
+                           + iptvx.subtitleList.length;
+      app.streamconfig.channelId = iptvx.channel;
+      app.streamconfig.hash = app.streamconfig.getHash();
+
+      /* set track counter */
+      var trackid = 0;
+
+      /* get all audio tracks available */
+      for(var i=0;i<iptvx.trackList.length;i++){
+         var track = iptvx.trackList[i];
+
+         var classList = "configitem audiotrackitem";
+         if(track.active == true){
+            classList += " configitemactive";
+         }
+
+         if(app.streamconfig.selected == trackid){
+            classList += " configitemselected";
+         }
+
+         html += "<div id=\"track" + trackid + "\" "
+               + "class=\""+classList+"\" "
+               + "data-tracktype=\"audiotrack\" "
+               + "data-trackid=\"" + track.id + "\">"
+               + track.name + "</div>";
+         trackid++;
+      }
+
+      /* get all subtitle tracks available */
+      for(var i=0;i<iptvx.subtitleList.length;i++){
+         var subtitle = iptvx.subtitleList[i];
+
+         var classList = "configitem subtitleitem";
+         if(subtitle.active == true){
+            classList += " configitemactive";
+         }
+
+         if(app.streamconfig.selected == trackid){
+            classList += " configitemselected";
+         }
+
+         html += "<div id=\"track" + trackid + "\" " 
+               + "class=\""+classList+"\" "
+               + "data-tracktype=\"subtitle\" "
+               + "data-trackid=\"" + subtitle.id + "\">"
+               + subtitle.name + "</div>";
+         trackid++;
+      }
+
+      /* smash html into the container */
+      $("#streamconfig").html(html);
+      app.streamconfig.resize();
    },
 
    /* handles switching audio tracks and subtitles */
@@ -126,6 +171,9 @@ app.streamconfig = {
             app.streamconfig.selected++;
          } 
       }      
+
+      /* we need to render again */
+      app.streamconfig.render();
    },
 
    /* handles the resize of the document */

@@ -30,12 +30,15 @@ app.mouse = {
 		$(window).mouseup(function(event){
 			/* only allow elements when EPG is ready */
 			if(app.epg.ready){
+				/* allow mouse scroll wheel for audio track/ subtitle list */
+				app.mouse.checkTrackScroll(event.clientX,event.clientY,event.button);
+
 				/* allow mouse scroll wheel for channel list */
 				app.mouse.checkChannelScroll(event.clientX,event.clientY,event.button);
 
 				/* show EPG when click into empty space */
 				if(document.elementFromPoint(event.clientX,event.clientY).tagName == "HTML"
-					&& event.button == 3){
+					&& event.button == 1){
 					/* left mouse click in empty space */
 					app.list.toggle(true);
 					app.find.toggle(true);
@@ -70,6 +73,35 @@ app.mouse = {
 		});
 	},
 
+	/* allow scrolling tracks with the mouse wheel */
+	checkTrackScroll: function(mouseX,mouseY,button){
+		if(app.streamconfig.visible == true){
+			/* allow scrolling and selection with 
+				the wheel or 2nd button if you like */
+			if(button == 4){
+				/* scroll up */
+				app.streamconfig.handleKey(38);
+			}if(button == 5){
+				/* scroll down */
+				app.streamconfig.handleKey(40);
+			}if(button == 2){
+				/* click on middle button */
+				app.streamconfig.handleKey(13);
+			}
+
+			/* check for primary (left) button clicks */
+			if(button == 1){
+				var elm = document.elementFromPoint(mouseX,mouseY);
+				if($(elm).hasClass("configitem")){
+					var trackid = $(elm).attr("id").substring(5);
+					app.streamconfig.selected = parseInt(trackid);
+					app.streamconfig.handleKey(13);
+				}
+			}
+		}
+	},
+
+	/* allow scrolling channels with the mousewheel*/
 	checkChannelScroll: function(mouseX,mouseY,button){
 		/* get element width and height first */
 		elmWidth = $("#list").outerWidth();
@@ -97,18 +129,17 @@ app.mouse = {
 
 				/* check if it is a click of the left button */
 				if(button == 1){
-					var epgData = app.epg.getEpgData();
-					for(var c=0;c<epgData.length;c++){
-						var chan_elm = $("#listchannel"+c);
-						if(mouseX > $(chan_elm).position().left 
-							&& mouseX < ($(chan_elm).position().left+$(chan_elm).outerWidth())
-							&& mouseY > $(chan_elm).position().top  
-							&& mouseY < ($(chan_elm).position().top+$(chan_elm).outerHeight())){
-							/* obviously channel was clicked */
-							app.list.selectedChannel = c;
-							app.epg.switchChannel(app.list.selectedChannel);
-							app.list.update();
-						}
+					var elm = document.elementFromPoint(mouseX,mouseY);
+					if($(elm).hasClass("channel")){
+						var selchan = $(elm).attr("id").substring(11);
+						app.list.selectedChannel = selchan;
+						app.epg.switchChannel(app.list.selectedChannel);
+						app.list.update();
+					}if($(elm).parent().hasClass("channel")){
+						var selchan = $(elm).parent().attr("id").substring(11);
+						app.list.selectedChannel = selchan;
+						app.epg.switchChannel(app.list.selectedChannel);
+						app.list.update();
 					}
 				}
 			}
