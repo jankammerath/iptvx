@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = `pkg-config --cflags --libs glib-2.0 webkit2gtk-4.0 libconfig libvlc libcurl libxml-2.0 sdl SDL_image json-c`
 
 all:
-	$(CC) -g -o bin/iptvx src/*.c $(CFLAGS) 
+	$(CC) -g -std=c99 -o bin/iptvx src/*.c $(CFLAGS) 
 
 install:
 	mkdir -p /usr/bin/
