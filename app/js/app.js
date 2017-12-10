@@ -68,6 +68,7 @@ var app = {
 					app.list.toggle(true);
 					app.control.toggle(true);
 					app.find.toggle(true);
+					app.streamconfig.toggle(true);
 					$("#volume").fadeOut();
 				}
 
@@ -76,6 +77,7 @@ var app = {
 					app.epg.toggle(true);
 					app.list.toggle(true);
 					app.find.toggle(true);
+					app.streamconfig.toggle(true);
 					app.control.toggle();
 				}
 
@@ -84,6 +86,7 @@ var app = {
 					app.epg.toggle(true);
 					app.control.toggle(true);
 					app.find.toggle(true);
+					app.streamconfig.toggle(true);
 					app.list.toggle();
 				}
 
@@ -92,7 +95,17 @@ var app = {
 					app.list.toggle(true);
 					app.control.toggle(true);
 					app.find.toggle(true);
+					app.streamconfig.toggle(true);
 					app.epg.toggle();
+				}
+
+				/* search ui toggle with alt-gr (313) */
+				if(keyCode == 313){
+					app.list.toggle(true);
+					app.control.toggle(true);
+					app.epg.toggle(true);
+					app.find.toggle(true);
+					app.streamconfig.toggle();
 				}
 
 				/* search ui toggle with ctl (17) */
@@ -100,6 +113,7 @@ var app = {
 					app.list.toggle(true);
 					app.control.toggle(true);
 					app.epg.toggle(true);
+					app.streamconfig.toggle(true);
 					app.find.toggle();
 				}
 
@@ -217,6 +231,9 @@ var app = {
 		var controlLeft = ($(window).innerWidth()/2)-($("#control").outerWidth()/2);
 		$("#control").css("left",controlLeft+"px");	
 
+		var volumeLeft = ($(window).innerWidth()/2)-($("#volume").outerWidth()/2);
+		$("#volume").css("left",volumeLeft+"px");
+
 		var listMaxHeight = $(window).innerHeight()-40;
 		$("#list").css("max-height",listMaxHeight+"px");
 
@@ -230,6 +247,9 @@ var app = {
 
 		/* call epg resize */
 		app.epg.resize();
+
+		/* call stream-config resize */
+		app.streamconfig.resize();
 	}
 }
 

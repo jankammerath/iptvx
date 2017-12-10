@@ -71,7 +71,6 @@ body{
   height:80px;
   background-color:#0e0d40;
   position:fixed;
-  right:20px;
   top:20px;
   opacity:0.8;
   border-radius:10px;
@@ -122,9 +121,36 @@ body{
   z-index:1;
 }
 
-#videoconfig{
-  top:5px;
-  height:50px;
+#streamconfig{
+  top:20px;
+  right:-300px;
+  width:180px;
+  padding:0px 5px 10px 10px;
+  opacity:0;
+}
+
+.configitem{
+  padding:5px 5px 5px 40px;
+  margin:5px 10px 0px 5px;
+  color:#ffffff;
+  background-repeat:no-repeat;
+  opacity:0.3;
+}
+
+.configitemactive{
+  opacity:0.9;
+}
+
+#streamconfig .subtitleitem{
+  background-size: 22px auto;
+  background-position: 8px 13px;
+  background-image: url('../img/subtitle.svg');
+}
+
+#streamconfig .audiotrackitem{
+  background-size: 32px 22px;
+  background-position: 3px 7px;
+  background-image:url('../img/audio.svg');
 }
 
 #list{

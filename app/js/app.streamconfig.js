@@ -20,10 +20,54 @@ app.streamconfig = {
    visible: false,
 
    update: function(){
+      if(typeof(iptvx)=="object"){
+         var html = "";
+         for(var i=0;i<iptvx.trackList.length;i++){
+            var track = iptvx.trackList[i];
 
+            var classList = "configitem audiotrackitem";
+            if(track.active == true){
+               classList += " configitemactive";
+            }
+            html += "<div class=\""+classList+"\" "
+                  + "data-trackid=\"" + track.id + "\">"
+                  + track.name + "</div>";
+         }
+         $("#streamconfig").html(html);
+      }
    },
 
+   /* handles the resize of the document */
    resize: function(){
+      var configTop = ($(window).innerHeight()/2)-($("#streamconfig").outerHeight()/2);
+      if(configTop<0){configTop=10;}
+      $("#streamconfig").css("top",configTop+"px");     
+   },
 
-   }
+   /* toggles the streamconfig ui */
+   toggle: function(forceOut = false){
+      /* only allow toggle when stream is playing
+         and we have got valid channel/ track data */
+      if(iptvx.state == 3){
+         if(app.streamconfig.visible == true || forceOut == true){
+            /* fade out to the right */
+            $("#streamconfig").animate({
+               opacity: 0,
+               right: ($("#streamconfig").outerHeight()+100)*-1
+            }, 500);
+
+            /* set indicator to false */
+            app.streamconfig.visible = false;
+         }else{
+            /* fade in from the right */
+            $("#streamconfig").animate({
+               opacity: 0.8,
+               right: 20
+            }, 500);
+
+            /* set indicator to true */
+            app.streamconfig.visible = true;
+         }
+      }
+   }   
 }
