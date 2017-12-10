@@ -18,6 +18,7 @@
 
 app.streamconfig = {
    visible: false,
+   animating: false,
 
    update: function(){
       if(typeof(iptvx)=="object"){
@@ -64,22 +65,28 @@ app.streamconfig = {
    toggle: function(forceOut = false){
       /* only allow toggle when stream is playing
          and we have got valid channel/ track data */
-      if(iptvx.state == 3){
+      if(iptvx.state == 3 && app.streamconfig.animating == false){
          if(app.streamconfig.visible == true || forceOut == true){
             /* fade out to the right */
+            app.streamconfig.animating = true;
             $("#streamconfig").animate({
                opacity: 0,
-               right: ($("#streamconfig").outerHeight()+100)*-1
-            }, 500);
+               right: ($("#streamconfig").outerHeight()+20)*-1
+            }, 500, "swing", function(){
+                  app.streamconfig.animating = false;
+               });
 
             /* set indicator to false */
             app.streamconfig.visible = false;
          }else{
             /* fade in from the right */
+            app.streamconfig.animating = true;
             $("#streamconfig").animate({
                opacity: 0.8,
                right: 20
-            }, 500);
+            }, 500, "swing", function(){
+                  app.streamconfig.animating = false;
+               });
 
             /* set indicator to true */
             app.streamconfig.visible = true;

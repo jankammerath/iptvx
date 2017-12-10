@@ -24,6 +24,7 @@ app.mouse = {
 			if(app.epg.ready){
 				app.mouse.checkControlHover(event.clientX,event.clientY);
 				app.mouse.checkListHover(event.clientX,event.clientY);
+				app.mouse.checkStreamConfigHover(event.clientX,event.clientY);
 			}
 		});
 		$(window).mouseup(function(event){
@@ -138,6 +139,35 @@ app.mouse = {
 					|| mouseY < elmPosY || mouseY > (elmPosY+elmHeight)){
 					/* mouse is inside perimeter of control app */
 					app.control.toggle(true);
+				}
+			}
+		}
+	},
+
+	checkStreamConfigHover: function(mouseX,mouseY){
+		/* get element width and height first */
+		elmWidth = $("#streamconfig").outerWidth();
+		elmHeight = $("#streamconfig").outerHeight();
+
+		/* get element position */
+		elmPosY = $("#streamconfig").position().top;
+		elmPosX = $("#streamconfig").position().left;
+
+		/* check if list needs to be enabled */
+		if(app.epg.visible == false){
+			if(app.streamconfig.visible == false){
+				if(mouseX > (elmPosX-elmWidth)
+					&& mouseY > elmPosY 
+					&& mouseY < (elmPosY+elmHeight)){
+					/* mouse is inside perimeter */
+					app.streamconfig.toggle(false);
+				}
+			}else{
+				/* fade out list when out of bounding box */
+				if(mouseX < (elmPosX) || mouseX > (elmPosX+elmWidth+20)
+					|| mouseY < elmPosY || mouseY > (elmPosY+elmHeight)){
+					/* mouse is outside perimeter */
+					app.streamconfig.toggle(true);
 				}
 			}
 		}
