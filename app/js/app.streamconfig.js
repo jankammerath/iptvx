@@ -22,6 +22,8 @@ app.streamconfig = {
    update: function(){
       if(typeof(iptvx)=="object"){
          var html = "";
+
+         /* get all audio tracks available */
          for(var i=0;i<iptvx.trackList.length;i++){
             var track = iptvx.trackList[i];
 
@@ -33,6 +35,21 @@ app.streamconfig = {
                   + "data-trackid=\"" + track.id + "\">"
                   + track.name + "</div>";
          }
+
+         /* get all subtitle tracks available */
+         for(var i=0;i<iptvx.subtitleList.length;i++){
+            var subtitle = iptvx.subtitleList[i];
+
+            var classList = "configitem subtitleitem";
+            if(subtitle.active == true){
+               classList += " configitemactive";
+            }
+            html += "<div class=\""+classList+"\" "
+                  + "data-trackid=\"" + subtitle.id + "\">"
+                  + subtitle.name + "</div>";
+         }
+
+         /* smash html into the container */
          $("#streamconfig").html(html);
       }
    },

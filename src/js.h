@@ -64,10 +64,23 @@ void iptvx_js_set_epg_data(GString* epg_data);
 void iptvx_js_sendkey(int keyCode);
 
 /*
+  underlying function for audio tracks and subtitles
+  @param    tracklist     GArray with either audio or subtitle tracks
+  @param    jsobject      the jsobject of iptvx-obj to assign json to
+*/
+void iptvx_js_set_tracks(GArray* tracklist, char* jsobject);
+
+/*
   Sets the audio track information (name and id)
   @param    tracklist         GArray with audiotrack structs
 */
 void iptvx_js_set_audiotracks(GArray* tracklist);
+
+/*
+  Sets the subtitle information (name and id)
+  @param    tracklist         GArray with audiotracks for subtitles
+*/
+void iptvx_js_set_subtitles(GArray* tracklist);
 
 /* 
   handles any mouse move, scroll or click event

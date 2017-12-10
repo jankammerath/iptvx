@@ -85,7 +85,8 @@ void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(
    webkit_user_content_manager_register_script_message_handler(user_content, "iptvxexec");
 
    /* define the basic js object */
-   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], trackList: [], "
+   char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], "
+                     " trackList: [], subtitleList: [], "
                      " channel: 0, state: 0, volume: 100, "
                      " exec: function(cmd){ "
                      " window.webkit.messageHandlers.iptvxexec.postMessage(cmd); "
@@ -156,10 +157,11 @@ void iptvx_js_set_epg_data(GString* epg_data){
 }
 
 /*
-  Sets the audio track information (name and id)
-  @param    tracklist         GArray with audiotrack structs
+  underlying function for audio tracks and subtitles
+  @param    tracklist     GArray with either audio or subtitle tracks
+  @param    jsobject      the jsobject of iptvx-obj to assign json to
 */
-void iptvx_js_set_audiotracks(GArray* tracklist){
+void iptvx_js_set_tracks(GArray* tracklist, char* jsobject){
   if(iptvx_js_api_ready == true){
     /* the json array with the audio track list */
     json_object* j_tracklist = json_object_new_array();
@@ -187,9 +189,25 @@ void iptvx_js_set_audiotracks(GArray* tracklist){
           (json_object_to_json_string(j_tracklist));
 
     GString* jsCode = g_string_new("");
-    g_string_printf(jsCode,"iptvx.trackList = %s;",tracklist_json->str);
+    g_string_printf(jsCode,"iptvx.%s = %s;",jsobject,tracklist_json->str);
     webkit_web_view_run_javascript(js_view,jsCode->str,NULL,NULL,NULL);
   }
+}
+
+/*
+  Sets the audio track information (name and id)
+  @param    tracklist         GArray with audiotrack structs
+*/
+void iptvx_js_set_audiotracks(GArray* tracklist){
+  iptvx_js_set_tracks(tracklist,"trackList");
+}
+
+/*
+  Sets the subtitle information (name and id)
+  @param    tracklist         GArray with audiotracks for subtitles
+*/
+void iptvx_js_set_subtitles(GArray* tracklist){
+  iptvx_js_set_tracks(tracklist,"subtitleList");
 }
 
 /*

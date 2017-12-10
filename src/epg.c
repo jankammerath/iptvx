@@ -52,9 +52,11 @@ struct channel{
 	GString* urlShell;
 	GString* epgUrl;
 	GString* epgFile;
+	GString* epgChannelId;
 	GString* epgShell;
 	GString* epgInterval;
 	GString* logoFile;
+	GString* logoUrl;
 	GArray* programmeList;
 } typedef channel;
 
@@ -305,7 +307,7 @@ bool iptvx_epg_contains_programme(channel* current, programme* prog){
 
 /* parses the programmes from xmltv and returns it as 
 	a GArray holding programme structs */
-GArray* iptvx_epg_get_programmelist(GString* xmltv){
+GArray* iptvx_epg_get_programmelist(GString* xmltv, channel* chan){
 	GArray* result = g_array_new(false,false,sizeof(programme));
 
 	/* create libxml object instance */
@@ -323,7 +325,26 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 
 		/* get all programme nodes */
 		for(progNode = cur->children; progNode != NULL; progNode = progNode->next){
+			/* defines whether this node should be parsed or not */
+			bool parseCurrentNode = false;
 			if(xmlStrcmp(progNode->name,"programme")==0){
+				if(chan->epgChannelId->len > 0){
+					/* there is an epg channel id defined in the channel,
+						so we need to check if this is a programme node
+						and the node actually matches the epgChannelId */
+					GString* xmlChannelId = g_string_new(xmlGetProp(progNode,"channel"));
+					if(g_strcmp0(xmlChannelId->str,chan->epgChannelId->str)==0){
+						/* the channel attribute in the xml matches 
+							the config epgChannelId */
+						parseCurrentNode = true;
+					}
+				}else{
+					parseCurrentNode = true;
+				}
+			}
+
+			/* start parsing the node if its the correct one*/
+			if(parseCurrentNode == true){
 				/* create prorgramme struct */
 				programme prog;
 
@@ -388,15 +409,55 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv){
 }
 
 /*
+	Loads the logo for a channel and stores it on disk
+	@param 			current 			current channel to load logo for
+*/
+void iptvx_epg_load_channel_logo(channel* current){
+	/* check if the logo file needs to be downloaded 
+		which is the case when a logoUrl setting is set */
+	if(current->logoUrl->len > 0){
+		GString* logoFile;
+		if(current->logoFile->len > 0){
+			/* there is a logo file defined in config */
+			logoFile = g_string_new(current->logoFile->str);
+		}else{
+			/* there is no logo file defined, check for url filename first */
+			if(current->logoUrl->len > 0){
+				logoFile = g_string_new(g_strrstr(current->logoUrl->str,"/")+1);
+			}else{
+				/* there is no url defined, so we use the channel name */
+				logoFile = g_string_new(g_strconcat(current->name->str,".logo"));
+			}
+		}
+
+		/* define the full path of the logo file */
+		char* logoCacheDir = g_strjoin("/",epg_data_dir->str,"logo",NULL);
+		char* logoFilePath = g_strjoin("/",logoCacheDir,logoFile->str,NULL);		
+
+		/* there is a logo file defined, so we download it
+			if it has not already been in the past */
+		if(!util_file_exists(logoFilePath)){
+			/* file does not exist on disk, download it */
+			util_download_file(current->logoUrl->str,logoFilePath);
+		}
+	}
+}
+
+/*
    Loads the defined channel epg for the defined time
    @param            current           	current channel to load
    @param            epg_time          	time to get epg for
    @param 			 overwrite_cache	true when cache should be ignored
 */ 
 void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_cache){
+	/* load the logo file for this channel */
+	iptvx_epg_load_channel_logo(current);
+
 	/* create EPG url for today */
 	char epg_url[256];
 
+	/* convert epg time to local time 
+		and apply time pattern to url */
 	struct tm *t = localtime(&epg_time);
 	strftime(epg_url,sizeof(epg_url)-1,current->epgUrl->str,t);
 
@@ -405,7 +466,7 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 
 	/* check if the url is defined and use 
 		the filename defined in there */
-	if(current->epgUrl->len > 1){
+	if(current->epgUrl->len > 1 && current->epgFile->len == 0){
 		cacheFile = g_strrstr(epg_url,"/")+1;
 	}else{
 		/* use the name of the epg file if defined */
@@ -472,7 +533,7 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 	}
 
 	/* parse the programme list from the xmltv data */
-	GArray* plist = iptvx_epg_get_programmelist(xmltv);
+	GArray* plist = iptvx_epg_get_programmelist(xmltv,current);
 
 	/* append the programme data to the existing array */
 	int p;
@@ -618,9 +679,11 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
 			current.name = iptvx_epg_config_get_string(element,"name");
 			current.url = iptvx_epg_config_get_string(element,"url");
 			current.urlShell = iptvx_epg_config_get_string(element,"urlShell");
+			current.logoUrl = iptvx_epg_config_get_string(element,"logoUrl");
 			current.logoFile = iptvx_epg_config_get_string(element,"logoFile");
 			current.epgUrl = iptvx_epg_config_get_string(element,"epgUrl");
 			current.epgFile = iptvx_epg_config_get_string(element,"epgFile");
+			current.epgChannelId = iptvx_epg_config_get_string(element,"epgChannelId");
 			current.epgShell = iptvx_epg_config_get_string(element,"epgShell");
 			current.epgInterval = iptvx_epg_config_get_string(element,"epgInterval");
 

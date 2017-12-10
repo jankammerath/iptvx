@@ -37,7 +37,13 @@ struct channel{
    bool isDefault;
    GString* name;
    GString* url;
+   GString* urlShell;
    GString* epgUrl;
+   GString* epgFile;
+   GString* epgChannelId;
+   GString* epgShell;
+   GString* epgInterval;
+   GString* logoFile;
    GString* logoUrl;
    GArray* programmeList;
 } typedef channel;

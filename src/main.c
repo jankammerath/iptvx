@@ -265,6 +265,10 @@ int update(void* nothing){
 			GArray* audioTrackList = iptvx_video_get_audiotracks();
 			g_idle_add((GSourceFunc)iptvx_js_set_audiotracks,audioTrackList);
 
+			/* get subtitles and forward them to overlay app */
+			GArray* subtitleList = iptvx_video_get_subtitles();
+			g_idle_add((GSourceFunc)iptvx_js_set_subtitles,subtitleList);
+
 			/* wait a sec */
 			usleep(1000000);
 		}

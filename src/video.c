@@ -203,3 +203,51 @@ GArray* iptvx_video_get_audiotracks(){
 
 	return result;
 }
+
+/*
+	Gets the available subtitle tracks
+	@return 	GArray containing subtitle tracks
+*/
+GArray* iptvx_video_get_subtitles(){
+	GArray* result = g_array_new(false,true,sizeof(audiotrack));
+	int player_state = iptvx_video_get_state();
+
+	/* only get data when playing or paused */
+	if(player_state == 3 || player_state == 4){
+		/* get the currently active track */
+		int active_subtitle_id = libvlc_video_get_spu(mp);
+
+		/* get the number of tracks */
+		int track_count = libvlc_video_get_spu_count(mp);
+
+		if(track_count > 0){
+			/* get the current audio tracks */
+			libvlc_track_description_t* tdesc = libvlc_video_get_spu_description(mp);
+
+			audiotrack track[track_count];
+			track[0].name = g_string_new(tdesc->psz_name);
+			track[0].id = tdesc->i_id;
+			track[0].active = false;
+			if(track[0].id == active_subtitle_id){
+				/* track is currently active */
+				track[0].active = true;
+			}
+
+			g_array_append_val(result,track[0]);
+
+			for(int i=1;i<track_count;i++){
+				tdesc = tdesc->p_next;
+				track[i].name = g_string_new(tdesc->psz_name);
+				track[i].id = tdesc->i_id;
+				track[i].active = false;
+				if(track[i].id == active_subtitle_id){
+					/* track is currently active */
+					track[i].active = true;
+				}
+				g_array_append_val(result,track[i]);
+			}
+		}
+	}
+
+	return result;
+}

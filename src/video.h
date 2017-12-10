@@ -91,4 +91,10 @@ void iptvx_video_free();
 */
 GArray* iptvx_video_get_audiotracks();
 
+/*
+   Gets the available subtitle tracks
+   @return  GArray containing subtitle tracks
+*/
+GArray* iptvx_video_get_subtitles();
+
 #endif
