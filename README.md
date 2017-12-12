@@ -38,8 +38,8 @@ Through a menu it is possible to quickly select the audio track and subtitles av
 
 ## Where to obtain help
 
-If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx wiki](https://github.com/jankammerath/iptvx/wiki) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
+If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx wiki](https://iptvx.org/Help.html) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
 
 ## How to install
 
-You can install iptvx either through pre-built packages, by getting a released tarball or by cloning the git repository and then compiling yourself. All information on how to install iptvx can be obtained from the [Installation instructions](https://github.com/jankammerath/iptvx/wiki/Installation).
+You can install iptvx either through pre-built packages, by getting a released tarball or by cloning the git repository and then compiling yourself. All information on how to install iptvx can be obtained from the [Installation instructions](https://iptvx.org/Installation.html).
