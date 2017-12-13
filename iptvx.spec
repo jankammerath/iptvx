@@ -21,7 +21,7 @@ Summary:		iptv player and streamer
 License:        Apache License 2.0
 Group:          Productivity/Multimedia/Video/Players
 Url:            http://iptvx.org
-Source:         %{name}-%{version}.tar.gz
+Source:         iptvx-master.tar.gz
 
 # Build requirements
 BuildRequires:  pkgconfig(glib-2.0)
