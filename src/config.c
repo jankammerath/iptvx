@@ -132,13 +132,22 @@ char* iptvx_config_get_data_dir(){
 	struct stat st = {0};
 	if (stat(result, &st) == -1) {
 		/* data dir does not exists, create it */
-		mkdir(result, 0777);
+		if(mkdir(result, 0777)!=0){
+			printf("Failed to create data directory at:\n%s\n\n",result);
+			result = "";
+		}
 	}if (stat(logoFolder, &st) == -1) {
 		/* logo dir does not exists, create it */
-		mkdir(logoFolder, 0777);
+		if(mkdir(logoFolder, 0777)!=0){
+			printf("Failed to create logo file directory at:\n%s\n\n",logoFolder);
+			result = "";
+		}
 	}if (stat(epgFolder, &st) == -1) {
 		/* epg dir does not exists, create it */
-		mkdir(epgFolder, 0777);
+		if(mkdir(epgFolder, 0777)!=0){
+			printf("Failed to create epg data directory at:\n%s\n\n",epgFolder);
+			result = "";
+		}
 	}
 
 	/* free folder variables */

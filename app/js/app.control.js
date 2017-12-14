@@ -102,9 +102,12 @@ app.control = {
 			if(data.programme.productionDate!=""){
 				showInfo += " ("+data.programme.productionDate+")";
 			}if(data.programme.description != ""){
+				/* replace illegal characters or html from info */
 				showInfo += " - " + data.programme.description;
 			} 
-			$("#showinfo").html(showInfo);
+
+			/* add html to info, but remove html tags */
+			$("#showinfo").html(app.stripHtml(showInfo));
 			
 			/* render upcoming shows */
 			var nextProgrammeHtml = "";

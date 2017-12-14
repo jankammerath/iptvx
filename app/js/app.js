@@ -211,6 +211,13 @@ var app = {
 		};
 	},
 
+	/* removes html chars from data */
+	stripHtml: function(data){
+    	var tmp = document.createElement("DIV");
+   		tmp.innerHTML = data;
+   		return tmp.textContent || tmp.innerText || "";
+	},
+
 	/* shows the debug message */
 	showDebug: function(keyVal){
 		var debugText = "Key: "+keyVal;
