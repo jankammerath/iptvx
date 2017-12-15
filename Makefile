@@ -20,6 +20,9 @@ install:
 	chmod 644 /var/iptvx -R
 	chmod 644 /etc/iptvx -R
 
+clean:
+	rm -f bin/iptvx
+
 # this is for debian package build
 packinstall:
 	mkdir -p $(DESTDIR)/usr/bin/
