@@ -20,15 +20,12 @@ build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	make
+	make all
 	# --- end custom part for compiling
-
-	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp
 
 	# Add here commands to clean up after the build process.
 	make clean

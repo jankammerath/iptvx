@@ -2,6 +2,10 @@
 
 IPTV player and streamer for Linux that allows to play any stream that LibVLC can play, offers an overlay based on WebKit using HTML5, JavaScript and CSS and uses XMLTV data for EPG information. It allows the playback of URLs, files and can grab URLs from shell scripts. XMLTV EPG data can be downloaded directly from URLs or grabbed from shell scripts.
 
+## How to install
+
+You can install iptvx either through pre-built packages, by getting a released tarball or by cloning the git repository and then compiling yourself. All information on how to install iptvx can be obtained from the [Installation instructions](https://iptvx.org/Installation.html). You can find packages for OpenSUSE, Debian, Arch and Ubuntu in the [Package List](https://iptvx.org/Packages.html).
+
 ## What you can expect
 
 The aim of [iptvx](http://iptvx.org/) is to provide a software set-top box for Linux systems. It includes the playback of live TV channels and display of EPG as well as recording functionality. In its current state of development iptvx already provides playback from various sources as well as EPG functionality.
@@ -39,7 +43,3 @@ Through a menu it is possible to quickly select the audio track and subtitles av
 ## Where to obtain help
 
 If you need help with [iptvx](http://iptvx.org/), you can obtain it in the [iptvx wiki](https://iptvx.org/Help.html) or throught IRC on FreeNode in the #iptvx channel. It is generally recommended to check the wiki before anything else.
-
-## How to install
-
-You can install iptvx either through pre-built packages, by getting a released tarball or by cloning the git repository and then compiling yourself. All information on how to install iptvx can be obtained from the [Installation instructions](https://iptvx.org/Installation.html).
