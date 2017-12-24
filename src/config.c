@@ -38,6 +38,7 @@
 #include "util.h"
 
 config_t cfg;
+GString* iptvx_config_filename;
 
 /*
    Gets the configuration struct pointer
@@ -45,6 +46,14 @@ config_t cfg;
 */
 config_t* iptvx_get_config(){
 	return &cfg;
+}
+
+/*
+	Sets the path of the config file to use
+	@param 		configFile 		the file name of the config file
+*/
+void iptvx_set_config_filename(char* configFile){
+	iptvx_config_filename = g_string_new(configFile);
 }
 
 /*
@@ -56,16 +65,22 @@ char* iptvx_get_config_filename(){
 
 	bool configFileFound = false;
 
-	/* check if file is in app directory */
-	if(util_file_exists("cfg/iptvx.conf")){
-		result = "cfg/iptvx.conf";
+	/* use predefined config file if exists */
+	if(iptvx_config_filename->len > 0){
+		result = iptvx_config_filename->str;
 		configFileFound = true;
-	}if(util_file_exists("/etc/iptvx/iptvx.conf")){
-		result = "/etc/iptvx/iptvx.conf";
-		configFileFound = true;
-	}if(util_file_exists("~/.iptvx/iptvx.conf")){
-		result = "~/.iptvx/iptvx.conf";
-		configFileFound = true;
+	}else{
+		/* check if file is in app directory */
+		if(util_file_exists("cfg/iptvx.conf")){
+			result = "cfg/iptvx.conf";
+			configFileFound = true;
+		}if(util_file_exists("/etc/iptvx/iptvx.conf")){
+			result = "/etc/iptvx/iptvx.conf";
+			configFileFound = true;
+		}if(util_file_exists("~/.iptvx/iptvx.conf")){
+			result = "~/.iptvx/iptvx.conf";
+			configFileFound = true;
+		}
 	}
 
 	if(!configFileFound){

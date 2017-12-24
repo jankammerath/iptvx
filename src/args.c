@@ -23,7 +23,10 @@ const char *argp_program_version = "iptvx 0.5 beta";
 const char *argp_program_bug_address = "<dev@iptvx.org>";
 static char args_doc[] = "";
 static char doc[] = "iptvx -- An IPTV player and recorder";
-static struct argp_option options[] = { };
+static struct argp_option options[] = { 
+  {"config", 'c', "FILE", 0, "Define the config file to use" },
+  { 0 }
+};
 
 struct arguments{ 
   char* configFile;
@@ -32,6 +35,9 @@ struct arguments{
 static error_t parse_opt(int key, char *arg, struct argp_state *state) { 
   struct arguments *arguments = state->input; 
   switch (key) {
+    case 'c':
+      arguments->configFile = arg;
+      break;
     case ARGP_KEY_NO_ARGS:
       break; 
     case ARGP_KEY_END:
@@ -48,7 +54,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   return 0; 
 } 
 
-static struct argp argp = {NULL, parse_opt, args_doc, doc};
+static struct argp argp = {options, parse_opt, args_doc, doc};
 
 /*
   Parses the arguments

@@ -56,6 +56,12 @@ bool iptvx_config_init();
 bool iptvx_config_file_exists();
 
 /*
+   Sets the path of the config file to use
+   @param      configFile     the file name of the config file
+*/
+void iptvx_set_config_filename(char* configFile);
+
+/*
    Gets the config file name
    @return           the config file name and path
 */

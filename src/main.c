@@ -295,7 +295,11 @@ int main (int argc, char *argv[]){
 	application_active = true;
 
 	/* parse input arguments first */
-	struct arguments arguments = iptvx_parse_args(argc,argv);
+	struct arguments app_args = iptvx_parse_args(argc,argv);
+	if(app_args.configFile != NULL){
+		/* use the config file from args */
+		iptvx_set_config_filename(app_args.configFile);
+	}
 
 	/* ensure that there is a config file */
 	if(iptvx_config_init() == true){
