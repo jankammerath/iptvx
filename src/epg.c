@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <dirent.h>
 #include <glib.h>
 #include <libconfig.h>
 #include <SDL/SDL.h>
@@ -94,6 +95,34 @@ void iptvx_epg_set_data_dir(char* data_dir){
 */
 void iptvx_epg_set_storage_hours(int hours){
 	iptvx_epg_storage_hours = hours;
+}
+
+/*
+	Cleans local files when they are outdated
+*/
+void iptvx_epg_clean_files(){
+	DIR *d;
+	struct dirent *dir;
+	char* epgCacheDir = g_strjoin("/",epg_data_dir->str,"epg",NULL);
+	d = opendir(epgCacheDir);
+	if(d){
+		while ((dir = readdir(d)) != NULL){
+			/* make sure its not . or .. as filename */
+			if(g_strcmp0(dir->d_name,".") != 0 && g_strcmp0(dir->d_name,"..") != 0){
+				char* epgFileName = g_strjoin("/",epgCacheDir,dir->d_name,NULL);
+
+				struct stat attrib;
+    			stat(epgFileName, &attrib);
+    			char modified_date[10];
+    			strftime(modified_date, 10, "%d-%m-%y", gmtime(&(attrib.st_ctime)));
+
+    			double fileAge = difftime(time(NULL),attrib.st_ctime);
+
+				// printf("Epg file '%s': %f\n", dir->d_name,fileAge);
+			}
+    	}
+	    closedir(d);
+	}
 }
 
 /*
@@ -557,6 +586,9 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 	initiates the epg load for each channel 
 */
 int iptvx_epg_load(void* nothing){
+	/* delete any trash that might still be on disk */
+	iptvx_epg_clean_files();
+
 	int c = 0;
 	for(c = 0; c < list->len; c++){
 		/* get this channel */
