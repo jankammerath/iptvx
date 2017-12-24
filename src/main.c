@@ -325,6 +325,10 @@ int main (int argc, char *argv[]){
 		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
 		iptvx_epg_set_storage_hours(epg_hours);
 
+		/* get the days after the epg files expire */
+		int epg_expiry_days = iptvx_config_get_setting_int("epg_expiry_days",7);
+		iptvx_epg_set_expiry_days(epg_expiry_days);
+
 		/* get the data directory for the epg */
 		char* epg_dir = iptvx_config_get_data_dir();
 		iptvx_epg_set_data_dir(epg_dir);

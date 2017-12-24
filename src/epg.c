@@ -70,6 +70,9 @@ GString* epg_data_dir;
 /* define how many hours are to be stored */
 int iptvx_epg_storage_hours;
 
+/* define after how many days to delete files */
+int iptvx_epg_file_expiry_days;
+
 /* defines current channel */
 int iptvx_epg_current_channel;
 
@@ -86,6 +89,14 @@ void (*epg_status_update_callback)(void*);
 */
 void iptvx_epg_set_data_dir(char* data_dir){
 	epg_data_dir = g_string_new(data_dir);
+}
+
+/*
+	Defines after how many days the files will be deleted
+	@param 			days 			int defining the days
+*/
+void iptvx_epg_set_expiry_days(int days){
+	iptvx_epg_file_expiry_days = days;
 }
 
 /*
@@ -117,8 +128,10 @@ void iptvx_epg_clean_files(){
     			strftime(modified_date, 10, "%d-%m-%y", gmtime(&(attrib.st_ctime)));
 
     			double fileAge = difftime(time(NULL),attrib.st_ctime);
-
-				// printf("Epg file '%s': %f\n", dir->d_name,fileAge);
+    			if(fileAge > (iptvx_epg_file_expiry_days*3600)){
+    				/* file is outdated and needs to go */
+    				util_delete_file(epgFileName);
+    			}
 			}
     	}
 	    closedir(d);

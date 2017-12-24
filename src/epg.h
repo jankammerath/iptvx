@@ -55,6 +55,12 @@ struct channel{
 void iptvx_epg_set_data_dir(char* data_dir);
 
 /*
+   Defines after how many days the files will be deleted
+   @param         days        int defining the days
+*/
+void iptvx_epg_set_expiry_days(int days);
+
+/*
    Defines how many hours of programme 
    to be stored in the epg data
    @param         hours          int defining the hours
