@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2017   Jan Kammerath
+   Copyright 2018   Jan Kammerath
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 /* indicator to stay alive */
 volatile sig_atomic_t iptvx_daemon_alive;
 
+/* define the port to run the daemon on */
 int iptvx_daemon_server_port;
 
 /*
@@ -61,6 +62,11 @@ static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * conne
   /* create the response for the query */
   response = MHD_create_response_from_buffer(strlen(page), (void*) page,
                                              MHD_RESPMEM_PERSISTENT);
+
+  /* set the response content type to json */
+  MHD_add_response_header(response, "Content-Type", "application/json");
+
+  /* queue the response */
   ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
   MHD_destroy_response(response);
 
