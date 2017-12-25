@@ -32,6 +32,7 @@
 #include "js.h"
 #include "epg.h"
 #include "keycode.h"
+#include "daemon.h"
 
 /* application status */
 bool application_active;
@@ -260,7 +261,7 @@ int update(void* nothing){
 
 	/* ensure JS and App is active */
 	while(application_active){
-		if(main_js_ready == true){
+	 	if(main_js_ready == true){
 			/* get the current media state */
 			media_state = iptvx_video_get_state();
 
@@ -289,10 +290,61 @@ int update(void* nothing){
 	return 0;
 }
 
+/* starts main window application */
+void start_window(){
+	/* initialise window */
+	iptvx_window_init();
+
+	/* get preferred video size */
+	window_size win_size = iptvx_window_get_size();
+
+	/* define window size */
+	main_window_width = iptvx_config_get_setting_int("width",win_size.width);
+	main_window_height = iptvx_config_get_setting_int("height",win_size.height);
+
+	/* get fullscreen setting */
+	bool window_fullscreen = iptvx_config_get_setting_bool("fullscreen",true);
+	iptvx_window_set_fullscreen(window_fullscreen);
+
+	/* get log output setting */
+	bool video_log = iptvx_config_get_setting_bool("stream_log_output",false);
+	iptvx_video_set_log_output(video_log);
+
+	/* get the pointers to the webkit png data and status */
+	void* overlay_data = iptvx_get_overlay_ptr();
+	void* overlay_ready = iptvx_get_overlay_ready_ptr();
+	iptvx_window_set_overlay(overlay_data,overlay_ready);
+
+	/* start the webkit thread */
+	char* overlayApp = iptvx_config_get_overlay_app();
+	GString* gs_overlay_app = g_string_new(overlayApp);
+	if(gs_overlay_app->len > 0){
+		iptvx_webkit_start_thread(gs_overlay_app->str,main_window_width,
+								main_window_height,load_finished);
+
+		/* start the thread to update the js api */
+		update_thread = SDL_CreateThread(update,NULL);
+
+		/* create the main window which 
+			will lock this main thread */
+		iptvx_create_window(main_window_width,main_window_height,
+							keydown,mouse_event,window_ready);
+	}else{
+		/* throw an error when we don't have the app */
+		printf("App path not found or inaccessible\n");
+	}
+
+	/* free overlay app string */
+	g_string_free(gs_overlay_app,true);
+}
+
 /* main application code */
 int main (int argc, char *argv[]){
 	/* set activity indicator to true */
 	application_active = true;
+
+	/* set the daemon indicator */
+	bool is_daemon = false;
 
 	/* parse input arguments first */
 	struct arguments app_args = iptvx_parse_args(argc,argv);
@@ -301,29 +353,16 @@ int main (int argc, char *argv[]){
 		iptvx_set_config_filename(app_args.configFile);
 	}
 
+	/* check if daemon process was requested */
+	if(app_args.daemon == true){
+		is_daemon = true;
+	}
+
 	/* ensure that there is a config file */
 	if(iptvx_config_init() == true){
 		main_js_ready = false;
 		main_window_ready = false;
 		main_epg_ready = false;
-
-		/* initialise window */
-		iptvx_window_init();
-
-		/* get preferred video size */
-		window_size win_size = iptvx_window_get_size();
-
-		/* define window size */
-		main_window_width = iptvx_config_get_setting_int("width",win_size.width);
-		main_window_height = iptvx_config_get_setting_int("height",win_size.height);
-
-		/* get fullscreen setting */
-		bool window_fullscreen = iptvx_config_get_setting_bool("fullscreen",true);
-		iptvx_window_set_fullscreen(window_fullscreen);
-
-		/* get log output setting */
-		bool video_log = iptvx_config_get_setting_bool("stream_log_output",false);
-		iptvx_video_set_log_output(video_log);
 
 		/* get the hours to store in the epg */
 		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
@@ -341,32 +380,18 @@ int main (int argc, char *argv[]){
 		config_t* cfg = iptvx_get_config();
 		iptvx_epg_init(cfg,epg_status_update);
 
-		/* get the pointers to the webkit png data and status */
-		void* overlay_data = iptvx_get_overlay_ptr();
-		void* overlay_ready = iptvx_get_overlay_ready_ptr();
-		iptvx_window_set_overlay(overlay_data,overlay_ready);
+		/* check if window or daemon mode */
+		if(is_daemon){
+			/* get the configured server port */
+			int daemon_port = iptvx_config_get_setting_int("daemon_port",8085);
+			iptvx_daemon_set_server_port(daemon_port);
 
-		/* start the webkit thread */
-		char* overlayApp = iptvx_config_get_overlay_app();
-		GString* gs_overlay_app = g_string_new(overlayApp);
-		if(gs_overlay_app->len > 0){
-			iptvx_webkit_start_thread(gs_overlay_app->str,main_window_width,
-									main_window_height,load_finished);
-
-			/* start the thread to update the js api */
-			update_thread = SDL_CreateThread(update,NULL);
-
-			/* create the main window which 
-				will lock this main thread */
-			iptvx_create_window(main_window_width,main_window_height,
-								keydown,mouse_event,window_ready);
+			/* daemon mode */
+			iptvx_daemon_run();
 		}else{
-			/* throw an error when we don't have the app */
-			printf("App path not found or inaccessible\n");
+			/* window or client app mode */
+			start_window();
 		}
-
-		/* free overlay app string */
-		g_string_free(gs_overlay_app,true);
 	}else{
 		/* throw an error when config not initialised */
 		printf("Failed to initialise the configuration\n");

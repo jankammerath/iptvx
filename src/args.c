@@ -25,11 +25,13 @@ static char args_doc[] = "";
 static char doc[] = "iptvx -- An IPTV player and recorder";
 static struct argp_option options[] = { 
   {"config", 'c', "FILE", 0, "Define the config file to use" },
+  {"daemon", 'd', 0, 0, "Run as daemon in the background" },
   { 0 }
 };
 
 struct arguments{ 
-  char* configFile;
+  char*  configFile;
+  bool   daemon; 
 };
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) { 
@@ -37,6 +39,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   switch (key) {
     case 'c':
       arguments->configFile = arg;
+      break;
+    case 'd':
+      arguments->daemon = true;
       break;
     case ARGP_KEY_NO_ARGS:
       break; 
@@ -64,6 +69,11 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 */
 struct arguments iptvx_parse_args(int argc, char *argv[]){
 	struct arguments arguments;
+
+  /* set default values */
+  arguments.daemon = false;
+  arguments.configFile = NULL;
+
 	argp_parse (&argp, argc, argv, 0, 0, &arguments);
 	return arguments;
 }

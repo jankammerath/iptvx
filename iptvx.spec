@@ -33,6 +33,7 @@ BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(sdl)
 BuildRequires:	pkgconfig(SDL_image)
 BuildRequires:	pkgconfig(json-c)
+BuildRequires:	pkgconfig(libmicrohttpd)
 
 # Runtime requirements
 Requires:  		pkgconfig(glib-2.0)
@@ -44,6 +45,7 @@ Requires:		pkgconfig(libxml-2.0)
 Requires:		pkgconfig(sdl)
 Requires:		pkgconfig(SDL_image)
 Requires:		pkgconfig(json-c)
+Requires:		pkgconfig(libmicrohttpd)
 
 %description
 IPTV player and streamer for Linux that allows to play any stream that LibVLC can play, offers an overlay based on WebKit using HTML5, JavaScript and CSS and uses XMLTV data for EPG information. It allows the playback of URLs, files and can grab URLs from shell scripts. XMLTV EPG data can be downloaded directly from URLs or grabbed from shell scripts.

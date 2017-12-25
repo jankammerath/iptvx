@@ -66,7 +66,7 @@ char* iptvx_get_config_filename(){
 	bool configFileFound = false;
 
 	/* use predefined config file if exists */
-	if(iptvx_config_filename->len > 0){
+	if(iptvx_config_filename != NULL){
 		result = iptvx_config_filename->str;
 		configFileFound = true;
 	}else{

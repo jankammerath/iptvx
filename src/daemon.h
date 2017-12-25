@@ -16,23 +16,19 @@
 
 */
 
-#ifndef	ARGS_H
-#define ARGS_H
-
-#include <stdbool.h>
-
-/* struct containing arguments */
-struct arguments{ 
-  char* configFile;
-  bool daemon;
-};
+#ifndef DAEMON_H
+#define DAEMON_H
 
 /*
-  Parses the arguments
-  @param    argc      argument count
-  @param    argv      char array with arguments
-  @return             a struct with argument information
+   Runs the daemon loop, checks for signals
+   and performs the necessary operations.
 */
-extern struct arguments iptvx_parse_args(int argc, char *argv[]);
+void iptvx_daemon_run();
+
+/*
+   Sets the port number for the daemons http server
+   @param         port_number       int with port number to listen on
+*/
+void iptvx_daemon_set_server_port(int port_number);
 
 #endif
