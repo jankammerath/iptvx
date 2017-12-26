@@ -139,6 +139,15 @@ void iptvx_epg_clean_files(){
 }
 
 /*
+	Returns all epg data in the channel and 
+	programme structs within a GArray
+	@return 		GArray with all epg data
+*/
+GArray* iptvx_epg_get_data(){
+	return list;
+}
+
+/*
 	Returns all channel and epg info as JSON string
 	@return 		JSON string with all EPG info
 */

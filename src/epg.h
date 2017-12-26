@@ -68,6 +68,13 @@ void iptvx_epg_set_expiry_days(int days);
 void iptvx_epg_set_storage_hours(int hours);
 
 /*
+   Returns all epg data in the channel and 
+   programme structs within a GArray
+   @return     GArray with all epg data
+*/
+GArray* iptvx_epg_get_data();
+
+/*
    Returns all channel and epg info as JSON string
    @return     JSON string with all EPG info
 */

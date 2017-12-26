@@ -29,6 +29,50 @@ volatile sig_atomic_t iptvx_daemon_alive;
 /* define the port to run the daemon on */
 int iptvx_daemon_server_port;
 
+/* defines recording tolerance in minutes */
+int iptvx_daemon_record_tolerance;
+
+/* represents the working dir */
+GString* record_dir;
+
+/* string with epg json data */
+GString* iptvx_daemon_epg_json;
+
+/* garray with all epg data */
+GArray* iptvx_daemon_epg_data;
+
+/*
+   Sets the recording tolerance in minutes
+   @param      tolerance      the tolerance in minutes
+*/
+void iptvx_daemon_set_record_tolerance(int tolerance){
+   iptvx_daemon_record_tolerance = tolerance;
+}
+
+/*
+   Sets the directory to store data in
+   @param      dirname     full path of directory to work in
+*/
+void iptvx_daemon_set_dir(char* dirname){
+   record_dir = g_string_new(dirname);
+}
+
+/*
+   Sets the epg data for the daemon to return
+   @param      epg_data          epg data as json string
+*/
+void iptvx_daemon_set_epg_data(GArray* epg_data){
+   iptvx_daemon_epg_data = epg_data;
+}
+
+/*
+   Sets the epg data for the daemon to return
+   @param      epg_data          epg data as json string
+*/
+void iptvx_daemon_set_epg_json(GString* epg_data){
+   iptvx_daemon_epg_json = epg_data;
+}
+
 /*
    Sets the port number for the daemons http server
    @param         port_number       int with port number to listen on
@@ -46,6 +90,25 @@ void iptvx_daemon_kill(){
 }
 
 /*
+   Provides the proper result for the url
+   @param      request_url    url requested from the client
+   @return                    string with JSON contents to show
+*/
+GString* iptvx_daemon_get_response(char* request_url){
+   GString* result = g_string_new("{}");
+
+   /* check for requested data */
+   if(g_strcmp0(request_url,"/epg.json")==0){
+      /* full epg in json is requested */
+      if(iptvx_daemon_epg_json != NULL){
+         result = iptvx_daemon_epg_json;
+      }
+   }
+
+   return result;
+}
+
+/*
    Handles http requests to this daemon
 */
 static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * connection,
@@ -57,10 +120,10 @@ static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * conne
   int ret;
 
   /* define the response */
-  char* page = (char*)url;
+  GString* content = iptvx_daemon_get_response((char*)url);
 
   /* create the response for the query */
-  response = MHD_create_response_from_buffer(strlen(page), (void*) page,
+  response = MHD_create_response_from_buffer(strlen(content->str), (void*)content->str,
                                              MHD_RESPMEM_PERSISTENT);
 
   /* set the response content type to json */

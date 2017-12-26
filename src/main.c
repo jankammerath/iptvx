@@ -49,6 +49,9 @@ bool main_js_ready;
 bool main_window_ready;
 bool main_epg_ready;
 
+/* daemon mode indicator */
+bool is_daemon;
+
 /* the thread polling and pushing updates */
 SDL_Thread* update_thread;
 
@@ -214,35 +217,44 @@ void epg_status_update(void* progress){
 
 	/* mark ready when 100 percent reached */
 	if(progressVal == 100){
-		/* we need to wait for js to come up as 
-			otherwise it'll not get the notification 
-			that the epg is ready */
-		while(!main_js_ready){
-			/* wait 1s for it to show up */
-			sleep(1);
-		}
+		/* check if daemon or client */
+		if(is_daemon){
+			/* is daemon, so send epg data in raw and as json */
+			GString* epg_data_json = iptvx_epg_get_json();
+			GArray* epg_data = iptvx_epg_get_data();
+			iptvx_daemon_set_epg_json(epg_data_json);
+			iptvx_daemon_set_epg_data(epg_data);
+		}else{
+			/* we need to wait for js to come up as 
+				otherwise it'll not get the notification 
+				that the epg is ready */
+			while(!main_js_ready){
+				/* wait 1s for it to show up */
+				sleep(1);
+			}
 
-		/* signal complete epg data, string will be freed inside */
-		GString* epg_data = iptvx_epg_get_json();
-		g_idle_add((GSourceFunc)iptvx_js_set_epg_data,epg_data);
-		
-		/* only start the initial channel playback 
-			when the epg was not ready before as otherwise 
-			it might interrupt existing playback when 
-			the epg just received updates */
-		if(!main_epg_ready){
-			/* set epg ready to true */
-			main_epg_ready = true;
+			/* signal complete epg data, string will be freed inside */
+			GString* epg_data = iptvx_epg_get_json();
+			g_idle_add((GSourceFunc)iptvx_js_set_epg_data,epg_data);
+			
+			/* only start the initial channel playback 
+				when the epg was not ready before as otherwise 
+				it might interrupt existing playback when 
+				the epg just received updates */
+			if(!main_epg_ready){
+				/* set epg ready to true */
+				main_epg_ready = true;
 
-			/* signal current channel */
-			int currentChannelId = iptvx_epg_get_current_channel_id();
-			g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
-							GINT_TO_POINTER(currentChannelId));
+				/* signal current channel */
+				int currentChannelId = iptvx_epg_get_current_channel_id();
+				g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
+								GINT_TO_POINTER(currentChannelId));
 
-			/* activate video playback by getting
-				the default channel and play it */
-			channel* defaultChannel = iptvx_epg_get_default_channel();
-			channel_video_play(defaultChannel->url->str,false);
+				/* activate video playback by getting
+					the default channel and play it */
+				channel* defaultChannel = iptvx_epg_get_default_channel();
+				channel_video_play(defaultChannel->url->str,false);
+			}
 		}
 	}
 
@@ -344,7 +356,7 @@ int main (int argc, char *argv[]){
 	application_active = true;
 
 	/* set the daemon indicator */
-	bool is_daemon = false;
+	is_daemon = false;
 
 	/* parse input arguments first */
 	struct arguments app_args = iptvx_parse_args(argc,argv);
@@ -385,6 +397,14 @@ int main (int argc, char *argv[]){
 			/* get the configured server port */
 			int daemon_port = iptvx_config_get_setting_int("daemon_port",8085);
 			iptvx_daemon_set_server_port(daemon_port);
+
+			/* set the recording tolerance for the daemon */
+			iptvx_daemon_set_record_tolerance(iptvx_config_get_setting_int
+												("record_tolerance",5));
+
+			/* set the directory to put recordings into */
+			iptvx_daemon_set_dir(iptvx_config_get_setting_string
+									("record","/var/iptvx/video"));
 
 			/* daemon mode */
 			iptvx_daemon_run();
