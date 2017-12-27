@@ -23,6 +23,7 @@
 #include <microhttpd.h>
 #include <glib.h>
 #include <json-c/json.h>
+#include "record.h"
 
 /* indicator to stay alive */
 volatile sig_atomic_t iptvx_daemon_alive;
@@ -47,23 +48,6 @@ GArray* iptvx_daemon_epg_data;
 
 /* a list with all recordings */
 GArray* recordlist;
-
-/* represents a single recording */
-struct recording{
-   /* name of the channel to record */
-   GString* channel;
-
-   /* start and stop timings */
-   long start;
-   long stop;
-
-   /* 0 = scheduled, 1 = in progress, 
-      2 = ready, 9 = failed */
-   int status;
-
-   /* filename of the recording */
-   GString* filename;
-} typedef recording;
 
 /*
    Sets the percentage amount of loaded epg content
@@ -148,6 +132,10 @@ GString* iptvx_daemon_get_recordlist_json(){
                json_object_new_int(rec->stop));
          json_object_object_add(j_rec,"status",
                json_object_new_int(rec->status));
+         json_object_object_add(j_rec,"seconds_recorded",
+               json_object_new_int(rec->seconds_recorded));
+         json_object_object_add(j_rec,"filesize",
+               json_object_new_int(rec->filesize));
 
          /* add to json array */
          json_object_array_add(j_rec_array,j_rec);
@@ -156,6 +144,31 @@ GString* iptvx_daemon_get_recordlist_json(){
 
    /* finally pass j_object to result string */
    result = g_string_new(json_object_to_json_string(j_rec_array));
+
+   return result;
+}
+
+/*
+   Generates a filename for a scheduled recording
+   @param         rec      the recording object
+   @return                 the string with the filename
+*/
+GString* iptvx_daemon_get_filename(recording rec){
+   GString* result;
+
+   /* generate the date for the filename */
+   time_t starttime_struct = rec.start;
+   char startdate_text[50];
+   strftime(startdate_text, 50, "%Y-%m-%d_%H:%M:%S", 
+               gmtime(&(starttime_struct)));
+
+   /* generate the filename */
+   char filename[265];
+   sprintf(filename,"%s/%s_%s.ts",record_dir->str,
+            startdate_text,rec.channel->str);
+
+   /* push filename into result */
+   result = g_string_new(filename);
 
    return result;
 }
@@ -174,7 +187,11 @@ recording iptvx_daemon_create_recording(char* channel, long start, long stop){
    result.start = start;
    result.stop = stop;
    result.status = 0;
-   result.filename = g_string_new("");
+   result.seconds_recorded = 0;
+   result.filesize = 0;
+
+   /* generate the filename for this recording */
+   result.filename = iptvx_daemon_get_filename(result);
 
    return result;
 }
@@ -312,7 +329,7 @@ void iptvx_daemon_check_recording(){
          and schedule for now */
       if(rec->start >= now && rec->stop <= now && rec->status == 0){
          /* supposed to start now, has not yet finished and still scheduled */
-         
+         iptvx_record_start(rec);
       }
    }
 }
