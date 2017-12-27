@@ -320,6 +320,9 @@ void start_window(){
 	main_window_width = iptvx_config_get_setting_int("width",win_size.width);
 	main_window_height = iptvx_config_get_setting_int("height",win_size.height);
 
+	/* get the rendering support setting */
+	char* render_support = iptvx_config_get_setting_string("render","sw");
+
 	/* get fullscreen setting */
 	bool window_fullscreen = iptvx_config_get_setting_bool("fullscreen",true);
 	iptvx_window_set_fullscreen(window_fullscreen);
@@ -346,7 +349,8 @@ void start_window(){
 		/* create the main window which 
 			will lock this main thread */
 		iptvx_create_window(main_window_width,main_window_height,
-							keydown,mouse_event,window_ready);
+							render_support,keydown,mouse_event,
+							window_ready);
 	}else{
 		/* throw an error when we don't have the app */
 		printf("App path not found or inaccessible\n");

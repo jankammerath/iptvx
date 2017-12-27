@@ -76,12 +76,13 @@ void iptvx_window_set_title(const char* title);
 
 /* 
     creates the main window for this application 
-    @param          width               defines width of the window
-    @param          height              defines height of the window
-    @param          keydown_callback     callback func when key down event
-    @param          startplay_callback   callback func to call when playback can start
+    @param          width                 defines width of the window
+    @param          height                defines height of the window
+    @param          render_support        defines renderer to use (sw, hw, gl)
+    @param          keydown_callback      callback func when key down event
+    @param          startplay_callback    callback func to call when playback can start
 */
-int iptvx_create_window(int width, int height, 
+int iptvx_create_window(int width, int height, char* render_support,
                     keydown_callback* keydown_func,
                     mouseevent_callback* mouseevent_func,
                     startplay_callback* startplay_func);

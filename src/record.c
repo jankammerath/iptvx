@@ -88,6 +88,15 @@ int iptvx_record_start_thread(void* recordingptr){
    m = libvlc_media_new_location(inst,rec->url->str);
    mp = libvlc_media_player_new_from_media(m);
 
+   /* start the recording process */
+   libvlc_media_player_play (mp);
+
+   /* monitor the recording process */
+   bool run_recording = true;
+   while(run_recording){
+      // TODO
+   }
+
    return result;
 }
 

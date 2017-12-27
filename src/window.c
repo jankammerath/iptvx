@@ -123,10 +123,11 @@ void iptvx_window_set_title(const char* title){
     creates the main window for this application 
     @param          width               defines width of the window
     @param          height              defines height of the window
+    @param          render_support        defines renderer to use (sw, hw, gl)
     @param          keydown_callback     callback func when key down event
     @param          startplay_callback   callback func to call when playback can start
 */
-int iptvx_create_window(int width, int height, 
+int iptvx_create_window(int width, int height, char* render_support,
                     keydown_callback* keydown_func,
                     mouseevent_callback* mouseevent_func,
                     startplay_callback* startplay_func){
@@ -140,14 +141,27 @@ int iptvx_create_window(int width, int height,
     bool is_fullscreen = false;
 
     /* create the SDL surface */
-    int sdl_surface_option = SDL_HWSURFACE; // SDL_SWSURFACE for software
-    ctx.surf = SDL_CreateRGBSurface(sdl_surface_option, width, height, 16, 0x001f, 0x07e0, 0xf800, 0);
-    ctx.mutex = SDL_CreateMutex();
+    int sdl_surface_option = SDL_SWSURFACE; // SDL_SWSURFACE for software
 
     /* alternatively SDL_SWSURFACE can be used for CPU rendering.
      * Use SDL_RESIZABLE to make the window resizable.
      */
-    int sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF; 
+    int sdl_video_options = SDL_ANYFORMAT | SDL_SWSURFACE; 
+
+    /* check the configured support option */
+    if(g_strcmp0(render_support,"hw")==0){
+        /* standard hardware rendering support */
+        sdl_surface_option = SDL_HWSURFACE | SDL_SRCCOLORKEY | SDL_SRCALPHA;
+        sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF 
+                            | SDL_ASYNCBLIT | SDL_HWPALETTE; 
+    }
+
+    /* create the surface for rendering */
+    ctx.surf = SDL_CreateRGBSurface(sdl_surface_option, width, height, 
+                                        16, 0x001f, 0x07e0, 0xf800, 0);
+    
+    /* create the mutex */
+    ctx.mutex = SDL_CreateMutex();
 
     if(window_fullscreen){
         sdl_video_options ^= SDL_FULLSCREEN;
