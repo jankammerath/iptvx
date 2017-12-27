@@ -26,6 +26,9 @@ struct recording{
    /* name of the channel to record */
    GString* channel;
 
+   /* the url of the channel */
+   GString* url;
+
    /* start and stop timings */
    long start;
    long stop;
@@ -37,7 +40,7 @@ struct recording{
    long filesize;
 
    /* 0 = scheduled, 1 = in progress, 
-      2 = ready, 9 = failed */
+      2 = finished, 9 = failed */
    int status;
 
    /* ptr to recording thread */

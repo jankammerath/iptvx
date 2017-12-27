@@ -24,6 +24,7 @@
 #include <glib.h>
 #include <json-c/json.h>
 #include "record.h"
+#include "channel.h"
 
 /* indicator to stay alive */
 volatile sig_atomic_t iptvx_daemon_alive;
@@ -144,6 +145,26 @@ GString* iptvx_daemon_get_recordlist_json(){
 
    /* finally pass j_object to result string */
    result = g_string_new(json_object_to_json_string(j_rec_array));
+
+   return result;
+}
+
+/*
+   Returns the url for a given channel
+   @param         channel_name      name of the channel
+   @return                          url of the channel
+*/
+GString* iptvx_daemon_get_url(GString* channel_name){
+   GString* result = g_string_new("");
+
+   int c = 0;
+   for(c = 0; c < iptvx_daemon_epg_data->len; c++){
+      channel* chan = &g_array_index(iptvx_daemon_epg_data,channel,c);
+      if(g_strcmp0(chan->name->str,channel_name->str)==0){
+         /* this is the channel we're looking for */
+         result = chan->url;
+      }
+   } 
 
    return result;
 }
@@ -328,6 +349,9 @@ void iptvx_daemon_check_recording(){
       /* check if recording not active 
          and schedule for now */
       if(rec->start >= now && rec->stop <= now && rec->status == 0){
+         /* add the url of the channel to the recording */
+         rec->url = iptvx_daemon_get_url(rec->channel);
+
          /* supposed to start now, has not yet finished and still scheduled */
          iptvx_record_start(rec);
       }

@@ -21,32 +21,7 @@
 
 #include <stdbool.h>
 #include <glib.h>
-
-/* a programme on a channel */
-struct programme{
-   GString* title;
-   long start;
-   long stop;
-   int productionDate;
-   GString* category;
-   GString* description;
-} typedef programme;
-
-/* a channel */
-struct channel{
-   bool isDefault;
-   GString* name;
-   GString* url;
-   GString* urlShell;
-   GString* epgUrl;
-   GString* epgFile;
-   GString* epgChannelId;
-   GString* epgShell;
-   GString* epgInterval;
-   GString* logoFile;
-   GString* logoUrl;
-   GArray* programmeList;
-} typedef channel;
+#include "channel.h"
 
 /*
    Sets the data directory to store epg cache and logo files

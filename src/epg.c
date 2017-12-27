@@ -31,35 +31,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "util.h"
+#include "channel.h"
 
 /* thread loading the epg data */
 SDL_Thread *epg_thread;
-
-/* a programme on a channel */
-struct programme{
-	GString* title;
-	long start;
-	long stop;
-	int productionDate;
-	GString* category;
-	GString* description;
-} typedef programme;
-
-/* a channel */
-struct channel{
-	bool isDefault;
-	GString* name;
-	GString* url;
-	GString* urlShell;
-	GString* epgUrl;
-	GString* epgFile;
-	GString* epgChannelId;
-	GString* epgShell;
-	GString* epgInterval;
-	GString* logoFile;
-	GString* logoUrl;
-	GArray* programmeList;
-} typedef channel;
 
 /* the channel list */
 GArray* list;
