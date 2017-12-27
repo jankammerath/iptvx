@@ -64,6 +64,7 @@ sdl_context ctx;
 /* ptr to rendered data */
 void* overlay_data;
 bool* overlay_ready;
+bool* overlay_rendering;
 
 /* local storage */
 GByteArray* current_overlay;
@@ -105,10 +106,12 @@ window_size iptvx_window_get_size(){
     defines the overlay data
     @param      overlay_ptr         pointer to PNG data
     @param      ready_ptr           pointer to bool indicating if ready
+    @param      rendering_ptr       pointer to bool indicating if rendering
 */
-void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr){
+void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr, bool* rendering_ptr){
     overlay_data = overlay_ptr;
     overlay_ready = ready_ptr;
+    overlay_rendering = rendering_ptr;
 }
 
 /*
@@ -229,18 +232,22 @@ int iptvx_create_window(int width, int height, char* render_support,
 
         /* take the data from the new overlay */
         if(overlay_ready){
+            *overlay_rendering = true;
             png_data* overlay_png_ref = (png_data*)overlay_data;
             g_byte_array_free(current_overlay,false);
             current_overlay = g_byte_array_new_take(overlay_png_ref->data,
                                                     overlay_png_ref->length);
+            *overlay_rendering = false;
         }
 
         if(current_overlay->data != NULL){
+            *overlay_rendering = true;
             SDL_RWops *overlay_rwops = SDL_RWFromMem(current_overlay->data,current_overlay->len);
             overlay = IMG_LoadPNG_RW(overlay_rwops);
             SDL_BlitSurface(overlay, NULL, screen, NULL);
             SDL_FreeRW(overlay_rwops);
             SDL_FreeSurface(overlay);
+            *overlay_rendering = false;
         }
 
         /* unlock mutex */

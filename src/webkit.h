@@ -34,6 +34,12 @@ extern void* iptvx_get_overlay_ptr();
 const char* iptvx_get_overlay_title();
 
 /* 
+  returns ptr to bool indicating if busy rendering
+  @return        true when busy rendering, otherwise false
+*/
+bool* iptvx_get_overlay_rendering_ptr();
+
+/* 
   returns ptr to bool indicating if busy
   @return        true when budy, otherwise false
 */

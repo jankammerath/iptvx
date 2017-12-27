@@ -334,7 +334,8 @@ void start_window(){
 	/* get the pointers to the webkit png data and status */
 	void* overlay_data = iptvx_get_overlay_ptr();
 	void* overlay_ready = iptvx_get_overlay_ready_ptr();
-	iptvx_window_set_overlay(overlay_data,overlay_ready);
+	void* overlay_rendering = iptvx_get_overlay_rendering_ptr();
+	iptvx_window_set_overlay(overlay_data,overlay_ready,overlay_rendering);
 
 	/* start the webkit thread */
 	char* overlayApp = iptvx_config_get_overlay_app();

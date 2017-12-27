@@ -27,6 +27,7 @@ static GtkWidget *iptvx_gtk_window;
 static GtkWidget *iptvx_gtk_webview;
 static WebKitUserContentManager* user_content_mgr;
 static bool iptvx_webkit_ready;
+static bool iptvx_overlay_rendering;
 
 int iptvx_webkit_width;
 int iptvx_webkit_height;
@@ -69,8 +70,16 @@ const char* iptvx_get_overlay_title(){
 }
 
 /* 
+  returns ptr to bool indicating if busy rendering
+  @return        true when busy rendering, otherwise false
+*/
+bool* iptvx_get_overlay_rendering_ptr(){
+  return &iptvx_overlay_rendering;
+}
+
+/* 
   returns ptr to bool indicating if busy
-  @return        true when budy, otherwise false
+  @return        true when busy, otherwise false
 */
 bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
@@ -97,21 +106,25 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
 
   iptvx_webkit_ready = false;
 
-  old_png_byte_data = png_byte_data;  
-  png_byte_data = g_byte_array_new();
-  cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
-  overlay_data.data = png_byte_data->data;
-  overlay_data.length = png_byte_data->len;
+  /* flush data only when graphics is not currently rendering */
+  if(iptvx_overlay_rendering == false){
+    old_png_byte_data = png_byte_data;  
+    png_byte_data = g_byte_array_new();
+    cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
+    overlay_data.data = png_byte_data->data;
+    overlay_data.length = png_byte_data->len;
+
+    /* free the byte array */
+    g_byte_array_free(old_png_byte_data,true);
+  }
 
   /* free the surface */
   cairo_surface_destroy(surface);
 
+  /* set ready indicator to true */
   iptvx_webkit_ready = true;
 
-  usleep(1000);
-
-  g_byte_array_free(old_png_byte_data,true);
-
+  /* call for new snapshot immediately */
   webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);

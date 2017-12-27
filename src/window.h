@@ -65,8 +65,9 @@ window_size iptvx_window_get_size();
     defines the overlay data
     @param      overlay_ptr         pointer to PNG data
     @param      ready_ptr           pointer to bool indicating if ready
+    @param      rendering_ptr       pointer to bool indicating if rendering
 */
-void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr);
+void iptvx_window_set_overlay(void* overlay_ptr, bool* ready_ptr, bool* rendering_ptr);
 
 /*
     sets the title of the window
