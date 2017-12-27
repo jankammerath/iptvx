@@ -33,6 +33,9 @@ int iptvx_daemon_server_port;
 /* defines recording tolerance in minutes */
 int iptvx_daemon_record_tolerance;
 
+/* sets the percentage of epg content loaded */
+int iptvx_daemon_epg_status;
+
 /* represents the working dir */
 GString* record_dir;
 
@@ -61,6 +64,14 @@ struct recording{
    /* filename of the recording */
    GString* filename;
 } typedef recording;
+
+/*
+   Sets the percentage amount of loaded epg content
+   @param      percentage     int with percentage loaded (0-100)
+*/
+void iptvx_daemon_set_epg_status(int percentage){
+   iptvx_daemon_epg_status = percentage;
+}
 
 /*
    Sets the recording tolerance in minutes
@@ -195,6 +206,17 @@ void iptvx_daemon_add_recording(recording rec){
 }
 
 /*
+   Gets the current status of the daemon and 
+   its operations as json string
+   @return        json string with status info
+*/
+GString* iptvx_daemon_get_status_json(){
+   json_object* j_status = json_object_new_object();
+   json_object_object_add(j_status,"epg_loaded",json_object_new_int(iptvx_daemon_epg_status));
+   return g_string_new(json_object_to_json_string(j_status));
+}
+
+/*
    Provides the proper result for the url
    @param      request_url    url requested from the client
    @param      connection     handle for the current connection
@@ -204,7 +226,10 @@ GString* iptvx_daemon_get_response(char* request_url, struct MHD_Connection* con
    GString* result = g_string_new("{}");
 
    /* check for requested data */
-   if(g_strcmp0(request_url,"/epg.json")==0){
+   if(g_strcmp0(request_url,"/")==0){
+      /* current epg status is requested */
+      result = iptvx_daemon_get_status_json();
+   }if(g_strcmp0(request_url,"/epg.json")==0){
       /* full epg in json is requested */
       if(iptvx_daemon_epg_json != NULL){
          result = iptvx_daemon_epg_json;
@@ -271,12 +296,37 @@ static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * conne
 }
 
 /*
+   Checks if any scheduled recording is bound
+   to be started and initialises the recording process
+*/
+void iptvx_daemon_check_recording(){
+   /* get the current timestamp */
+   long now = time(NULL);
+
+   /* go through the list of scheduled recordings */
+   int c = 0;
+   for(c = 0; c < recordlist->len; c++){
+      recording* rec = &g_array_index(recordlist,recording,c);
+   
+      /* check if recording not active 
+         and schedule for now */
+      if(rec->start >= now && rec->stop <= now && rec->status == 0){
+         /* supposed to start now, has not yet finished and still scheduled */
+         
+      }
+   }
+}
+
+/*
    Runs the daemon loop, checks for signals
    and performs the necessary operations.
 */
 void iptvx_daemon_run(){
    /* indicate the daemon to stay alive */
    iptvx_daemon_alive = true;
+
+   /* initialise epg status to zero */
+   iptvx_daemon_epg_status = 0;
 
    /* initialise recording list */
    recordlist = g_array_new(false,false,sizeof(recording));
@@ -299,7 +349,9 @@ void iptvx_daemon_run(){
    /* monitor scheduled actions until a signal 
       is caught to stop or interrupt */
    while(iptvx_daemon_alive == true){
-      
+      /* start recording if necessary */
+      iptvx_daemon_check_recording();
+
       /* wait a sec */
       sleep(1);
    }

@@ -28,6 +28,12 @@
 #include <glib.h>
 
 /*
+   Sets the percentage amount of loaded epg content
+   @param      percentage     int with percentage loaded (0-100)
+*/
+void iptvx_daemon_set_epg_status(int percentage);
+
+/*
    Sets the recording tolerance in minutes
    @param      tolerance      the tolerance in minutes
 */

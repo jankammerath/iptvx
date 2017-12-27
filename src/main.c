@@ -258,6 +258,12 @@ void epg_status_update(void* progress){
 		}
 	}
 
+	/* send epg status to daemon if alive */
+	if(is_daemon){
+		iptvx_daemon_set_epg_status(progressVal);
+	}
+
+	/* send epg status to js client */
 	if(main_js_ready){
 		/* send epg status update to js */
 		g_idle_add((GSourceFunc)iptvx_js_update_epg_status,
