@@ -54,6 +54,15 @@ struct recording{
 } typedef recording;
 
 /*
+   Cancel the recording that is currently active
+   @param         recptr      ptr to the current recording
+*/
+void iptvx_record_cancel(recording* recptr){
+   /* just have SDL kill the thread */
+   SDL_KillThread(recptr->thread);
+}
+
+/*
    Actually executes the recording using the recording
    data structure. It is supposed to be executed within
    a thread.

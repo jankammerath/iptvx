@@ -54,6 +54,12 @@ struct recording{
 } typedef recording;
 
 /*
+   Cancel the recording that is currently active
+   @param         recptr      ptr to the current recording
+*/
+void iptvx_record_cancel(recording* recptr);
+
+/*
    Starts the recording process and finishes it after stoptime
    @param         rec      struct representing recording data
 */

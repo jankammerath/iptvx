@@ -25,6 +25,7 @@
 #include <json-c/json.h>
 #include "record.h"
 #include "channel.h"
+#include "util.h"
 
 /* indicator to stay alive */
 volatile sig_atomic_t iptvx_daemon_alive;
@@ -256,6 +257,32 @@ GString* iptvx_daemon_get_status_json(){
 }
 
 /*
+   Removes a recording from the list and from the disk, if exists
+   @param         number            id of the recording in the list
+*/
+void iptvx_daemon_remove_recording(long number){
+   /* make sure it is not out of bounds */
+   if(number >= 0 && number < recordlist->len){
+      /* get the recording to check it's status */
+      recording* exist_rec = &g_array_index(recordlist,recording,number);
+
+      if(exist_rec->status == 1){
+         /* this is in progress, so we 
+            need to stop the recording now */
+         iptvx_record_cancel(exist_rec);
+      }if(exist_rec->status == 2){
+         /* this is already finished and just 
+            sitting on the disk where we will
+            remove it from now */
+         util_delete_file(exist_rec->filename->str);
+      }
+
+      /* finally also remove it from the list */
+      g_array_remove_index(recordlist,number);
+   }
+}
+
+/*
    Provides the proper result for the url
    @param      request_url    url requested from the client
    @param      connection     handle for the current connection
@@ -296,6 +323,16 @@ GString* iptvx_daemon_get_response(char* request_url, struct MHD_Connection* con
 
             /* append new recording to list */
             iptvx_daemon_add_recording(new_rec);
+         }
+      }if(g_strcmp0(requestedAction,"remove")==0){
+         /* requested to remove recording */
+         const char* rec_item = MHD_lookup_connection_value 
+                  (connection, MHD_GET_ARGUMENT_KIND, "item");
+
+         /* check for the correct item number */
+         if(rec_item != NULL){
+            /* remove the item from the list */
+            iptvx_daemon_remove_recording(atol(rec_item));
          }
       }
 
@@ -396,8 +433,8 @@ void iptvx_daemon_run(){
       /* start recording if necessary */
       iptvx_daemon_check_recording();
 
-      /* wait a sec */
-      sleep(1);
+      /* wait */
+      sleep(5);
    }
 
    /* stop the daemon when finished */
