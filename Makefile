@@ -4,7 +4,11 @@ CFLAGS = `pkg-config --cflags --libs glib-2.0 webkit2gtk-4.0 libconfig libmicroh
 # this makes the binary
 all:
 	mkdir -p bin
-	$(CC) -g -std=c99 -o bin/iptvx src/*.c $(CFLAGS) 
+	$(CC) -std=c99 -o bin/iptvx src/*.c $(CFLAGS)
+
+debug:
+	mkdir -p bin
+	$(CC) -g -std=c99 -o bin/iptvx src/*.c $(CFLAGS)
 
 # use this for standalone install
 install:

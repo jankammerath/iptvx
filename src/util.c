@@ -30,6 +30,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <curl/curl.h>
+#include <sys/stat.h>
 #include <glib.h>
 
 /*
@@ -100,6 +101,23 @@ bool util_file_exists(char* fileName){
 	}
 
 	return result;
+}
+
+/*
+  Returns the size of a file in byte
+  @param    fileName    full file path of the file
+  @return               long with the size in byte
+*/
+long util_get_filesize(char* fileName){
+  long result = 0;
+
+  if(util_file_exists(fileName)){
+    struct stat st;
+    stat(fileName, &st);
+    result = st.st_size;
+  }
+
+  return result;
 }
 
 /*

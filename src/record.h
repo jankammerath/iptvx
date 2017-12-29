@@ -33,6 +33,9 @@ struct recording{
    long start;
    long stop;
 
+   /* recording tolerance in seconds */
+   long tolerance;
+
    /* number of minutes already recorded */
    int seconds_recorded;
 

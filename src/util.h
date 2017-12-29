@@ -57,6 +57,13 @@ GString* util_shell_exec(GString* command);
 bool util_file_exists(char* fileName);
 
 /*
+  Returns the size of a file in byte
+  @param    fileName    full file path of the file
+  @return               long with the size in byte
+*/
+long util_get_filesize(char* fileName);
+
+/*
    Writes a string into a file
    @param   file        the file path to write into
    @param   content     the content to write into the file

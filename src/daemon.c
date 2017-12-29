@@ -210,6 +210,7 @@ recording iptvx_daemon_create_recording(char* channel, long start, long stop){
    result.status = 0;
    result.seconds_recorded = 0;
    result.filesize = 0;
+   result.tolerance = iptvx_daemon_record_tolerance*60;
 
    /* generate the filename for this recording */
    result.filename = iptvx_daemon_get_filename(result);
@@ -348,7 +349,9 @@ void iptvx_daemon_check_recording(){
    
       /* check if recording not active 
          and schedule for now */
-      if(rec->start >= now && rec->stop <= now && rec->status == 0){
+      if(rec->start >= (now-(rec->tolerance)) 
+         && rec->stop <= (now+(rec->tolerance)) 
+         && rec->status == 0){
          /* add the url of the channel to the recording */
          rec->url = iptvx_daemon_get_url(rec->channel);
 

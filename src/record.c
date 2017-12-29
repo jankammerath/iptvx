@@ -19,6 +19,7 @@
 #include <glib.h>
 #include <vlc/vlc.h>
 #include <SDL/SDL.h>
+#include "util.h"
 
 /* represents a single recording */
 struct recording{
@@ -31,6 +32,9 @@ struct recording{
    /* start and stop timings */
    long start;
    long stop;
+
+   /* recording tolerance in seconds */
+   long tolerance;
 
    /* number of minutes already recorded */
    int seconds_recorded;
@@ -91,10 +95,32 @@ int iptvx_record_start_thread(void* recordingptr){
    /* start the recording process */
    libvlc_media_player_play (mp);
 
+   /* set the start time of the recording */
+   long rec_starttime = time(NULL);
+
    /* monitor the recording process */
    bool run_recording = true;
    while(run_recording){
-      // TODO
+      /* get the current time */
+      long now = time(NULL);
+      
+      /* check if recording has hit end */
+      if(now >= (rec->stop+rec->tolerance)){
+         /* recording has hit end, so kill it */
+         libvlc_media_player_stop (mp);
+         libvlc_media_player_release (mp);
+         libvlc_release (inst);                    
+         
+         /* set the indicator, so we can stop */
+         run_recording = false;
+
+         /* set the status to finished */
+         rec->status = 2;
+      }
+      
+      /* update info on current recording */
+      rec->seconds_recorded = now-rec_starttime;
+      rec->filesize = util_get_filesize(rec->filename->str);
    }
 
    return result;
