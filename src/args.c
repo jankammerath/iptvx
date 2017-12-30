@@ -19,7 +19,7 @@
 #include <argp.h>
 #include <stdbool.h>
 
-const char *argp_program_version = "iptvx 0.5 beta";
+const char *argp_program_version = "iptvx 0.6 beta";
 const char *argp_program_bug_address = "<dev@iptvx.org>";
 static char args_doc[] = "";
 static char doc[] = "iptvx -- An IPTV player and recorder";

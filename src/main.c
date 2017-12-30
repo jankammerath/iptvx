@@ -33,6 +33,7 @@
 #include "epg.h"
 #include "keycode.h"
 #include "daemon.h"
+#include "db.h"
 
 /* application status */
 bool application_active;
@@ -217,11 +218,14 @@ void epg_status_update(void* progress){
 
 	/* mark ready when 100 percent reached */
 	if(progressVal == 100){
+		/* get the epg data and flush into db */
+		GArray* epg_data = iptvx_epg_get_data();
+		iptvx_db_update(epg_data);
+
 		/* check if daemon or client */
 		if(is_daemon){
 			/* is daemon, so send epg data in raw and as json */
 			GString* epg_data_json = iptvx_epg_get_json();
-			GArray* epg_data = iptvx_epg_get_data();
 			iptvx_daemon_set_epg_json(epg_data_json);
 			iptvx_daemon_set_epg_data(epg_data);
 		}else{
@@ -387,6 +391,10 @@ int main (int argc, char *argv[]){
 		main_window_ready = false;
 		main_epg_ready = false;
 
+		/* initialise the database */
+		char* db_file = iptvx_config_get_setting_string("db","/var/iptvx/db");
+		iptvx_db_init(db_file);
+
 		/* get the hours to store in the epg */
 		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
 		iptvx_epg_set_storage_hours(epg_hours);
@@ -417,12 +425,16 @@ int main (int argc, char *argv[]){
 			iptvx_daemon_set_dir(iptvx_config_get_setting_string
 									("record","/var/iptvx/video"));
 
-			/* daemon mode */
+			/* daemon mode execution which 
+				will lock the thread */
 			iptvx_daemon_run();
 		}else{
 			/* window or client app mode */
 			start_window();
 		}
+
+		/* close the database when finished */
+		iptvx_db_close();
 	}else{
 		/* throw an error when config not initialised */
 		printf("Failed to initialise the configuration\n");
