@@ -78,31 +78,35 @@ long iptvx_db_get_programme_id(int chanid, programme* prog){
    @return                          id of the category
 */
 long iptvx_db_get_category_id(char* category_name){
-   long result = -1;
+   long result = 0;
 
-   if(category_name != NULL && strlen(category_name) > 0){
-      /* prepare the sql statement */
-      char* sql = sqlite3_mprintf("SELECT categoryid FROM category "
-                                 "WHERE categoryname = '%q'", category_name);
+   /* prepare the sql statement */
+   char* sql = sqlite3_mprintf("SELECT categoryid FROM category "
+                              "WHERE categoryname = '%q'", category_name);
 
-      sqlite3_stmt *stmt;
-      sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-      while (sqlite3_step(stmt) != SQLITE_DONE) {
-         int i;
-         int column_count = sqlite3_column_count(stmt);
-         for(i = 0; i < column_count; i++){
-            result = sqlite3_column_int64(stmt, i);
-         }
-      }
-
-      if(result == -1){
-         char* insert_sql = sqlite3_mprintf("INSERT INTO category "
-                  "(categoryname) VALUES ('%q')", category_name);
-         sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
-         sqlite3_free(insert_sql);
-         result = sqlite3_last_insert_rowid(db);
+   sqlite3_stmt *stmt;
+   sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+   while (sqlite3_step(stmt) != SQLITE_DONE) {
+      int i;
+      int column_count = sqlite3_column_count(stmt);
+      for(i = 0; i < column_count; i++){
+         result = sqlite3_column_int64(stmt, i);
       }
    }
+
+   /* make a gstring out of the name */
+   GString* catname = g_string_new(category_name);
+
+   if(result == 0 && catname->len > 0){
+      char* insert_sql = sqlite3_mprintf("INSERT INTO category "
+               "(categoryname) VALUES ('%q')", category_name);
+      sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
+      sqlite3_free(insert_sql);
+      result = sqlite3_last_insert_rowid(db);
+   }
+
+   /* finally free the gstring again */
+   g_string_free(catname,false);
 
    return result;
 }
@@ -178,9 +182,10 @@ void iptvx_db_insert_channel(channel* chan){
 
    /* insert if it doesn't exist */
    if(channel_exists == false){
+      char* errmsg;
       char* insert_sql = sqlite3_mprintf("INSERT INTO channel "
                "(channelname) VALUES ('%q')" ,chan->name->str);
-      sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
+      sqlite3_exec(db,insert_sql,NULL,NULL,&errmsg);
       sqlite3_free(insert_sql);
    }
 
