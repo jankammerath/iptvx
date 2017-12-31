@@ -91,4 +91,11 @@ void* util_download_file(char* url, char* filePath);
 */
 GString* util_download_string(char* url);
 
+/*
+  Gets the timestamp of the last modification time
+  @param      fileName    path of the file to get date for
+  @return                 the timestamp of the last modification
+*/
+long util_file_lastmodified(char* fileName);
+
 #endif

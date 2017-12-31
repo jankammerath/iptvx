@@ -48,6 +48,9 @@ int iptvx_epg_storage_hours;
 /* define after how many days to delete files */
 int iptvx_epg_file_expiry_days;
 
+/* minimum age for epg files to be deleted */
+int iptvx_epg_file_min_age_hours;
+
 /* defines current channel */
 int iptvx_epg_current_channel;
 
@@ -64,6 +67,14 @@ void (*epg_status_update_callback)(void*);
 */
 void iptvx_epg_set_data_dir(char* data_dir){
 	epg_data_dir = g_string_new(data_dir);
+}
+
+/*
+   Defines the minimum age of epg files for deletion
+   @param         hours        int defining the hours
+*/
+void iptvx_epg_set_min_age_hours(int hours){
+	iptvx_epg_file_min_age_hours = hours;
 }
 
 /*
@@ -292,7 +303,7 @@ long iptvx_epg_get_xmltv_timestamp(GString* xmltvDate){
 	@param 			channel 		ptr to the channel to check
 	@return 						int value with max epoch stored
 */
-int iptvx_epg_get_max_time(channel* current){
+long iptvx_epg_get_max_time(channel* current){
 	int result = 0;
 
 	int p;
@@ -586,6 +597,14 @@ int iptvx_epg_load(void* nothing){
 	/* delete any trash that might still be on disk */
 	iptvx_epg_clean_files();
 
+	/*
+		What happens here: first of all the local files
+		present are queried to load the cached epg data
+		from disk. Afterwards this function will check 
+		if the files are completely outdated, do not
+		contain the necessary data anymore and then
+		might catch them from the server again.
+	*/
 	int c = 0;
 	for(c = 0; c < list->len; c++){
 		/* get this channel */
@@ -623,10 +642,32 @@ int iptvx_epg_load(void* nothing){
 				hours of programme included. We update the file 
 				when the cached one does not include the amount 
 				of hours defined in config */
-			int max_epg_time = time(NULL)+(iptvx_epg_storage_hours*3600);
-			int max_stored = iptvx_epg_get_max_time(current);
+			bool refresh_file = false;
 
+			time_t today_t = time(NULL);
+			today_t -= (today_t % 86400); /* get the timestamp for last midnight */
+			long max_epg_time = today_t+(iptvx_epg_storage_hours*3600);
+			long max_stored = iptvx_epg_get_max_time(current);
 			if(max_stored < max_epg_time){
+				refresh_file = true;
+			}
+
+			if(current->epgFile->len > 0){
+				char* epgCacheDir = g_strjoin("/",epg_data_dir->str,"epg",NULL);
+				char* cacheFilePath = g_strjoin("/",epgCacheDir,current->epgFile->str,NULL);
+				int file_expiry_ts = (util_file_lastmodified(cacheFilePath)
+									+ (iptvx_epg_file_min_age_hours*3600));
+
+				/* If the file is supposed to be refreshed as it does not 
+					contain the sufficient amount of epg data, the 'epg_min_age_hours' 
+					setting prevents the application from reloading the file 
+					again and again. Default value for this is usually 3 hours. */
+				if(refresh_file == true && file_expiry_ts < (time(NULL))){
+					refresh_file = false;
+				}
+			}
+
+			if(refresh_file){
 				/* fetch epg data again */
 				iptvx_epg_load_channel(current,time(NULL)-18000,true);
 			}

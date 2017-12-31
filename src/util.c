@@ -271,3 +271,20 @@ GString* util_download_string(char* url){
 
  	return result;
 }
+
+/*
+  Gets the timestamp of the last modification time
+  @param      fileName    path of the file to get date for
+  @return                 the timestamp of the last modification
+*/
+long util_file_lastmodified(char* fileName){
+  long result = 0;
+
+  if(util_file_exists(fileName)){
+    struct stat attrib;
+    stat(fileName, &attrib);
+    result = attrib.st_mtime;
+  }
+
+  return result;
+}

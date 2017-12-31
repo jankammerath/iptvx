@@ -30,6 +30,12 @@
 void iptvx_epg_set_data_dir(char* data_dir);
 
 /*
+   Defines the minimum age of epg files for deletion
+   @param         hours        int defining the hours
+*/
+void iptvx_epg_set_min_age_hours(int hours);
+
+/*
    Defines after how many days the files will be deleted
    @param         days        int defining the days
 */
