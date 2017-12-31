@@ -45,6 +45,7 @@ struct channel{
    GString* logoFile;
    GString* logoUrl;
    GArray* programmeList;
+   long lastUpdated;
 } typedef channel;
 
 #endif
