@@ -5,6 +5,7 @@
     <param name="extract">iptvx.spec</param>
     <param name="extract">iptvx.dsc</param>
     <param name="extract">PKGBUILD</param>
+    <param name="include">*data/db*</param>
     <param name="include">*app/*</param>
     <param name="include">*cfg/*</param>
     <param name="include">*src/*</param>
