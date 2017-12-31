@@ -20,9 +20,11 @@ install:
 	mkdir -p /var/iptvx/data/epg
 	mkdir -p /var/iptvx/data/logo
 	cp app /var/iptvx/ -R
+	cp data/db /var/iptvx/db
 	chmod 755 /usr/bin/iptvx
 	chmod 644 /var/iptvx -R
 	chmod 644 /etc/iptvx -R
+	cp iptvx.service /etc/systemd/system/iptvx.service
 
 clean:
 	rm -f bin/iptvx
@@ -37,6 +39,8 @@ packinstall:
 	mkdir -p $(DESTDIR)/var/iptvx/data/epg
 	mkdir -p $(DESTDIR)/var/iptvx/data/logo
 	cp app $(DESTDIR)/var/iptvx/ -R
+	cp data/db $(DESTDIR)/var/iptvx/db
 	chmod 755 $(DESTDIR)/usr/bin/iptvx
 	chmod 644 $(DESTDIR)/var/iptvx -R
 	chmod 644 $(DESTDIR)/etc/iptvx -R
+	cp iptvx.service $(DESTDIR)/etc/systemd/system/iptvx.service

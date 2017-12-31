@@ -65,11 +65,13 @@ chmod 755 %{buildroot}%{_bindir}/iptvx
 mkdir -p %{buildroot}%{_sysconfdir}/iptvx
 cp cfg/iptvx.conf %{buildroot}%{_sysconfdir}/iptvx/iptvx.conf
 cp cfg/channels.conf %{buildroot}%{_sysconfdir}/iptvx/channels.conf
-mkdir -p %{buildroot}%{_datadir}/iptvx/data/epg
-mkdir -p %{buildroot}%{_datadir}/iptvx/data/logo
-cp app %{buildroot}%{_datadir}/iptvx/ -R
+mkdir -p %{buildroot}%{_var}/iptvx/data/epg
+mkdir -p %{buildroot}%{_var}/iptvx/data/logo
+cp app %{buildroot}%{_var}/iptvx/ -R
+cp data/db %{buildroot}%{_var}/iptvx/db
+chmod 644 %{buildroot}%{_var}/iptvx/ -R
 
 %files
 %{_bindir}/iptvx
 %{_sysconfdir}/iptvx/
-%{_datadir}/iptvx/
+%{_var}/iptvx/

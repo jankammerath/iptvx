@@ -1,0 +1,9 @@
+[Unit]
+Description=iptvx epg and recording service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/iptvx --daemon
+
+[Install]
+WantedBy=multi-user.target
