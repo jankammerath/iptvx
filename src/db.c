@@ -213,6 +213,10 @@ void iptvx_db_insert_channel(channel* chan){
    sqlite3_free(sql);
 }
 
+void iptvx_db_add_recording(){
+
+}
+
 /*
    Updates the database with epg data
    @param      epg      array with all epg data

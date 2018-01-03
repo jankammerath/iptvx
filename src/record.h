@@ -20,38 +20,7 @@
 #define RECORD_H
 
 #include <glib.h>
-
-/* represents a single recording */
-struct recording{
-   /* name of the channel to record */
-   GString* channel;
-
-   /* the url of the channel */
-   GString* url;
-
-   /* start and stop timings */
-   long start;
-   long stop;
-
-   /* recording tolerance in seconds */
-   long tolerance;
-
-   /* number of minutes already recorded */
-   int seconds_recorded;
-
-   /* size of recorded file in bytes */
-   long filesize;
-
-   /* 0 = scheduled, 1 = in progress, 
-      2 = finished, 9 = failed */
-   int status;
-
-   /* ptr to recording thread */
-   void* thread;
-
-   /* filename of the recording */
-   GString* filename;
-} typedef recording;
+#include "recording.h"
 
 /*
    Cancel the recording that is currently active
