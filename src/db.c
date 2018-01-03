@@ -21,6 +21,7 @@
 #include <string.h>
 #include <glib.h>
 #include "channel.h"
+#include "recording.h"
 
 /* db handle */
 sqlite3* db;
@@ -213,7 +214,11 @@ void iptvx_db_insert_channel(channel* chan){
    sqlite3_free(sql);
 }
 
-void iptvx_db_add_recording(){
+/*
+   Updates the recording in the database
+   @param         reclist        array with all current recordings
+*/
+void iptvx_db_update_recording(GArray* reclist){
 
 }
 

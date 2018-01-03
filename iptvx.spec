@@ -69,7 +69,7 @@ mkdir -p %{buildroot}%{_var}/iptvx/data/epg
 mkdir -p %{buildroot}%{_var}/iptvx/data/logo
 cp app %{buildroot}%{_var}/iptvx/ -R
 cp data/db %{buildroot}%{_var}/iptvx/db
-chmod 644 %{buildroot}%{_var}/iptvx/ -R
+chmod 777 %{buildroot}%{_var}/iptvx/ -R
 
 %files
 %{_bindir}/iptvx
