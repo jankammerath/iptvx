@@ -16,12 +16,19 @@
 
 */
 #include <glib.h>
+#include "recording.h"
 
 /*
    Initialises and opens the database
    @param         filename       file path of the db file
 */
 void iptvx_db_init(char* filename);
+
+/*
+   Removes a recording from the database
+   @param         rec         the recording to remove from database
+*/
+void iptvx_db_remove_recording(recording* rec);
 
 /*
    Updates the recording in the database

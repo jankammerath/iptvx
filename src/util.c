@@ -151,7 +151,15 @@ GString* file_get_contents(GString* file){
     return NULL;
   }
 
-	return g_string_new(out);
+  /* free the io channel data and shut it down */
+  g_io_channel_shutdown(f,false,NULL);
+  g_io_channel_unref(f);
+
+  /* copy into result string and free char buf */
+  GString* result = g_string_new(out);
+  free(out);
+
+	return result;
 }
 
 /*

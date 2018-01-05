@@ -16,6 +16,8 @@
 
 */
 
+#pragma once
+
 #include <glib.h>
 
 /* represents a single recording */

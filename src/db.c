@@ -257,6 +257,24 @@ long iptvx_db_get_recording_id(recording* rec){
 }
 
 /*
+   Removes a recording from the database
+   @param         rec         the recording to remove from database
+*/
+void iptvx_db_remove_recording(recording* rec){
+   /* get the db id of the channel the recording is for */
+   long recchannelid = iptvx_db_get_channel_id(rec->channel->str);
+
+   /* prepare the delete statement for the recording */
+   char* delete_sql = sqlite3_mprintf("DELETE FROM record "
+                        "WHERE recordchannelid = %lld "
+                        "AND recordstart = %lld "
+                        "AND recordstop = %lld",
+                        recchannelid, rec->start,rec->stop);
+      sqlite3_exec(db,delete_sql,NULL,NULL,NULL);
+      sqlite3_free(delete_sql);
+}
+
+/*
    Inserts a recording into the database if it doesn't exist
    @param      rec         recording struct with the new recording
 */

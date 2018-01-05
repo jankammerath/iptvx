@@ -138,8 +138,6 @@ GArray* iptvx_epg_get_data(){
 	@return 		JSON string with all EPG info
 */
 GString* iptvx_epg_get_json(){
-	GString* result = g_string_new(NULL);
-
 	/* json result object array */
 	json_object* j_chan_array = json_object_new_array();
 
@@ -196,7 +194,11 @@ GString* iptvx_epg_get_json(){
 	}
 
 	/* finally pass j_object to result string */
-	result = g_string_new(json_object_to_json_string(j_chan_array));
+	char* json_result_buf = (char*)json_object_to_json_string(j_chan_array);
+	GString* result = g_string_new(json_result_buf);
+
+	/* free the json object */
+	json_object_put(j_chan_array);
 
 	return result;
 }
@@ -369,7 +371,12 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv, channel* chan){
 					/* there is an epg channel id defined in the channel,
 						so we need to check if this is a programme node
 						and the node actually matches the epgChannelId */
-					GString* xmlChannelId = g_string_new(xmlGetProp(progNode,"channel"));
+					char* progNodeChannelProp = xmlGetProp(progNode,"channel");
+					GString* xmlChannelId = g_string_new(progNodeChannelProp);
+					
+					/* free original char buf ptr */
+					free(progNodeChannelProp);
+
 					if(g_strcmp0(xmlChannelId->str,chan->epgChannelId->str)==0){
 						/* the channel attribute in the xml matches 
 							the config epgChannelId */

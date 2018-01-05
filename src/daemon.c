@@ -281,6 +281,9 @@ void iptvx_daemon_remove_recording(long number){
          util_delete_file(exist_rec->filename->str);
       }
 
+      /* remove recording from database */
+      iptvx_db_remove_recording(exist_rec);
+
       /* finally also remove it from the list */
       g_array_remove_index(recordlist,number);
    }
@@ -427,7 +430,10 @@ void iptvx_daemon_init_recordlist(){
       
       /* default values to be set below */
       rec->seconds_recorded = 0;
-      rec->filesize = 0;      
+      rec->filesize = 0;
+
+      /* scheduled status default */   
+      rec->status = 0;   
 
       /* Check the current status.
          This will only check for recordings to be 
@@ -438,12 +444,12 @@ void iptvx_daemon_init_recordlist(){
          a recording that just came out of the database
          is actually now active.
        */
-      if(t_now > rec->start){
-         /* this is still scheduled */
-         rec->status = 0;
-      }if(t_now > rec->stop){
+      if(t_now > rec->stop){
          /* this recording is already finished or failed */
          if(util_file_exists(rec->filename->str)){
+            /* set recording status to finished */
+            rec->status = 2;
+
             /* file exists, get it's details */
             rec->filesize = util_get_filesize(rec->filename->str);
 
