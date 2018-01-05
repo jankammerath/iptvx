@@ -30,6 +30,12 @@ void iptvx_db_init(char* filename);
 void iptvx_db_update_recording(GArray* reclist);
 
 /*
+   Returns a list of all recordings from the database
+   @return           an array with all recordings in the database
+*/
+GArray* iptvx_db_get_recording_list();
+
+/*
    Updates the database with epg data
    @param      epg      array with all epg data
 */

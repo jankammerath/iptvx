@@ -151,6 +151,26 @@ void iptvx_db_insert_programme(int chanid, programme* prog){
 }
 
 /*
+   Returns the db id of a given channel name if exists
+   @param         channelname    name of the channel to get id for
+   @return                       db id of the channel or -1 if not exists 
+*/
+long iptvx_db_get_channel_id(char* channelname){
+   int channelid = -1;
+   
+   char* get_id_sql = sqlite3_mprintf("SELECT channelid FROM channel "
+                        "WHERE channelname = '%q'",channelname);
+   
+   sqlite3_stmt *getid_stmt;
+   sqlite3_prepare_v2(db,get_id_sql, -1, &getid_stmt, NULL);
+   while(sqlite3_step(getid_stmt) != SQLITE_DONE){
+      channelid = sqlite3_column_int64(getid_stmt,0);
+   }
+
+   return channelid;
+}
+
+/*
    Inserts a channel into the db if it doesn't exist
    @param         chan        the channel struct
 */
@@ -191,14 +211,7 @@ void iptvx_db_insert_channel(channel* chan){
    }
 
    /* get the id of the channel */
-   int channelid = -1;
-   char* get_id_sql = sqlite3_mprintf("SELECT channelid FROM channel "
-                        "WHERE channelname = '%q'",chan->name->str);
-   sqlite3_stmt *getid_stmt;
-   sqlite3_prepare_v2(db,get_id_sql, -1, &getid_stmt, NULL);
-   while(sqlite3_step(getid_stmt) != SQLITE_DONE){
-      channelid = sqlite3_column_int64(getid_stmt,0);
-   }
+   int channelid = iptvx_db_get_channel_id(chan->name->str);
 
    /* make sure the channel exists and has an id */
    if(channelid != -1){
@@ -215,11 +228,88 @@ void iptvx_db_insert_channel(channel* chan){
 }
 
 /*
+   Gets the database id of an existing recording
+   @param         rec      the recording to get id for
+   @return                 db id or -1 if it doesn't exist
+*/
+long iptvx_db_get_recording_id(recording* rec){
+   long result = -1;
+
+   /* get the channel id for this channel */
+   long channelid = iptvx_db_get_channel_id(rec->channel->str);
+
+   /* build the sql */
+   if(channelid != -1){
+      char* get_id_sql = sqlite3_mprintf("SELECT recordid FROM record "
+                           "WHERE recordstart = %lld "
+                           "AND recordstop = %lld "
+                           "AND recordchannelid = %lld",
+                           rec->start, rec->stop, channelid);
+      
+      sqlite3_stmt *getid_stmt;
+      sqlite3_prepare_v2(db,get_id_sql, -1, &getid_stmt, NULL);
+      while(sqlite3_step(getid_stmt) != SQLITE_DONE){
+         result = sqlite3_column_int64(getid_stmt,0);
+      }
+   }
+
+   return result;
+}
+
+/*
+   Inserts a recording into the database if it doesn't exist
+   @param      rec         recording struct with the new recording
+*/
+void iptvx_db_insert_recording(recording* rec){
+   int rec_id = iptvx_db_get_recording_id(rec);
+
+   /* check if the recording does not yet exist */
+   if(rec_id == -1){
+      /* insert the recording into the database */
+      long channelid = iptvx_db_get_channel_id(rec->channel->str);
+      char* insert_sql = sqlite3_mprintf("INSERT INTO record "
+               "(recordstart, recordstop, recordchannelid) "
+               "VALUES (%lld, %lld, %lld)" ,
+               rec->start,rec->stop,channelid);
+      sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
+      sqlite3_free(insert_sql);
+   }
+}
+
+/*
    Updates the recording in the database
    @param         reclist        array with all current recordings
 */
 void iptvx_db_update_recording(GArray* reclist){
+   int r = 0;
+   for(r = 0; r<reclist->len; r++){
+      recording* rec = &g_array_index(reclist,recording,r);
+      iptvx_db_insert_recording(rec);
+   }
+}
 
+/*
+   Returns a list of all recordings from the database
+   @return           an array with all recordings in the database
+*/
+GArray* iptvx_db_get_recording_list(){
+   GArray* result = g_array_new(false,false,sizeof(recording));
+
+   char* get_recording_sql = "SELECT c.channelname, r.recordstart, "
+                     "r.recordstop FROM record r, channel c "
+                     "WHERE c.channelid = r.recordchannelid";
+   
+   sqlite3_stmt *getrec_stmt;
+   sqlite3_prepare_v2(db,get_recording_sql, -1, &getrec_stmt, NULL);
+   while(sqlite3_step(getrec_stmt) != SQLITE_DONE){
+      recording rec;
+      rec.channel = g_string_new(sqlite3_column_text(getrec_stmt,0));
+      rec.start = sqlite3_column_int64(getrec_stmt,1);
+      rec.stop = sqlite3_column_int64(getrec_stmt,2);
+      g_array_append_val(result,rec);
+   }
+
+   return result;
 }
 
 /*

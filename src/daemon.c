@@ -23,6 +23,7 @@
 #include <microhttpd.h>
 #include <glib.h>
 #include <json-c/json.h>
+#include "db.h"
 #include "record.h"
 #include "channel.h"
 #include "util.h"
@@ -242,6 +243,9 @@ void iptvx_daemon_add_recording(recording rec){
    if(!exists){
       /* this is a new one, so add it */
       g_array_append_val(recordlist,rec);
+
+      /* sync the recording list with the db */
+      iptvx_db_update_recording(recordlist);
    }
 }
 
@@ -399,6 +403,63 @@ void iptvx_daemon_check_recording(){
 }
 
 /*
+   Initialises the local record list
+*/
+void iptvx_daemon_init_recordlist(){
+   /* initialise recording list by 
+      retrieving it from the database */
+   recordlist = iptvx_db_get_recording_list();
+
+   /* get the timestamp for now */
+   long t_now = time(NULL);
+
+   /* go through all recordings and update 
+      them with the information that is not
+      present in the database */
+   int r = 0;
+   for(r = 0; r < recordlist->len; r++){
+      /* get the recording struct from the list */
+      recording* rec = &g_array_index(recordlist,recording,r);
+
+      /* set the values independent of the status */
+      rec->tolerance = iptvx_daemon_record_tolerance*60;
+      rec->filename = iptvx_daemon_get_filename(*rec);
+      
+      /* default values to be set below */
+      rec->seconds_recorded = 0;
+      rec->filesize = 0;      
+
+      /* Check the current status.
+         This will only check for recordings to be 
+         scheduled, finished or failed. If they are
+         supposed to be active, then the daemon will
+         pick them up right away and amend their status
+         anyhow. So there is no need to check whether
+         a recording that just came out of the database
+         is actually now active.
+       */
+      if(t_now > rec->start){
+         /* this is still scheduled */
+         rec->status = 0;
+      }if(t_now > rec->stop){
+         /* this recording is already finished or failed */
+         if(util_file_exists(rec->filename->str)){
+            /* file exists, get it's details */
+            rec->filesize = util_get_filesize(rec->filename->str);
+
+            /* we assume the recording went successfull and 
+               contains all the seconds required including
+               the tolerance. */
+            rec->seconds_recorded = (rec->stop-rec->start)+(rec->tolerance*2);
+         }else{
+            /* file does not exist, so this is a failed recording */
+            rec->status = 9; /* marked as failed */
+         }
+      }
+   }
+}
+
+/*
    Runs the daemon loop, checks for signals
    and performs the necessary operations.
 */
@@ -410,7 +471,7 @@ void iptvx_daemon_run(){
    iptvx_daemon_epg_status = 0;
 
    /* initialise recording list */
-   recordlist = g_array_new(false,false,sizeof(recording));
+   iptvx_daemon_init_recordlist();
 
    /* attach sigterm handler to kill daemon */
    struct sigaction action;
