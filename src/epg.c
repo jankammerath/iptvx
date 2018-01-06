@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include "util.h"
 #include "channel.h"
+#include "db.h"
 
 /* thread loading the epg data */
 SDL_Thread *epg_thread;
@@ -617,8 +618,13 @@ int iptvx_epg_load(void* nothing){
 		/* get this channel */
 		channel* current = &g_array_index(list,channel,c);
 
-		/* start the thread to capture xmltv epg */
-		iptvx_epg_load_channel(current,time(NULL)-18000,false);
+		/* query the database for epg information for this channel */
+		current->programmeList = iptvx_db_get_channel_programme(current->name);
+
+		/* in case the epg from the db is empty, query the local file */
+		if(current->programmeList->len == 0){
+			iptvx_epg_load_channel(current,time(NULL)-18000,false);
+		}
 
 		/* update percentage status */
 		iptvx_epg_percentage_loaded = (int)((float)((float)c / (float)list->len) * 100);

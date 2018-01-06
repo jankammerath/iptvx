@@ -43,6 +43,13 @@ void iptvx_db_update_recording(GArray* reclist);
 GArray* iptvx_db_get_recording_list();
 
 /*
+   Gets the programme for a given channel from the database
+   @param            channelname       name of the channel to get program for
+   @return                             returns an array with all programmes for the channel
+*/
+GArray* iptvx_db_get_channel_programme(GString* channelname);
+
+/*
    Updates the database with epg data
    @param      epg      array with all epg data
 */

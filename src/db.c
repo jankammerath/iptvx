@@ -61,13 +61,16 @@ long iptvx_db_get_programme_id(int chanid, programme* prog){
 
    sqlite3_stmt *stmt;
    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-   while (sqlite3_step(stmt) != SQLITE_DONE) {
+   while (sqlite3_step(stmt) == SQLITE_ROW) {
       int i;
       int column_count = sqlite3_column_count(stmt);
       for(i = 0; i < column_count; i++){
          result = sqlite3_column_int64(stmt, i);
       }
    }
+
+   sqlite3_free(sql);
+   sqlite3_finalize(stmt);
 
    return result;
 }
@@ -87,7 +90,7 @@ long iptvx_db_get_category_id(char* category_name){
 
    sqlite3_stmt *stmt;
    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-   while (sqlite3_step(stmt) != SQLITE_DONE) {
+   while (sqlite3_step(stmt) == SQLITE_ROW) {
       int i;
       int column_count = sqlite3_column_count(stmt);
       for(i = 0; i < column_count; i++){
@@ -105,6 +108,9 @@ long iptvx_db_get_category_id(char* category_name){
       sqlite3_free(insert_sql);
       result = sqlite3_last_insert_rowid(db);
    }
+
+   sqlite3_finalize(stmt);
+   sqlite3_free(sql);
 
    /* finally free the gstring again */
    g_string_free(catname,false);
@@ -163,9 +169,12 @@ long iptvx_db_get_channel_id(char* channelname){
    
    sqlite3_stmt *getid_stmt;
    sqlite3_prepare_v2(db,get_id_sql, -1, &getid_stmt, NULL);
-   while(sqlite3_step(getid_stmt) != SQLITE_DONE){
+   while(sqlite3_step(getid_stmt) == SQLITE_ROW){
       channelid = sqlite3_column_int64(getid_stmt,0);
    }
+
+   sqlite3_free(get_id_sql);
+   sqlite3_finalize(getid_stmt);
 
    return channelid;
 }
@@ -187,7 +196,7 @@ void iptvx_db_insert_channel(channel* chan){
 
    sqlite3_stmt *stmt;
    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-   while (sqlite3_step(stmt) != SQLITE_DONE) {
+   while (sqlite3_step(stmt) == SQLITE_ROW) {
       int i;
       int column_count = sqlite3_column_count(stmt);
       for(i = 0; i < column_count; i++){
@@ -248,9 +257,12 @@ long iptvx_db_get_recording_id(recording* rec){
       
       sqlite3_stmt *getid_stmt;
       sqlite3_prepare_v2(db,get_id_sql, -1, &getid_stmt, NULL);
-      while(sqlite3_step(getid_stmt) != SQLITE_DONE){
+      while(sqlite3_step(getid_stmt) == SQLITE_ROW){
          result = sqlite3_column_int64(getid_stmt,0);
       }
+   
+      sqlite3_free(get_id_sql);
+      sqlite3_finalize(getid_stmt);
    }
 
    return result;
@@ -319,13 +331,72 @@ GArray* iptvx_db_get_recording_list(){
    
    sqlite3_stmt *getrec_stmt;
    sqlite3_prepare_v2(db,get_recording_sql, -1, &getrec_stmt, NULL);
-   while(sqlite3_step(getrec_stmt) != SQLITE_DONE){
+   while(sqlite3_step(getrec_stmt) == SQLITE_ROW){
       recording rec;
       rec.channel = g_string_new(sqlite3_column_text(getrec_stmt,0));
       rec.start = sqlite3_column_int64(getrec_stmt,1);
       rec.stop = sqlite3_column_int64(getrec_stmt,2);
       g_array_append_val(result,rec);
    }
+
+   sqlite3_free(get_recording_sql);
+   sqlite3_finalize(getrec_stmt);
+
+   return result;
+}
+
+/*
+   Gets the programme for a given channel from the database
+   @param            channelname       name of the channel to get program for
+   @return                             returns an array with all programmes for the channel
+*/
+GArray* iptvx_db_get_channel_programme(GString* channelname){
+   GArray* result = g_array_new(false,false,sizeof(programme));
+
+   /* define start time as now minus 5 hours */
+   long starttime = time(NULL)-18000;
+
+   char* get_prog_sql = sqlite3_mprintf(
+               "SELECT prog.programmetitle, prog.programmedescription, "
+               "prog.programmestart, prog.programmestop, "
+               "prog.programmeproductiondate "
+               "FROM programme prog, channel chan "
+               "WHERE chan.channelname = '%q' "
+               "AND prog.programmestart > %lld "
+               "AND chan.channelid = prog.programmechannelid",
+               channelname->str,starttime);
+
+   sqlite3_stmt *getprog_stmt;
+   sqlite3_prepare_v2(db,get_prog_sql, -1, &getprog_stmt, NULL);
+   while(sqlite3_step(getprog_stmt) == SQLITE_ROW){
+       /* create programme struct */
+       programme prog;
+
+       /* get all the db string values */
+       char* prog_title = (char*)sqlite3_column_text(getprog_stmt,0);
+       char* prog_desc = (char*)sqlite3_column_text(getprog_stmt,1);
+
+       /* copy the string into the struct */
+       prog.title = g_string_new(prog_title);
+       prog.description = g_string_new(prog_desc);
+       prog.category = g_string_new("");
+
+       /* get the integer values */
+       prog.start = sqlite3_column_int64(getprog_stmt,2);
+       prog.stop = sqlite3_column_int64(getprog_stmt,3);
+       prog.productionDate = sqlite3_column_int(getprog_stmt,4);
+
+       /* append to the result array */
+       g_array_append_val(result,prog);
+
+       /* free the original char bufs */
+       g_free(prog_title);
+       g_free(prog_desc);
+   }
+
+   /* finalise the statement */
+   sqlite3_free(get_prog_sql);
+   sqlite3_finalize(getprog_stmt);
 
    return result;
 }
