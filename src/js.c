@@ -266,4 +266,8 @@ void iptvx_js_sendmouse(GArray* mouse_args){
       webkit_web_view_run_javascript(js_view,scriptMouseEvent,NULL,NULL,NULL);
     }
   }
+
+  /* free the array as this 
+    cannot be done in the caller */
+  g_array_free(mouse_args,true);
 }

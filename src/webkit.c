@@ -124,7 +124,10 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
   /* set ready indicator to true */
   iptvx_webkit_ready = true;
 
-  /* call for new snapshot immediately */
+  /* just wait 5ms to continue */
+  usleep(5000);
+
+  /* call for new snapshot */
   webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);

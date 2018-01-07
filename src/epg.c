@@ -383,6 +383,9 @@ GArray* iptvx_epg_get_programmelist(GString* xmltv, channel* chan){
 							the config epgChannelId */
 						parseCurrentNode = true;
 					}
+
+					/* free the xmlChannelId-gstring */
+					g_string_free(xmlChannelId,true);
 				}else{
 					parseCurrentNode = true;
 				}
