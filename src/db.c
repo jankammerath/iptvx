@@ -69,7 +69,6 @@ long iptvx_db_get_programme_id(int chanid, programme* prog){
       }
    }
 
-   sqlite3_free(sql);
    sqlite3_finalize(stmt);
 
    return result;
@@ -105,12 +104,11 @@ long iptvx_db_get_category_id(char* category_name){
       char* insert_sql = sqlite3_mprintf("INSERT INTO category "
                "(categoryname) VALUES ('%q')", category_name);
       sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
-      sqlite3_free(insert_sql);
+
       result = sqlite3_last_insert_rowid(db);
    }
 
    sqlite3_finalize(stmt);
-   sqlite3_free(sql);
 
    /* finally free the gstring again */
    g_string_free(catname,false);
@@ -140,7 +138,6 @@ void iptvx_db_insert_programme(int chanid, programme* prog){
                   prog->description->str, exist_category_id,
                   prog->productionDate, exist_prog_id);
       sqlite3_exec(db,update_sql,NULL,NULL,NULL);
-      sqlite3_free(update_sql);
    }else{
       /* the programme is not in the database, insert it */
       char* insert_sql = sqlite3_mprintf(
@@ -152,7 +149,6 @@ void iptvx_db_insert_programme(int chanid, programme* prog){
             exist_category_id, prog->start, prog->stop, 
             prog->productionDate, chanid);
       sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
-      sqlite3_free(insert_sql);
    }
 }
 
@@ -173,7 +169,6 @@ long iptvx_db_get_channel_id(char* channelname){
       channelid = sqlite3_column_int64(getid_stmt,0);
    }
 
-   sqlite3_free(get_id_sql);
    sqlite3_finalize(getid_stmt);
 
    return channelid;
@@ -216,7 +211,6 @@ void iptvx_db_insert_channel(channel* chan){
       char* insert_sql = sqlite3_mprintf("INSERT INTO channel "
                "(channelname) VALUES ('%q')" ,chan->name->str);
       sqlite3_exec(db,insert_sql,NULL,NULL,&errmsg);
-      sqlite3_free(insert_sql);
    }
 
    /* get the id of the channel */
@@ -233,7 +227,6 @@ void iptvx_db_insert_channel(channel* chan){
 
    /* finalise statement */
    sqlite3_finalize(stmt);
-   sqlite3_free(sql);
 }
 
 /*
@@ -261,7 +254,6 @@ long iptvx_db_get_recording_id(recording* rec){
          result = sqlite3_column_int64(getid_stmt,0);
       }
    
-      sqlite3_free(get_id_sql);
       sqlite3_finalize(getid_stmt);
    }
 
@@ -283,7 +275,6 @@ void iptvx_db_remove_recording(recording* rec){
                         "AND recordstop = %lld",
                         recchannelid, rec->start,rec->stop);
       sqlite3_exec(db,delete_sql,NULL,NULL,NULL);
-      sqlite3_free(delete_sql);
 }
 
 /*
@@ -302,7 +293,6 @@ void iptvx_db_insert_recording(recording* rec){
                "VALUES (%lld, %lld, %lld)" ,
                rec->start,rec->stop,channelid);
       sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
-      sqlite3_free(insert_sql);
    }
 }
 
@@ -339,7 +329,6 @@ GArray* iptvx_db_get_recording_list(){
       g_array_append_val(result,rec);
    }
 
-   sqlite3_free(get_recording_sql);
    sqlite3_finalize(getrec_stmt);
 
    return result;
@@ -388,14 +377,9 @@ GArray* iptvx_db_get_channel_programme(GString* channelname){
 
        /* append to the result array */
        g_array_append_val(result,prog);
-
-       /* free the original char bufs */
-       g_free(prog_title);
-       g_free(prog_desc);
    }
 
    /* finalise the statement */
-   sqlite3_free(get_prog_sql);
    sqlite3_finalize(getprog_stmt);
 
    return result;

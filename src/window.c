@@ -246,7 +246,8 @@ int iptvx_create_window(int width, int height, char* render_support,
         if(overlay_png_ref->data != NULL && window_overlay_active == true){
             *overlay_rendering = true;
 
-            SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,overlay_png_ref->length);
+            SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,
+                                                    overlay_png_ref->length);
             overlay = IMG_LoadPNG_RW(overlay_rwops);
 
             SDL_BlitSurface(overlay, NULL, screen, NULL);
