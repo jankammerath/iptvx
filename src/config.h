@@ -79,6 +79,12 @@ char* iptvx_config_get_data_dir();
 */
 char* iptvx_config_get_overlay_app();
 
+/*
+   Returns the directory of the overlay app
+   @return     the path where the overlay app is in
+*/
+char* iptvx_config_get_overlay_app_dir();
+
 /* 
    Gets a setting value as integer
    @param   setting_name      name of the setting

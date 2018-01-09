@@ -247,6 +247,21 @@ char* iptvx_config_get_overlay_app(){
 	return result;
 }
 
+/*
+	Returns the directory of the overlay app
+	@return 		the path where the overlay app is in
+*/
+char* iptvx_config_get_overlay_app_dir(){
+	char* result = "";
+
+	/* get the full filename first */
+	GString* filename = g_string_new(iptvx_config_get_overlay_app());
+	GString* path = g_string_truncate(filename,util_strrpos(filename->str,"/"));
+	result = path->str;
+
+	return result;
+}
+
 /* 
    Gets a setting value as integer
    @param   setting_name      name of the setting

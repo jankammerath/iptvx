@@ -28,6 +28,12 @@
 #include <glib.h>
 
 /*
+   Sets the application directory for the overlay
+   @param       appdir        path where the app files are in
+*/
+void iptvx_daemon_set_app_dir(GString* appdir);
+
+/*
    Sets the percentage amount of loaded epg content
    @param      percentage     int with percentage loaded (0-100)
 */

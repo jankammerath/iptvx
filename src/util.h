@@ -98,4 +98,23 @@ GString* util_download_string(char* url);
 */
 long util_file_lastmodified(char* fileName);
 
+/*
+  Returns the mime type of the provided file
+  @param        filename      string with the full file path of the file
+  @return                     string with the guessed mime type
+*/
+GString* util_file_get_mime_type(GString* filename);
+
+/*
+  Returns the position of needle in haystack or -1 if not present
+  @returns        position of needle or -1 if not present   
+*/
+long util_strpos(char *haystack, char *needle);
+
+/*
+  Returns the last position of needle in haystack or -1 if not present
+  @returns        position of needle or -1 if not present   
+*/
+long util_strrpos(char *haystack, char *needle);
+
 #endif

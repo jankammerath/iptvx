@@ -396,6 +396,10 @@ int main (int argc, char *argv[]){
 		if(is_daemon){
 			db_file = iptvx_config_get_setting_string("db","/var/iptvx/db");
 			iptvx_db_init(db_file);
+
+			/* set the overlay app directory for serving it */
+			GString* appdir = g_string_new(iptvx_config_get_overlay_app_dir());
+			iptvx_daemon_set_app_dir(appdir);
 		}
 
 		/* get the hours to store in the epg */

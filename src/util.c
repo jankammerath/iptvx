@@ -32,6 +32,7 @@
 #include <curl/curl.h>
 #include <sys/stat.h>
 #include <glib.h>
+#include <gio/gio.h>
 
 /*
   Deletes a file from disk
@@ -50,6 +51,11 @@ void util_delete_file(char* fileName){
 */
 GString* util_substr(GString *str, int index, int len){
   GString* result = g_string_new("");
+
+  /* take the max when len is less than 1 */
+  if(len < 1){
+    len = str->len - index;
+  }
 
   int c;
   int pos;
@@ -295,4 +301,44 @@ long util_file_lastmodified(char* fileName){
   }
 
   return result;
+}
+
+/*
+  Returns the mime type of the provided file
+  @param        filename      string with the full file path of the file
+  @return                     string with the guessed mime type
+*/
+GString* util_file_get_mime_type(GString* filename){
+  /* have the gio lib guess the mime type */
+  char* mimetype = g_content_type_guess(filename->str,NULL,0,NULL);
+
+  /* copy the char buf into a gstring */
+  GString* result = g_string_new(mimetype);
+
+  /* free that mime type guessing char buf */
+  g_free(mimetype);
+
+  return result;
+}
+
+/*
+  Returns the first position of needle in haystack or -1 if not present
+  @returns        position of needle or -1 if not present   
+*/
+long util_strpos(char *haystack, char *needle){
+   char *p = strstr(haystack, needle);
+   if (p)
+      return p - haystack;
+   return -1; 
+}
+
+/*
+  Returns the last position of needle in haystack or -1 if not present
+  @returns        position of needle or -1 if not present   
+*/
+long util_strrpos(char *haystack, char *needle){
+   char *p = g_strrstr(haystack, needle);
+   if (p)
+      return p - haystack;
+   return -1; 
 }

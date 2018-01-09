@@ -43,6 +43,9 @@ int iptvx_daemon_epg_status;
 /* represents the working dir */
 GString* record_dir;
 
+/* path where the app files are in */
+GString* app_dir;
+
 /* string with epg json data */
 GString* iptvx_daemon_epg_json;
 
@@ -51,6 +54,14 @@ GArray* iptvx_daemon_epg_data;
 
 /* a list with all recordings */
 GArray* recordlist;
+
+/*
+   Sets the application directory for the overlay
+   @param       appdir        path where the app files are in
+*/
+void iptvx_daemon_set_app_dir(GString* appdir){
+   app_dir = appdir;
+}
 
 /*
    Sets the percentage amount of loaded epg content
@@ -357,25 +368,51 @@ static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * conne
                                        const char * url, const char * method,
                                        const char * version, const char * upload_data,
                                        size_t * upload_data_size, void ** ptr) {
-  static int dummy;
-  struct MHD_Response * response;
-  int ret;
+   static int dummy;
+   struct MHD_Response * response;
+   int ret;
 
-  /* define the response */
-  GString* content = iptvx_daemon_get_response((char*)url,connection);
+   /* define the response */
+   char* content_type = "application/json";
+   GString* content = iptvx_daemon_get_response((char*)url,connection);
 
-  /* create the response for the query */
-  response = MHD_create_response_from_buffer(strlen(content->str), (void*)content->str,
+   /* check if content app file data */
+   if(g_str_has_prefix((char*)url,"/app/") == true){
+      /* get the file from the local disk and return it */
+      GString* s_url = g_string_new((char*)url);
+      GString* requested_file = util_substr(s_url,5,0);
+
+      /* prepend the full path of the file */
+      g_string_prepend(requested_file,"/");
+      g_string_prepend(requested_file,app_dir->str);
+      
+      /* check if the file exists */
+      if(util_file_exists(requested_file->str)){
+         /* get the file content as result */
+         content = file_get_contents(requested_file);
+         GString* req_content_type = util_file_get_mime_type(requested_file);
+
+         /* assign to content type char ptr, but clear its mem first */
+         content_type = req_content_type->str;
+      }
+
+      /* free all these temporary string */
+      g_string_free(s_url,true);
+      g_string_free(requested_file,true);
+   }
+
+   /* create the response for the query */
+   response = MHD_create_response_from_buffer(strlen(content->str), (void*)content->str,
                                              MHD_RESPMEM_PERSISTENT);
 
-  /* set the response content type to json */
-  MHD_add_response_header(response, "Content-Type", "application/json");
+   /* set the response content type to json */
+   MHD_add_response_header(response, "Content-Type", content_type);
 
-  /* queue the response */
-  ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
-  MHD_destroy_response(response);
+   /* queue the response */
+   ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+   MHD_destroy_response(response);
 
-  return ret;
+   return ret;
 }
 
 /*
