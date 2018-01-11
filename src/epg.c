@@ -722,6 +722,50 @@ GString* iptvx_epg_config_get_string(config_setting_t* element, char* setting_na
 }
 
 /*
+	Initialises the epg with a url identifying the channel json from a daemon
+	@param 			url 		url to hold json data with channel information
+	@return 					bool with true when initialised otherwise false
+*/
+bool iptvx_epg_init_client(char* url){
+	bool result = true;
+
+	/* create a new empty list */
+	list = g_array_new (false,false,sizeof(channel));
+
+	/* download the json data for parsing */
+	GString* json_list = util_download_string(url);
+
+	/* parse input to json object */
+	json_object* list_obj = json_tokener_parse(json_list->str);
+
+	if(list_obj != NULL){
+		/* parsing went fine */
+		int i = 0;
+		for(i = 0; i < json_object_array_length(list_obj); i++){
+			/* get the channel object from the array */
+			json_object* chan_obj = json_object_array_get_idx(list_obj, i);
+
+			/* create the new channel object */
+			channel chan;
+			chan.isDefault = json_object_get_boolean
+				(json_object_object_get(chan_obj,"default"));
+			chan.name = g_string_new(json_object_get_string
+						(json_object_object_get(chan_obj,"name")));
+			chan.url = g_string_new(json_object_get_string
+						(json_object_object_get(chan_obj,"url")));
+
+			g_array_append_val(list,chan);
+		}
+	}else{
+		/* parsing failed, that's a no */
+		result = false;
+	}
+
+
+	return result;
+}
+
+/*
    Initialises EPG and loads XMLTV files
    @param      cfg                     Config struct from libconfig holding channel config
    @param      statusUpdateCallback    Callback to call when status changes (e.g. finish)

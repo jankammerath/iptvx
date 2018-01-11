@@ -343,6 +343,11 @@ void start_window(){
 	void* overlay_rendering = iptvx_get_overlay_rendering_ptr();
 	iptvx_window_set_overlay(overlay_data,overlay_ready,overlay_rendering);
 
+	/* initialise the client with the epg */
+	char* listUrl = iptvx_config_get_setting_string("daemon_list",
+								"http://127.0.0.1:8085/list.json");	
+	iptvx_epg_init_client(listUrl);
+
 	/* start the webkit thread */
 	char* overlayUrl = iptvx_config_get_setting_string("daemon_url",
 								"http://127.0.0.1:8085/app/app.html");

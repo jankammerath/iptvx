@@ -174,6 +174,39 @@ GString* iptvx_daemon_get_recordlist_json(){
 }
 
 /*
+   Returns a json string with the channel list
+*/
+GString* iptvx_daemon_get_channel_list_json(){
+   json_object* j_chan_array = json_object_new_array();
+
+   if(iptvx_daemon_epg_data != NULL){
+      int c = 0;
+      for(c = 0; c < iptvx_daemon_epg_data->len; c++){
+         channel* chan = &g_array_index(iptvx_daemon_epg_data,channel,c);
+         
+         json_object* j_chan = json_object_new_object();
+         json_object_object_add(j_chan,"default",
+            json_object_new_boolean(chan->isDefault));
+         json_object_object_add(j_chan,"name",
+            json_object_new_string(chan->name->str));
+         json_object_object_add(j_chan,"url",
+            json_object_new_string(chan->url->str));
+
+         /* add the channel to the result json array */
+         json_object_array_add(j_chan_array,j_chan);
+      }    
+   }
+   /* finally pass j_object to result string */
+   char* json_result_buf = (char*)json_object_to_json_string(j_chan_array);
+   GString* result = g_string_new(json_result_buf);
+
+   /* free the json object */
+   json_object_put(j_chan_array);
+
+   return result;
+}
+
+/*
    Returns the url for a given channel
    @param         channel_name      name of the channel
    @return                          url of the channel
@@ -324,6 +357,9 @@ GString* iptvx_daemon_get_response(char* request_url, struct MHD_Connection* con
    if(g_strcmp0(request_url,"/")==0){
       /* current epg status is requested */
       result = iptvx_daemon_get_status_json();
+   }if(g_strcmp0(request_url,"/list.json")==0){
+      /* channel list is requested */
+      result = iptvx_daemon_get_channel_list_json();
    }if(g_strcmp0(request_url,"/epg.json")==0){
       /* full epg in json is requested */
       if(iptvx_daemon_epg_json != NULL){

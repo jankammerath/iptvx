@@ -80,6 +80,13 @@ void iptvx_epg_set_current_channel_id(int channelId);
 channel* iptvx_epg_get_current_channel();
 
 /*
+   Initialises the epg with a url identifying the channel json from a daemon
+   @param         url      url to hold json data with channel information
+   @return              bool with true when initialised otherwise false
+*/
+bool iptvx_epg_init_client(char* url);
+
+/*
    Initialises EPG and loads XMLTV files
    @param      cfg                     Config struct from libconfig holding channel config
    @param      statusUpdateCallback    Callback to call when status changes (e.g. finish)
