@@ -218,8 +218,10 @@ int iptvx_epg_get_current_channel_id(){
 */
 void iptvx_epg_set_current_channel_id(int channelId){
 	/* don't set the val if it exceeds the list */
-	if(channelId < list->len){
-		iptvx_epg_current_channel = channelId;
+	if(list != NULL){
+		if(channelId < list->len){
+			iptvx_epg_current_channel = channelId;
+		}
 	}
 }
 

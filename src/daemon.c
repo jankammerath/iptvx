@@ -46,6 +46,9 @@ GString* record_dir;
 /* path where the app files are in */
 GString* app_dir;
 
+/* path where the data files are in */
+GString* data_dir;
+
 /* string with epg json data */
 GString* iptvx_daemon_epg_json;
 
@@ -61,6 +64,14 @@ GArray* recordlist;
 */
 void iptvx_daemon_set_app_dir(GString* appdir){
    app_dir = appdir;
+}
+
+/*
+   Sets the data directory where all application data is in
+   @param       datadir        path where the data files are in
+*/
+void iptvx_daemon_set_data_dir(GString* datadir){
+   data_dir = datadir;
 }
 
 /*
@@ -401,8 +412,29 @@ static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * conne
       g_string_free(requested_file,true);
    }
 
+   /* check if local logo files are requested and return them */
+   if(g_str_has_prefix((char*)url,"/logo/") == true){
+      GString* s_url = g_string_new((char*)url);
+
+      /* prepend the full path of the file */
+      g_string_prepend(s_url,data_dir->str);
+
+      /* check if the file exists */
+      if(util_file_exists(s_url->str)){
+         /* get the file content as result */
+         content = file_get_contents(s_url);
+         GString* req_content_type = util_file_get_mime_type(s_url);
+
+         /* assign to content type char ptr, but clear its mem first */
+         content_type = req_content_type->str;
+      }
+
+      /* free all these temporary string */
+      g_string_free(s_url,true);
+   }
+
    /* create the response for the query */
-   response = MHD_create_response_from_buffer(strlen(content->str), (void*)content->str,
+   response = MHD_create_response_from_buffer(content->len, (void*)content->str,
                                              MHD_RESPMEM_PERSISTENT);
 
    /* set the response content type to json */

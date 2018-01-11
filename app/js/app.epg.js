@@ -408,6 +408,21 @@ app.epg = {
                app.epg.renderProgress();
             },1000);
          }else{
+            /* query epg interface */
+            $.getJSON("/",function(data){
+               if(data.epg_loaded == 100){
+                  /* epg fully loaded, get the content */
+                  $.getJSON("/epg.json",function(data){
+                     /* set data locally, update indicator */
+                     iptvx.epg = data;
+                     iptvx.epgLoaded = 100;
+                  });
+               }else{
+                  /* update indicator with server data */
+                  iptvx.epgLoaded = data.epg_loaded;
+               }
+            });
+
             if(iptvx.epgLoaded > 0){
                $("#status").html(iptvx.epgLoaded);
             }

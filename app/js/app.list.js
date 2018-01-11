@@ -113,7 +113,7 @@ app.list = {
 
 			listHtml += '<div id="listchannel'+c+'" class="channel'+activeClass+'">'
 						+ '<div class="channellogo" '
-						+ 'style="background-image:url(../data/logo/'+chan.logoFile+');">'
+						+ 'style="background-image:url(/logo/'+chan.logoFile+');">'
 						+ '</div>'
 						+ '<div class="channelname">'
 						+ chan.name

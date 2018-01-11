@@ -168,10 +168,19 @@ void iptvx_video_stop(){
    Stops and frees the instance
 */
 void iptvx_video_free(){
-	/* terminate the whole thing */
-	libvlc_media_player_stop (mp);
-	libvlc_media_player_release (mp);
-	libvlc_release (inst);	
+	/* terminate the whole thing if not null */
+	if(mp != NULL){
+		int state = iptvx_video_get_state();
+		if(state == 1 || state == 2 || state == 3 || state == 4){
+			libvlc_media_player_stop (mp);
+		}
+		libvlc_media_player_release (mp);
+	}
+
+	/* clear instance if not null */
+	if(inst != NULL){
+		libvlc_release (inst);
+	}	
 }
 
 /*

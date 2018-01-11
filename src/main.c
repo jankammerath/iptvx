@@ -312,7 +312,9 @@ int update(void* nothing){
 	return 0;
 }
 
-/* starts main window application */
+/* 
+	Starts main window application providing user interface
+*/
 void start_window(){
 	/* initialise window */
 	iptvx_window_init();
@@ -342,27 +344,77 @@ void start_window(){
 	iptvx_window_set_overlay(overlay_data,overlay_ready,overlay_rendering);
 
 	/* start the webkit thread */
-	char* overlayApp = iptvx_config_get_overlay_app();
-	GString* gs_overlay_app = g_string_new(overlayApp);
-	if(gs_overlay_app->len > 0){
-		iptvx_webkit_start_thread(gs_overlay_app->str,main_window_width,
-								main_window_height,load_finished);
+	char* overlayUrl = iptvx_config_get_setting_string("daemon_url",
+								"http://127.0.0.1:8085/app/app.html");
 
-		/* start the thread to update the js api */
-		update_thread = SDL_CreateThread(update,NULL);
+	iptvx_webkit_start_thread(overlayUrl,main_window_width,
+							main_window_height,load_finished);
 
-		/* create the main window which 
-			will lock this main thread */
-		iptvx_create_window(main_window_width,main_window_height,
-							render_support,keydown,mouse_event,
-							window_ready);
-	}else{
-		/* throw an error when we don't have the app */
-		printf("App path not found or inaccessible\n");
-	}
+	/* start the thread to update the js api */
+	update_thread = SDL_CreateThread(update,NULL);
 
-	/* free overlay app string */
-	g_string_free(gs_overlay_app,true);
+	/* create the main window which 
+		will lock this main thread */
+	iptvx_create_window(main_window_width,main_window_height,
+						render_support,keydown,mouse_event,
+						window_ready);
+}
+
+/*
+	Starts the daemon application to provide application services
+*/
+void start_daemon(){
+	/* initialise the daemon */
+	char* db_file;
+	db_file = iptvx_config_get_setting_string("db","/var/iptvx/db");
+	iptvx_db_init(db_file);
+
+	/* set the overlay app directory for serving it */
+	GString* appdir = g_string_new(iptvx_config_get_overlay_app_dir());
+	iptvx_daemon_set_app_dir(appdir);
+
+	/* set the data dir for serving the logo files */
+	GString* datadir = g_string_new(iptvx_config_get_data_dir());
+	iptvx_daemon_set_data_dir(datadir);
+
+	/* get the hours to store in the epg */
+	int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
+	iptvx_epg_set_storage_hours(epg_hours);
+
+	/* get the days after the epg files expire */
+	int epg_min_age_hours = iptvx_config_get_setting_int("epg_min_age_hours",3);
+	iptvx_epg_set_min_age_hours(epg_min_age_hours);
+
+	/* get the days after the epg files expire */
+	int epg_expiry_days = iptvx_config_get_setting_int("epg_expiry_days",7);
+	iptvx_epg_set_expiry_days(epg_expiry_days);
+
+	/* get the data directory for the epg */
+	char* epg_dir = iptvx_config_get_data_dir();
+	iptvx_epg_set_data_dir(epg_dir);
+
+	/* initialise the epg */
+	config_t* cfg = iptvx_get_config();
+	iptvx_epg_init(cfg,epg_status_update);
+
+	/* get the configured server port */
+	int daemon_port = iptvx_config_get_setting_int("daemon_port",8085);
+	iptvx_daemon_set_server_port(daemon_port);
+
+	/* set the recording tolerance for the daemon */
+	iptvx_daemon_set_record_tolerance(iptvx_config_get_setting_int
+										("record_tolerance",5));
+
+	/* set the directory to put recordings into */
+	iptvx_daemon_set_dir(iptvx_config_get_setting_string
+							("record","/var/iptvx/video"));
+
+	/* daemon mode execution which 
+		will lock the thread */
+	iptvx_daemon_run();
+
+	/* close the database when finished */
+	iptvx_db_close();
 }
 
 /* main application code */
@@ -391,61 +443,14 @@ int main (int argc, char *argv[]){
 		main_window_ready = false;
 		main_epg_ready = false;
 
-		/* initialise the database when daemon */
-		char* db_file;
+		/* check if daemon or client mode */
 		if(is_daemon){
-			db_file = iptvx_config_get_setting_string("db","/var/iptvx/db");
-			iptvx_db_init(db_file);
-
-			/* set the overlay app directory for serving it */
-			GString* appdir = g_string_new(iptvx_config_get_overlay_app_dir());
-			iptvx_daemon_set_app_dir(appdir);
-		}
-
-		/* get the hours to store in the epg */
-		int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
-		iptvx_epg_set_storage_hours(epg_hours);
-
-		/* get the days after the epg files expire */
-		int epg_min_age_hours = iptvx_config_get_setting_int("epg_min_age_hours",3);
-		iptvx_epg_set_min_age_hours(epg_min_age_hours);
-
-		/* get the days after the epg files expire */
-		int epg_expiry_days = iptvx_config_get_setting_int("epg_expiry_days",7);
-		iptvx_epg_set_expiry_days(epg_expiry_days);
-
-		/* get the data directory for the epg */
-		char* epg_dir = iptvx_config_get_data_dir();
-		iptvx_epg_set_data_dir(epg_dir);
-
-		/* initialise the epg */
-		config_t* cfg = iptvx_get_config();
-		iptvx_epg_init(cfg,epg_status_update);
-
-		/* check if window or daemon mode */
-		if(is_daemon){
-			/* get the configured server port */
-			int daemon_port = iptvx_config_get_setting_int("daemon_port",8085);
-			iptvx_daemon_set_server_port(daemon_port);
-
-			/* set the recording tolerance for the daemon */
-			iptvx_daemon_set_record_tolerance(iptvx_config_get_setting_int
-												("record_tolerance",5));
-
-			/* set the directory to put recordings into */
-			iptvx_daemon_set_dir(iptvx_config_get_setting_string
-									("record","/var/iptvx/video"));
-
-			/* daemon mode execution which 
-				will lock the thread */
-			iptvx_daemon_run();
+			/* daemon mode */
+			start_daemon();
 		}else{
 			/* window or client app mode */
 			start_window();
 		}
-
-		/* close the database when finished */
-		iptvx_db_close();
 	}else{
 		/* throw an error when config not initialised */
 		printf("Failed to initialise the configuration\n");

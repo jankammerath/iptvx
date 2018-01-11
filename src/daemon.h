@@ -34,6 +34,12 @@
 void iptvx_daemon_set_app_dir(GString* appdir);
 
 /*
+   Sets the data directory where all application data is in
+   @param       datadir        path where the data files are in
+*/
+void iptvx_daemon_set_data_dir(GString* datadir);
+
+/*
    Sets the percentage amount of loaded epg content
    @param      percentage     int with percentage loaded (0-100)
 */

@@ -176,9 +176,7 @@ int iptvx_webkit_start(void* file){
   WebKitSettings *wk_setting = webkit_web_view_get_settings (WEBKIT_WEB_VIEW(iptvx_gtk_webview));
   g_object_set (G_OBJECT(wk_setting), "enable-write-console-messages-to-stdout", TRUE, NULL);
 
-  char *filename = (char*)file;
-	char *url = g_strjoin("","file://",filename,NULL);
-	webkit_web_view_load_uri (WEBKIT_WEB_VIEW (iptvx_gtk_webview),url);
+	webkit_web_view_load_uri (WEBKIT_WEB_VIEW (iptvx_gtk_webview),(char*)file);
 	gtk_widget_show_all (iptvx_gtk_window);
 	gtk_main ();
 }

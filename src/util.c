@@ -149,11 +149,17 @@ GString* file_get_contents(GString* file){
   GError *e=NULL;
   GIOChannel *f  = g_io_channel_new_file(file->str, "r", &e);
   if (!f) {
-    fprintf(stderr, "failed to open file '%s'.\n", file);
+    fprintf(stderr, "failed to open file '%s': %s\n", file, e->message);
     return NULL;
   }
-  if (g_io_channel_read_to_end(f, &out, NULL, &e) != G_IO_STATUS_NORMAL){
-    fprintf(stderr, "found file '%s' but couldn't read it.\n", file);
+
+  /* set default encoding for that file */
+  g_io_channel_set_encoding(f, NULL, &e);
+
+  long data_length = 0;
+  if (g_io_channel_read_to_end(f, &out, &data_length, &e) != G_IO_STATUS_NORMAL){
+    fprintf(stderr, "found file '%s' but couldn't read it:\n%s\n", 
+                    file->str, e->message);
     return NULL;
   }
 
@@ -162,7 +168,7 @@ GString* file_get_contents(GString* file){
   g_io_channel_unref(f);
 
   /* copy into result string and free char buf */
-  GString* result = g_string_new(out);
+  GString* result = g_string_new_len(out,data_length);
   free(out);
 
 	return result;
