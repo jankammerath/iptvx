@@ -24,6 +24,12 @@
 #include "channel.h"
 
 /*
+   Returns the number of channels in the list
+   @return     the number of channels in the list as long
+*/
+long iptvx_epg_get_channel_count();
+
+/*
    Sets the data directory to store epg cache and logo files
    @param      data_dir       path of the directory for the data
 */

@@ -155,7 +155,7 @@ app.epg = {
             /* set up channel heads */
             channelHeadHtml += "<div class=\"epgcalheaditem\">"
                               + "<div class=\"epgcalheaditemlogo\" "
-                              + "style=\"background-image:url('../data/logo/"
+                              + "style=\"background-image:url('/logo/"
                               + chan.logoFile + "');\"></div>"
                               + "<div class=\"epgcalheaditemtext\">"
                               + chan.name + "</div></div>";
@@ -260,6 +260,17 @@ app.epg = {
       }
 
       return result;
+   },
+
+   /* switches to the default channel */
+   showDefaultChannel: function(){
+      if(typeof(iptvx)=="object"){
+         for(var c=0;c<iptvx.epg.length;c++){
+            if(iptvx.epg[c].default == true){
+               app.epg.switchChannel(c);
+            }
+         }
+      }
    },
 
    /* forces application to switch to defined channel */
@@ -416,6 +427,9 @@ app.epg = {
                      /* set data locally, update indicator */
                      iptvx.epg = data;
                      iptvx.epgLoaded = 100;
+
+                     /* switch to default channel */
+                     app.epg.showDefaultChannel();
                   });
                }else{
                   /* update indicator with server data */

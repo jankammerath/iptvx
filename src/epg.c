@@ -63,6 +63,20 @@ int iptvx_epg_percentage_loaded;
 void (*epg_status_update_callback)(void*);
 
 /*
+	Returns the number of channels in the list
+	@return 		the number of channels in the list as long
+*/
+long iptvx_epg_get_channel_count(){
+	long result = 0;
+
+	if(list != NULL){
+		result = list->len;
+	}
+
+	return result;
+}
+
+/*
 	Sets the data directory to store epg cache and logo files
 	@param 		data_dir 		path of the directory for the data
 */
@@ -154,6 +168,8 @@ GString* iptvx_epg_get_json(){
 			json_object_new_string(chan->name->str));
 		json_object_object_add(j_chan,"logoFile",
 			json_object_new_string(chan->logoFile->str));
+		json_object_object_add(j_chan,"default",
+			json_object_new_boolean(chan->isDefault));
 
 		/* json array with the programme */
 		json_object* j_prog_array = json_object_new_array();

@@ -53,6 +53,9 @@ bool main_epg_ready;
 /* daemon mode indicator */
 bool is_daemon;
 
+/* url of the daemon's channel list */
+char* channelListUrl;
+
 /* the thread polling and pushing updates */
 SDL_Thread* update_thread;
 
@@ -130,17 +133,28 @@ void control_message_received(void* message){
 
 		/* check which command this is */
 		if(g_ascii_strncasecmp(ctlMsg[0],"switch-channel",13)==0){
+			/* in case the epg channel list is empty, 
+				re-initialise the list from the daemon*/
+			if(iptvx_epg_get_channel_count() == 0){
+				iptvx_epg_init_client(channelListUrl);
+			}
+
 			/* this is a channel switch control message,
 				so we need to get the channel number */
 			int chanId = g_ascii_strtoll(ctlMsg[1],NULL,0);
 			iptvx_epg_set_current_channel_id(chanId);
 			channel* newChan = iptvx_epg_get_current_channel();
-			channel_video_play(newChan->url->str,true);
 
-			/* update JS with new channel */
-			int currentChannelId = iptvx_epg_get_current_channel_id();
-			g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
+			/* ensure the channel is not null */
+			if(newChan != NULL){
+				/* request player to start playback */
+				channel_video_play(newChan->url->str,true);
+
+				/* update JS with new channel */
+				int currentChannelId = iptvx_epg_get_current_channel_id();
+				g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
 							GINT_TO_POINTER(currentChannelId));
+			}
 		}
 
 		if(g_ascii_strncasecmp(ctlMsg[0],"set-volume",10)==0){
@@ -228,50 +242,10 @@ void epg_status_update(void* progress){
 			GString* epg_data_json = iptvx_epg_get_json();
 			iptvx_daemon_set_epg_json(epg_data_json);
 			iptvx_daemon_set_epg_data(epg_data);
-		}else{
-			/* we need to wait for js to come up as 
-				otherwise it'll not get the notification 
-				that the epg is ready */
-			while(!main_js_ready){
-				/* wait 1s for it to show up */
-				sleep(1);
-			}
 
-			/* signal complete epg data, string will be freed inside */
-			GString* epg_data = iptvx_epg_get_json();
-			g_idle_add((GSourceFunc)iptvx_js_set_epg_data,epg_data);
-			
-			/* only start the initial channel playback 
-				when the epg was not ready before as otherwise 
-				it might interrupt existing playback when 
-				the epg just received updates */
-			if(!main_epg_ready){
-				/* set epg ready to true */
-				main_epg_ready = true;
-
-				/* signal current channel */
-				int currentChannelId = iptvx_epg_get_current_channel_id();
-				g_idle_add((GSourceFunc)iptvx_js_set_current_channel,
-								GINT_TO_POINTER(currentChannelId));
-
-				/* activate video playback by getting
-					the default channel and play it */
-				channel* defaultChannel = iptvx_epg_get_default_channel();
-				channel_video_play(defaultChannel->url->str,false);
-			}
+			/* signal epg status to daemon */
+			iptvx_daemon_set_epg_status(progressVal);
 		}
-	}
-
-	/* send epg status to daemon if alive */
-	if(is_daemon){
-		iptvx_daemon_set_epg_status(progressVal);
-	}
-
-	/* send epg status to js client */
-	if(main_js_ready){
-		/* send epg status update to js */
-		g_idle_add((GSourceFunc)iptvx_js_update_epg_status,
-							GINT_TO_POINTER(progressVal));		
 	}
 }
 
@@ -344,25 +318,42 @@ void start_window(){
 	iptvx_window_set_overlay(overlay_data,overlay_ready,overlay_rendering);
 
 	/* initialise the client with the epg */
-	char* listUrl = iptvx_config_get_setting_string("daemon_list",
+	channelListUrl = iptvx_config_get_setting_string("daemon_list",
 								"http://127.0.0.1:8085/list.json");	
-	iptvx_epg_init_client(listUrl);
+	bool init_result = iptvx_epg_init_client(channelListUrl);
 
-	/* start the webkit thread */
-	char* overlayUrl = iptvx_config_get_setting_string("daemon_url",
-								"http://127.0.0.1:8085/app/app.html");
+	/* continue initialising the application when the
+		epg was successfully set up with the server */
+	if(init_result == true){
+		/* start the webkit thread */
+		char* overlayUrl = iptvx_config_get_setting_string("daemon_url",
+									"http://127.0.0.1:8085/app/app.html");
 
-	iptvx_webkit_start_thread(overlayUrl,main_window_width,
-							main_window_height,load_finished);
+		iptvx_webkit_start_thread(overlayUrl,main_window_width,
+								main_window_height,load_finished);
 
-	/* start the thread to update the js api */
-	update_thread = SDL_CreateThread(update,NULL);
+		/* start the thread to update the js api */
+		update_thread = SDL_CreateThread(update,NULL);
 
-	/* create the main window which 
-		will lock this main thread */
-	iptvx_create_window(main_window_width,main_window_height,
-						render_support,keydown,mouse_event,
-						window_ready);
+		/* create the main window which 
+			will lock this main thread */
+		iptvx_create_window(main_window_width,main_window_height,
+							render_support,keydown,mouse_event,
+							window_ready);
+	}else{
+		/* terminate the application and ask 
+			the user to start the daemon first */
+		printf("\e[1;1H\e[2J");
+		printf("\033[1m\033[31m*** Connection to daemon failed ***\x1B[0m\n\n"
+			"Connection to the daemon could not be established on:\n%s\n\n"
+			"Please ensure that the daemon is up, running and it's\n"
+			"address configured correctly. You can launch the daemon\n"
+			"either through the system's service management or by typing:\n\n"
+			"\033[33m\tservice iptvx start\x1B[0m\n\n"
+			"This version cannot function without the daemon.\n\n"
+			"For any further assistance, please visit iptvx.org.\n\x1B[0m",
+			channelListUrl);
+	}
 }
 
 /*
