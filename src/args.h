@@ -25,6 +25,7 @@
 struct arguments{ 
   char* configFile;
   bool daemon;
+  bool test;
 };
 
 /*

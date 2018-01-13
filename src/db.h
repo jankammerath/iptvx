@@ -52,8 +52,9 @@ GArray* iptvx_db_get_channel_programme(GString* channelname);
 /*
    Updates the database with epg data
    @param      epg      array with all epg data
+   @param      min_age  minimum age of epg data in hours
 */
-void iptvx_db_update(GArray* epg);
+void iptvx_db_update(GArray* epg, int min_age);
 
 /*
    Closes the database

@@ -236,7 +236,7 @@ void epg_status_update(void* progress){
 		if(is_daemon){
 			/* get the epg data and flush into db */
 			GArray* epg_data = iptvx_epg_get_data();
-			iptvx_db_update(epg_data);
+			iptvx_db_update(epg_data,iptvx_epg_get_min_age_hours());
 
 			/* is daemon, so send epg data in raw and as json */
 			GString* epg_data_json = iptvx_epg_get_json();
@@ -357,22 +357,9 @@ void start_window(){
 }
 
 /*
-	Starts the daemon application to provide application services
+	Sets up epg with the config data
 */
-void start_daemon(){
-	/* initialise the daemon */
-	char* db_file;
-	db_file = iptvx_config_get_setting_string("db","/var/iptvx/db");
-	iptvx_db_init(db_file);
-
-	/* set the overlay app directory for serving it */
-	GString* appdir = g_string_new(iptvx_config_get_overlay_app_dir());
-	iptvx_daemon_set_app_dir(appdir);
-
-	/* set the data dir for serving the logo files */
-	GString* datadir = g_string_new(iptvx_config_get_data_dir());
-	iptvx_daemon_set_data_dir(datadir);
-
+void config_epg(){
 	/* get the hours to store in the epg */
 	int epg_hours = iptvx_config_get_setting_int("epg_hours",48);
 	iptvx_epg_set_storage_hours(epg_hours);
@@ -388,10 +375,38 @@ void start_daemon(){
 	/* get the data directory for the epg */
 	char* epg_dir = iptvx_config_get_data_dir();
 	iptvx_epg_set_data_dir(epg_dir);
+}
+
+/*
+	Sets up the database with config data
+*/
+void config_db(){
+	char* db_file;
+	db_file = iptvx_config_get_setting_string("db","/var/iptvx/db");
+	iptvx_db_init(db_file);
+}
+
+/*
+	Starts the daemon application to provide application services
+*/
+void start_daemon(){
+	/* set up the database */
+	config_db();
+
+	/* set the overlay app directory for serving it */
+	GString* appdir = g_string_new(iptvx_config_get_overlay_app_dir());
+	iptvx_daemon_set_app_dir(appdir);
+
+	/* set the data dir for serving the logo files */
+	GString* datadir = g_string_new(iptvx_config_get_data_dir());
+	iptvx_daemon_set_data_dir(datadir);
+
+	/* Set up epg config */
+	config_epg();
 
 	/* initialise the epg */
 	config_t* cfg = iptvx_get_config();
-	iptvx_epg_init(cfg,epg_status_update);
+	iptvx_epg_init(cfg,epg_status_update,true);
 
 	/* get the configured server port */
 	int daemon_port = iptvx_config_get_setting_int("daemon_port",8085);
@@ -413,6 +428,43 @@ void start_daemon(){
 	iptvx_db_close();
 }
 
+/*
+	This allows the application to be tested without
+	any threads or time-based procedures which allows
+	development to check vital operations for their fitness.
+*/
+void test(){
+	if(iptvx_config_init() == true){
+		/* be a little more verbose for testing */
+		printf("Configuration files are good to go.\n");
+
+		/* give a little info that we're in test mode */
+		printf("Performing epg test run...\n");
+	
+		/* set up the database */
+		config_db();
+
+		/* Set up epg config */
+		config_epg();
+
+		/* initialise the epg */
+		config_t* cfg = iptvx_get_config();
+		iptvx_epg_init(cfg,epg_status_update,false);
+
+		/* close db when finished */
+		iptvx_db_close();
+
+		/* print out a message when finished */
+		printf("Test run completed.\n");
+	}else{
+		/*
+			Impossible to execute the 
+			test due to a bad config
+		*/
+		printf("Test aborted due to bad config.\n");
+	}	
+}
+
 /* main application code */
 int main (int argc, char *argv[]){
 	/* set activity indicator to true */
@@ -426,6 +478,23 @@ int main (int argc, char *argv[]){
 	if(app_args.configFile != NULL){
 		/* use the config file from args */
 		iptvx_set_config_filename(app_args.configFile);
+	}
+
+	/*
+		Application testing support argument:
+		Many parts of this application run in a 
+		timed/scheduled multi-threaded environment 
+		making it hard to debug epg and other 
+		functionality. Therefore the -t option
+		performs actions in a single thread
+		for better testing and debugging.
+	*/
+	if(app_args.test == true){
+		/* execute the test procedures */
+		test();
+
+		/* quit the application upon finish */
+		return 0;
 	}
 
 	/* check if daemon process was requested */

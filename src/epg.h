@@ -36,6 +36,12 @@ long iptvx_epg_get_channel_count();
 void iptvx_epg_set_data_dir(char* data_dir);
 
 /*
+   Returns the minimum age for epg files to be deleted
+   @return        int with hours after files are deleted
+*/
+int iptvx_epg_get_min_age_hours();
+
+/*
    Defines the minimum age of epg files for deletion
    @param         hours        int defining the hours
 */
@@ -85,6 +91,12 @@ void iptvx_epg_set_current_channel_id(int channelId);
 */
 channel* iptvx_epg_get_current_channel();
 
+/* 
+   initiates the epg load for each channel
+   @param         idle        true = activates a thread to continuously check epg 
+*/
+int iptvx_epg_load(void* idle);
+
 /*
    Initialises the epg with a url identifying the channel json from a daemon
    @param         url      url to hold json data with channel information
@@ -94,10 +106,11 @@ bool iptvx_epg_init_client(char* url);
 
 /*
    Initialises EPG and loads XMLTV files
-   @param      cfg                     Config struct from libconfig holding channel config
-   @param      statusUpdateCallback    Callback to call when status changes (e.g. finish)
+   @param         cfg                     Config struct from libconfig holding channel config
+   @param         statusUpdateCallback    Callback to call when status changes (e.g. finish)
+   @param      threaded          Tells whether to run in thread or not  
 */
-bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*));
+bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*),bool threaded);
 
 /* 
    Gets the default channel as defined in config

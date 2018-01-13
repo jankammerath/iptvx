@@ -621,13 +621,6 @@ void iptvx_daemon_init_recordlist(){
 }
 
 /*
-   Updates epg if necessary
-*/
-void iptvx_daemon_check_epg_update(){
-
-}
-
-/*
    Runs the daemon loop, checks for signals
    and performs the necessary operations.
 */
@@ -663,7 +656,7 @@ void iptvx_daemon_run(){
       iptvx_daemon_check_recording();
 
       /* wait */
-      sleep(5);
+      sleep(10);
    }
 
    /* stop the daemon when finished */

@@ -59,6 +59,9 @@ int iptvx_epg_current_channel;
 bool iptvx_epg_ready;
 int iptvx_epg_percentage_loaded;
 
+/* tells epg to scan for new data in separate thread */
+bool iptvx_epg_idle;
+
 /* status update callback */
 void (*epg_status_update_callback)(void*);
 
@@ -82,6 +85,14 @@ long iptvx_epg_get_channel_count(){
 */
 void iptvx_epg_set_data_dir(char* data_dir){
 	epg_data_dir = g_string_new(data_dir);
+}
+
+/*
+	Returns the minimum age for epg files to be deleted
+	@return 			int with hours after files are deleted
+*/
+int iptvx_epg_get_min_age_hours(){
+	return iptvx_epg_file_min_age_hours;
 }
 
 /*
@@ -623,9 +634,10 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 }
 
 /* 
-	initiates the epg load for each channel 
+   initiates the epg load for each channel
+   @param         idle        true = activates a thread to continuously check epg 
 */
-int iptvx_epg_load(void* nothing){
+int iptvx_epg_load(void* idle){
 	/* delete any trash that might still be on disk */
 	iptvx_epg_clean_files();
 
@@ -714,6 +726,24 @@ int iptvx_epg_load(void* nothing){
 	/* fire up callback when additional data 
 		was captured for the coming days */
 	epg_status_update_callback(&iptvx_epg_percentage_loaded);
+	
+	iptvx_epg_idle = *(bool*)idle;
+	while(iptvx_epg_idle == true){
+		long expiry_time = time(NULL)-(iptvx_epg_get_min_age_hours()*3600); 
+		if(list != NULL){
+		  int c = 0;
+		  for(c = 0; c < list->len; c++){
+		     channel* chan = &g_array_index(list,channel,c);
+		     if(chan->lastUpdated < expiry_time){
+		        iptvx_epg_load_channel(chan,time(NULL)-18000,false);
+		     }
+		  }
+		}
+
+		/* only check every minute */
+		sleep(60);
+	}
+	
 
 	return 0;
 }
@@ -786,10 +816,11 @@ bool iptvx_epg_init_client(char* url){
 
 /*
    Initialises EPG and loads XMLTV files
-   @param      cfg                     Config struct from libconfig holding channel config
-   @param      statusUpdateCallback    Callback to call when status changes (e.g. finish)
+   @param      	cfg                     Config struct from libconfig holding channel config
+   @param      	statusUpdateCallback    Callback to call when status changes (e.g. finish)
+   @param 		threaded				Tells whether to run in thread or not	
 */
-bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
+bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*),bool threaded){
 	list = g_array_new (false,false,sizeof(channel));
 
 	/* init current channel */
@@ -845,8 +876,14 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*)){
             g_array_append_val(list,current);
 		}
 
-		// all channels parsed, launch epg load
-		epg_thread = SDL_CreateThread(iptvx_epg_load,"");
+		/* all channels parsed, launch epg load */
+		if(threaded == true){
+			/* execute in separate thread */
+			epg_thread = SDL_CreateThread(iptvx_epg_load,"");
+		}else{
+			/* execute in the same thread */
+			iptvx_epg_load(NULL);
+		}
 	}else{
 		/* output and error when channels not present */
 		printf("Error getting channels from config\n");

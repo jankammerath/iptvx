@@ -41,6 +41,10 @@ void iptvx_db_init(char* filename){
    }
 }
 
+GArray* iptvx_db_get_channel_list(){
+   
+}
+
 /*
    Checks if a programme already exists in the database and returns it's id
    @param         chanid         id of the channel the programme is on
@@ -213,12 +217,15 @@ void iptvx_db_insert_channel(channel* chan){
                "VALUES ('%q',%lld)", chan->name->str, chan->lastUpdated);
       sqlite3_exec(db,insert_sql,NULL,NULL,&errmsg);
    }else{
-      /* update when channel already exists */
-      char* update_sql = sqlite3_mprintf("UPDATE channel "
-                        "SET channelepgupdated = %lld "
-                        "WHERE channelname = '%q'",
-                        chan->lastUpdated, chan->name->str);
-      sqlite3_exec(db,update_sql,NULL,NULL,NULL);
+      /* do not update the channel if last updated is 0 */
+      if(chan->lastUpdated > 0){
+         /* update when channel already exists */
+         char* update_sql = sqlite3_mprintf("UPDATE channel "
+                           "SET channelepgupdated = %lld "
+                           "WHERE channelname = '%q'",
+                           chan->lastUpdated, chan->name->str);
+         sqlite3_exec(db,update_sql,NULL,NULL,NULL);
+      }
    }
 
    /* get the id of the channel */
@@ -397,15 +404,22 @@ GArray* iptvx_db_get_channel_programme(GString* channelname){
 /*
    Updates the database with epg data
    @param      epg      array with all epg data
+   @param      min_age  minimum age of epg data in hours
 */
-void iptvx_db_update(GArray* epg){
+void iptvx_db_update(GArray* epg, int min_age){
+   long expiry_time = time(NULL)-(min_age*3600);
+
    /* go through all channels and insert them
       into the database if they do not already exist */
    int c = 0;
    for(c = 0; c < epg->len; c++){
       /* get the channel from the list */
       channel* chan = &g_array_index(epg,channel,c);
-      iptvx_db_insert_channel(chan);
+
+      /* insert to database when data outdated */
+      if(chan->lastUpdated < expiry_time){
+         iptvx_db_insert_channel(chan);
+      }
    }
 }
 
