@@ -24,6 +24,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mutex.h>
+#include <SDL/SDL_getenv.h>
 
 /* window args type */
 struct create_window_args{
@@ -162,6 +163,9 @@ int iptvx_create_window(int width, int height, char* render_support,
 
     /* check the configured support option */
     if(g_strcmp0(render_support,"hw")==0){
+        /* tell SDL to use directfb driver */
+        SDL_putenv("SDL_VIDEODRIVER=directfb");
+
         /* standard hardware rendering support */
         sdl_surface_option = SDL_HWSURFACE | SDL_SRCCOLORKEY | SDL_SRCALPHA;
         sdl_video_options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF 
