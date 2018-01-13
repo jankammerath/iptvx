@@ -868,6 +868,8 @@ bool iptvx_epg_init(config_t* cfg,void (*statusUpdateCallback)(void*),bool threa
 			current.epgChannelId = iptvx_epg_config_get_string(element,"epgChannelId");
 			current.epgShell = iptvx_epg_config_get_string(element,"epgShell");
 			current.epgInterval = iptvx_epg_config_get_string(element,"epgInterval");
+			current.lastUpdated = iptvx_db_get_channel_last_updated(current.name);
+
 
 			/* initialise programme array */
 			current.programmeList = g_array_new(false,false,sizeof(programme));

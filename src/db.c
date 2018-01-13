@@ -41,10 +41,6 @@ void iptvx_db_init(char* filename){
    }
 }
 
-GArray* iptvx_db_get_channel_list(){
-   
-}
-
 /*
    Checks if a programme already exists in the database and returns it's id
    @param         chanid         id of the channel the programme is on
@@ -421,6 +417,29 @@ void iptvx_db_update(GArray* epg, int min_age){
          iptvx_db_insert_channel(chan);
       }
    }
+}
+
+/*
+   Returns the timestamp of the last epg update of a channel
+   @param         channelname    name of the channel to get timestamp for
+   @return                       long with timestamp of last epg update
+*/
+long iptvx_db_get_channel_last_updated(GString* channelname){
+   long result = 0;
+
+   char* get_recording_sql = sqlite3_mprintf(
+                           "SELECT channelepgupdated FROM channel "
+                           "WHERE channelname = '%q'",channelname->str);
+
+   sqlite3_stmt *stmt;
+   sqlite3_prepare_v2(db,get_recording_sql, -1, &stmt, NULL);
+   while(sqlite3_step(stmt) == SQLITE_ROW){
+      result = sqlite3_column_int64(stmt,0);
+   }
+
+   sqlite3_finalize(stmt);  
+
+   return result;
 }
 
 /*

@@ -57,6 +57,13 @@ GArray* iptvx_db_get_channel_programme(GString* channelname);
 void iptvx_db_update(GArray* epg, int min_age);
 
 /*
+   Returns the timestamp of the last epg update of a channel
+   @param         channelname    name of the channel to get timestamp for
+   @return                       long with timestamp of last epg update
+*/
+long iptvx_db_get_channel_last_updated(GString* channelname);
+
+/*
    Closes the database
 */
 void iptvx_db_close();
