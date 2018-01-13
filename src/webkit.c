@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <SDL/SDL.h>
 #include <webkit2/webkit2.h>
+#include "util.h"
 
 SDL_Thread *webkit_thread;
 
@@ -35,6 +36,7 @@ int iptvx_webkit_height;
 struct png_data{
     unsigned char* data;
     unsigned int length;
+    long updated;
 } typedef png_data;
 
 static png_data overlay_data;
@@ -113,6 +115,7 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
     cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
     overlay_data.data = png_byte_data->data;
     overlay_data.length = png_byte_data->len;
+    overlay_data.updated = util_get_time_ms();
 
     /* free the byte array */
     g_byte_array_free(old_png_byte_data,true);
@@ -123,14 +126,6 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
 
   /* set ready indicator to true */
   iptvx_webkit_ready = true;
-
-  /* just wait 5ms to continue */
-  usleep(5000);
-
-  /* call for new snapshot */
-  webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
-         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
-         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
 }
 
 /*
@@ -145,6 +140,14 @@ static void iptvx_webkit_loadchanged_callback (WebKitWebView *webview, WebKitLoa
   /* fire callback when load finished */
   (*load_finished_callback)(webview);
 
+  webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
+         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
+         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
+}
+
+/* call for a new snapshot when window is drawn again */
+static void iptvx_webkit_draw_callback(WebKitWebView *webview, cairo_t* cr, char* destfile){
+  /* call for new snapshot */
   webkit_web_view_get_snapshot(webview,WEBKIT_SNAPSHOT_REGION_VISIBLE,
          WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
          (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,destfile);
@@ -171,6 +174,10 @@ int iptvx_webkit_start(void* file){
 	gtk_container_add (GTK_CONTAINER (iptvx_gtk_window), iptvx_gtk_webview);
 	g_signal_connect (iptvx_gtk_webview, "load-changed",
 	                G_CALLBACK (iptvx_webkit_loadchanged_callback), "");
+
+  /* connect to draw signal to render png when window changes */
+  g_signal_connect (iptvx_gtk_webview, "draw",
+                  G_CALLBACK (iptvx_webkit_draw_callback), "");
 
   /* write all console messages to stdout */
   WebKitSettings *wk_setting = webkit_web_view_get_settings (WEBKIT_WEB_VIEW(iptvx_gtk_webview));

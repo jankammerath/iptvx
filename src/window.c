@@ -36,6 +36,7 @@ struct create_window_args{
 struct png_data{
     unsigned char* data;
     unsigned int length;
+    long updated;
 } typedef png_data;
 
 /* SDL context type */
@@ -60,13 +61,15 @@ typedef void startplay_callback(void*);
 SDL_Thread *window_thread;
 bool window_terminate;
 bool window_fullscreen;
-bool window_overlay_active;
 sdl_context ctx;
 
 /* ptr to rendered data */
 void* overlay_data;
 bool* overlay_ready;
 bool* overlay_rendering;
+
+/* sets the last overlay update in ms */
+long last_overlay_update_ms;
 
 /*
     Initialises window and graphics library
@@ -99,14 +102,6 @@ window_size iptvx_window_get_size(){
     result.height = info->current_h; 
 
     return result;
-}
-
-/*
-    Defines whether the overlay is active and should be rendered
-    @param          active      true will render, false will not
-*/
-void iptvx_window_set_overlay_active(bool active){
-    window_overlay_active = active;
 }
 
 /*
@@ -144,8 +139,8 @@ int iptvx_create_window(int width, int height, char* render_support,
     SDL_Surface *screen, *overlay;
     SDL_Event event;
 
-    /* set overlay to active by default */
-    window_overlay_active = true;
+    /* set last overlay update to 0 */
+    last_overlay_update_ms = 0;
 
     /* set window terminate to false */
     window_terminate = false;
@@ -247,16 +242,24 @@ int iptvx_create_window(int width, int height, char* render_support,
         png_data* overlay_png_ref = (png_data*)overlay_data;
 
         /* render it if it's not null */
-        if(overlay_png_ref->data != NULL && window_overlay_active == true){
+        if(overlay_png_ref->data != NULL){
             *overlay_rendering = true;
 
-            SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,
+            if(last_overlay_update_ms < overlay_png_ref->updated){
+                if(overlay != NULL){
+                    if(last_overlay_update_ms > 0){
+                        SDL_FreeSurface(overlay);
+                    }
+                    SDL_RWops *overlay_rwops = SDL_RWFromMem(overlay_png_ref->data,
                                                     overlay_png_ref->length);
-            overlay = IMG_LoadPNG_RW(overlay_rwops);
+                    overlay = IMG_LoadPNG_RW(overlay_rwops);
+                    SDL_FreeRW(overlay_rwops);
+
+                    last_overlay_update_ms = overlay_png_ref->updated;
+                }
+            }
 
             SDL_BlitSurface(overlay, NULL, screen, NULL);
-            SDL_FreeRW(overlay_rwops);
-            SDL_FreeSurface(overlay);
             *overlay_rendering = false;
         }
 

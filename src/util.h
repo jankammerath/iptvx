@@ -28,6 +28,12 @@
 #define UTIL_H
 
 /*
+  Gets the current time in milliseconds
+  @returns      the current time in milliseconds as long
+*/
+long util_get_time_ms();
+
+/*
   Deletes a file from disk
   @param    fileName    file path of the file to delete
 */

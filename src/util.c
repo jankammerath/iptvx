@@ -33,6 +33,23 @@
 #include <sys/stat.h>
 #include <glib.h>
 #include <gio/gio.h>
+#include <time.h>
+
+/*
+  Gets the current time in milliseconds
+  @returns      the current time in milliseconds as long
+*/
+long util_get_time_ms(){
+  long result = 0;
+
+  struct timespec tm;
+  clock_gettime(CLOCK_REALTIME,&tm);
+
+  /* 1 s = 1000 ms, 1 ms = 1000000 ns */
+  result = (long)(tm.tv_sec*1000)+(tm.tv_nsec/1000000);
+
+  return result;
+}
 
 /*
   Deletes a file from disk
