@@ -28,6 +28,9 @@ struct recording{
    /* the url of the channel */
    GString* url;
 
+   /* title of the recording */
+   GString* title;
+
    /* start and stop timings */
    long start;
    long stop;

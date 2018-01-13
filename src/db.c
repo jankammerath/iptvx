@@ -209,8 +209,16 @@ void iptvx_db_insert_channel(channel* chan){
    if(channel_exists == false){
       char* errmsg;
       char* insert_sql = sqlite3_mprintf("INSERT INTO channel "
-               "(channelname) VALUES ('%q')" ,chan->name->str);
+               "(channelname, channelepgupdated) "
+               "VALUES ('%q',%lld)", chan->name->str, chan->lastUpdated);
       sqlite3_exec(db,insert_sql,NULL,NULL,&errmsg);
+   }else{
+      /* update when channel already exists */
+      char* update_sql = sqlite3_mprintf("UPDATE channel "
+                        "SET channelepgupdated = %lld "
+                        "WHERE channelname = '%q'",
+                        chan->lastUpdated, chan->name->str);
+      sqlite3_exec(db,update_sql,NULL,NULL,NULL);
    }
 
    /* get the id of the channel */
@@ -289,9 +297,9 @@ void iptvx_db_insert_recording(recording* rec){
       /* insert the recording into the database */
       long channelid = iptvx_db_get_channel_id(rec->channel->str);
       char* insert_sql = sqlite3_mprintf("INSERT INTO record "
-               "(recordstart, recordstop, recordchannelid) "
-               "VALUES (%lld, %lld, %lld)" ,
-               rec->start,rec->stop,channelid);
+               "(recordstart, recordstop, recordchannelid, recordtitle) "
+               "VALUES (%lld, %lld, %lld, '%q')" ,
+               rec->start,rec->stop,channelid,rec->title->str);
       sqlite3_exec(db,insert_sql,NULL,NULL,NULL);
    }
 }
@@ -316,7 +324,7 @@ GArray* iptvx_db_get_recording_list(){
    GArray* result = g_array_new(false,false,sizeof(recording));
 
    char* get_recording_sql = "SELECT c.channelname, r.recordstart, "
-                     "r.recordstop FROM record r, channel c "
+                     "r.recordstop, r.recordtitle FROM record r, channel c "
                      "WHERE c.channelid = r.recordchannelid";
    
    sqlite3_stmt *getrec_stmt;
@@ -326,6 +334,7 @@ GArray* iptvx_db_get_recording_list(){
       rec.channel = g_string_new(sqlite3_column_text(getrec_stmt,0));
       rec.start = sqlite3_column_int64(getrec_stmt,1);
       rec.stop = sqlite3_column_int64(getrec_stmt,2);
+      rec.title = g_string_new(sqlite3_column_text(getrec_stmt,3));
       g_array_append_val(result,rec);
    }
 

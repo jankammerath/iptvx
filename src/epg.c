@@ -612,6 +612,9 @@ void iptvx_epg_load_channel(channel* current, time_t epg_time, bool overwrite_ca
 		}
 	}
 
+	/* update the channel last updated value with the current time */
+	current->lastUpdated = (long)time(NULL);
+
 	/* free the temporary programme array */
 	g_array_free(plist,true);
 

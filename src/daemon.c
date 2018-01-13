@@ -149,6 +149,8 @@ GString* iptvx_daemon_get_recordlist_json(){
          json_object* j_rec = json_object_new_object();
          json_object_object_add(j_rec,"channel",
                json_object_new_string(rec->channel->str));
+         json_object_object_add(j_rec,"title",
+               json_object_new_string(rec->title->str));
          json_object_object_add(j_rec,"filename",
                json_object_new_string(rec->filename->str));
          json_object_object_add(j_rec,"start",
@@ -237,16 +239,61 @@ GString* iptvx_daemon_get_filename(recording rec){
    /* generate the date for the filename */
    time_t starttime_struct = rec.start;
    char startdate_text[50];
-   strftime(startdate_text, 50, "%Y-%m-%d_%H:%M:%S", 
+   strftime(startdate_text, 50, "%Y-%m-%d %H:%M:%S", 
                gmtime(&(starttime_struct)));
 
    /* generate the filename */
    char filename[265];
-   sprintf(filename,"%s/%s_%s.ts",record_dir->str,
-            startdate_text,rec.channel->str);
+   sprintf(filename,"%s/%s %s - %s.ts",record_dir->str,
+            startdate_text,rec.channel->str,rec.title->str);
 
    /* push filename into result */
    result = g_string_new(filename);
+
+   return result;
+}
+
+/*
+   Gets the title for a specific recording by checking the epg data
+   @param               rec      recording to get title for
+   @return                       a string with the title of the show
+*/
+GString* iptvx_daemon_get_recording_title(recording* rec){
+   /* the default title, if no programme can be found, is 'Live' */
+   GString* result = g_string_new("Live");
+
+   if(iptvx_daemon_epg_data != NULL){
+      int c = 0;
+      long max_prog_len = 0;
+      for(c = 0; c < iptvx_daemon_epg_data->len; c++){
+         channel* chan = &g_array_index(iptvx_daemon_epg_data,channel,c);
+
+         /* check if this is the recording's channel */
+         if(g_strcmp0(chan->name->str,rec->channel->str) == 0){
+            /* Check which programme matches the recording schedule.
+               If there are multiple programmes during the recording 
+               period than the programme with the longest duration during
+               the recording period will represent the recording */
+            if(chan->programmeList != NULL){
+               int p = 0;
+               for(p = 0; p < chan->programmeList->len; p++){
+                  programme* prog = &g_array_index(chan->programmeList,programme,p);
+                  
+                  /* calculate the duration of the programme */
+                  long prog_len = prog->stop - prog->start;
+
+                  if(prog->start >= rec->start && prog->stop <= rec->stop && prog_len > max_prog_len){
+                     /* this programme runs during the recording */
+                     result = g_string_new(prog->title->str);
+
+                     /* increase the max len */
+                     max_prog_len = prog_len;
+                  }
+               }
+            }
+         }
+      }
+   }
 
    return result;
 }
@@ -268,6 +315,9 @@ recording iptvx_daemon_create_recording(char* channel, long start, long stop){
    result.seconds_recorded = 0;
    result.filesize = 0;
    result.tolerance = iptvx_daemon_record_tolerance*60;
+
+   /* generate the title for this recording */
+   result.title = iptvx_daemon_get_recording_title(&result);
 
    /* generate the filename for this recording */
    result.filename = iptvx_daemon_get_filename(result);
@@ -568,6 +618,13 @@ void iptvx_daemon_init_recordlist(){
          }
       }
    }
+}
+
+/*
+   Updates epg if necessary
+*/
+void iptvx_daemon_check_epg_update(){
+
 }
 
 /*
