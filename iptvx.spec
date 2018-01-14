@@ -37,6 +37,7 @@ BuildRequires:	pkgconfig(libmicrohttpd)
 BuildRequires:	pkgconfig(sqlite3)
 
 # Runtime requirements
+Requires(pre):  shadow
 Requires:  		pkgconfig(glib-2.0)
 Requires:		pkgconfig(webkit2gtk-4.0)
 Requires:		pkgconfig(libconfig)
