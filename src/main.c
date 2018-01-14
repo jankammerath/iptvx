@@ -66,9 +66,7 @@ void mouse_event(int mouse_event_type, int mouse_x, int mouse_y, int mouse_butto
 	g_array_append_val(mouseEvent,mouse_x);
 	g_array_append_val(mouseEvent,mouse_y);
 	g_array_append_val(mouseEvent,mouse_button);
-
-	g_idle_add_full(G_PRIORITY_DEFAULT_IDLE,
-			(GSourceFunc)iptvx_webkit_sendmouse,mouseEvent,NULL);
+	iptvx_webkit_sendmouse(mouseEvent);
 }
 
 /* handles any key down event */

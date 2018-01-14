@@ -126,6 +126,17 @@ void iptvx_webkit_sendmouse(GArray* mouse_args){
 
     /* send event to the widget */
     gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_mouse_event);
+  }if(mouse_event_type == 1){
+    /* this is a mouse button click */
+    GdkEventButton* gdk_mouse_event = (GdkEventButton*)gdk_event_new(GDK_BUTTON_RELEASE);
+    gdk_mouse_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+    gdk_mouse_event->axes = NULL;
+    gdk_mouse_event->x = mouse_x;
+    gdk_mouse_event->y = mouse_y;
+    gdk_mouse_event->button = mouse_button+1;
+
+    /* send event to the widget */
+    gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_mouse_event);
   }
 }
 
