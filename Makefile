@@ -25,6 +25,8 @@ install:
 	chmod 644 /var/iptvx -R
 	chmod 644 /etc/iptvx -R
 	cp iptvx.service /etc/systemd/system/iptvx.service
+	useradd iptv
+	usermod -L iptv
 
 clean:
 	rm -f bin/iptvx
@@ -44,3 +46,5 @@ packinstall:
 	chmod 644 $(DESTDIR)/var/iptvx -R
 	chmod 644 $(DESTDIR)/etc/iptvx -R
 	cp iptvx.service $(DESTDIR)/etc/systemd/system/iptvx.service
+	useradd iptv
+	usermod -L iptv

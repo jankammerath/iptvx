@@ -328,7 +328,8 @@ GArray* iptvx_db_get_recording_list(){
 
    char* get_recording_sql = "SELECT c.channelname, r.recordstart, "
                      "r.recordstop, r.recordtitle FROM record r, channel c "
-                     "WHERE c.channelid = r.recordchannelid";
+                     "WHERE c.channelid = r.recordchannelid "
+                     "ORDER BY r.recordstop DESC";
    
    sqlite3_stmt *getrec_stmt;
    sqlite3_prepare_v2(db,get_recording_sql, -1, &getrec_stmt, NULL);

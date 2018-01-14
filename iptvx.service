@@ -4,6 +4,7 @@ Description=iptvx epg and recording service
 [Service]
 Type=simple
 ExecStart=/usr/bin/iptvx --daemon
+User=iptv
 
 [Install]
 WantedBy=multi-user.target

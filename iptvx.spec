@@ -70,6 +70,8 @@ mkdir -p %{buildroot}%{_var}/iptvx/data/logo
 cp app %{buildroot}%{_var}/iptvx/ -R
 cp data/db %{buildroot}%{_var}/iptvx/db
 chmod 755 %{buildroot}%{_var}/iptvx/ -R
+useradd iptv
+usermod -L iptv
 
 %files
 %{_bindir}/iptvx

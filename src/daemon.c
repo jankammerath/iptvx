@@ -308,9 +308,21 @@ GString* iptvx_daemon_get_recording_title(recording* rec){
 recording iptvx_daemon_create_recording(char* channel, long start, long stop){
    recording result;
 
-   result.channel = g_string_new(channel);
+   /* set the start time */
    result.start = start;
+   if(result.start < time(NULL)){
+      /* recording should have started already, give it 10 secs */
+      result.start = time(NULL)+10;
+   }
+
+   /* set the stop time for the recording */
    result.stop = stop;
+   if(result.stop < time(NULL)){
+      /* this is gone already, so take the next 5 minutes */
+      result.stop = time(NULL)+300;
+   }   
+
+   result.channel = g_string_new(channel);
    result.status = 0;
    result.seconds_recorded = 0;
    result.filesize = 0;
@@ -539,7 +551,7 @@ static int iptvx_daemon_handle_request(void * cls, struct MHD_Connection * conne
 */
 void iptvx_daemon_check_recording(){
    /* get the current timestamp */
-   long now = time(NULL);
+   long now = (long)time(NULL);
 
    /* go through the list of scheduled recordings */
    int c = 0;
@@ -548,9 +560,17 @@ void iptvx_daemon_check_recording(){
    
       /* check if recording not active 
          and schedule for now */
-      if(rec->start >= (now-(rec->tolerance)) 
-         && rec->stop <= (now+(rec->tolerance)) 
-         && rec->status == 0){
+      long actual_start = (rec->start-(rec->tolerance));
+      long actual_stop = (rec->stop+(rec->tolerance));
+
+      if(actual_start <= now && actual_stop >= now && rec->status == 0){
+         /* it might be that the daemon was just fired up 
+            and EPG data is not yet, ready and we need to 
+            wait for it to come up */
+         while(iptvx_daemon_epg_data == NULL){
+            sleep(1);
+         }
+
          /* add the url of the channel to the recording */
          rec->url = iptvx_daemon_get_url(rec->channel);
 
@@ -655,8 +675,10 @@ void iptvx_daemon_run(){
       /* start recording if necessary */
       iptvx_daemon_check_recording();
 
+      printf("Daemon alive! (%d)\n",(long)time(NULL));
+
       /* wait */
-      sleep(10);
+      sleep(5);
    }
 
    /* stop the daemon when finished */

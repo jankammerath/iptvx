@@ -59,7 +59,7 @@ int iptvx_record_start_thread(void* recordingptr){
    char* vlc_args[] = {
       "--no-xlib", /* don't use the graphics lib */
       "--repeat", /* ensure it retries on failure */
-      "--quiet", /* no verbose output */
+      "--quiet", /* '--quiet' no verbose output */
       rec_param /* the actual file dumping */
    };
 
