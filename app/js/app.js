@@ -46,7 +46,7 @@ var app = {
 			var keyCode = event.which;
 
 			/* hash key toggles debug */
-			if(keyCode == 35){
+			if(keyCode == 51){
 				$("#debuginfo").toggle();
 			}
 
@@ -99,8 +99,8 @@ var app = {
 					app.epg.toggle();
 				}
 
-				/* search ui toggle with alt-gr (313) */
-				if(keyCode == 313){
+				/* toggle config with F2 (113) */
+				if(keyCode == 113){
 					app.list.toggle(true);
 					app.control.toggle(true);
 					app.epg.toggle(true);

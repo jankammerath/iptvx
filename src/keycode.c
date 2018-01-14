@@ -26,25 +26,28 @@
 					Also check the SDL_keysym.h file for numbers
 */
 int keycode_convert_sdl_to_gtk(int sdl_keycode){
-	int result = -1;
+	int result = sdl_keycode;
 
-	/* calculate the characters A-Z */
+	/* CHARACTER A-Z KEYS */
 	if(sdl_keycode >= 97 && sdl_keycode <= 122){
 		result = sdl_keycode - 32;
 	}
 
-	/* calculate function keys */
+	/* FUNCTION KEYS */
 	if(sdl_keycode >= 282 && sdl_keycode <= 293){
 		result = sdl_keycode + 65188;
 	}	
 
-	/* calculate the keypad numbers */
+	/* KEYPAD NUMBERS */
 	if(sdl_keycode >= 256 && sdl_keycode <= 265){
 		result = sdl_keycode + 65200;
 	}
 
-	/* DELETE */
-	if(sdl_keycode == 8){result=65535;}
+	/* BACKSPACE */
+	if(sdl_keycode == 8){result=65288;}
+
+	/* TAB */
+	if(sdl_keycode == 9){result=65289;}
 
 	/* ENTER or RETURN */
 	if(sdl_keycode == 13){result=65293;}
@@ -85,8 +88,11 @@ int keycode_convert_sdl_to_gtk(int sdl_keycode){
 	/* CTRL */
 	if(sdl_keycode == 305 || sdl_keycode == 306){result=65507;}
 
-	/* ALT */
-	if(sdl_keycode == 307 || sdl_keycode == 308){result=65513;}
+	/* L-ALT and R-ALT */
+	if(sdl_keycode == 308 || sdl_keycode == 307){result=65513;}
+
+	/* ALT-GR */
+	if(sdl_keycode == 313){result=65514;}
 
 	/* SUPER */
 	if(sdl_keycode == 311 || sdl_keycode == 312){result=65515;}

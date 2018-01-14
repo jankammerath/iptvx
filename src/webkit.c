@@ -87,21 +87,6 @@ bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
 }
 
-/*
-  Sends a key up event to webkit
-  @param    keycode       the keycode for the key up event
-*/
-void iptvx_webkit_sendkey(int keycode){
-  GdkEventKey* gdk_key_event = (GdkEventKey*)gdk_event_new(GDK_KEY_PRESS);
-  gdk_key_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
-  gdk_key_event->keyval = keycode;
-  gdk_key_event->string = "";
-  gdk_key_event->length = 0;
-  gdk_key_event->group = 0;
-  gdk_key_event->is_modifier = 0;
-  gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_key_event);
-}
-
 /* 
   handles any mouse move, scroll or click event
   @param    mouse_args    mouse event arguments in GArray  
@@ -194,18 +179,15 @@ static void iptvx_webkit_snapshotfinished_callback(WebKitWebView *webview,GAsync
 
   iptvx_webkit_ready = false;
 
-  /* flush data only when graphics is not currently rendering */
-  if(iptvx_overlay_rendering == false){
-    old_png_byte_data = png_byte_data;  
-    png_byte_data = g_byte_array_new();
-    cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
-    overlay_data.data = png_byte_data->data;
-    overlay_data.length = png_byte_data->len;
-    overlay_data.updated = util_get_time_ms();
+  old_png_byte_data = png_byte_data;  
+  png_byte_data = g_byte_array_new();
+  cairo_surface_write_to_png_stream(surface,iptvx_webkit_snapshot_write_png,png_byte_data);
+  overlay_data.data = png_byte_data->data;
+  overlay_data.length = png_byte_data->len;
+  overlay_data.updated = util_get_time_ms();
 
-    /* free the byte array */
-    g_byte_array_free(old_png_byte_data,true);
-  }
+  /* free the byte array */
+  g_byte_array_free(old_png_byte_data,true);
 
   /* free the surface */
   cairo_surface_destroy(surface);
@@ -287,4 +269,31 @@ void iptvx_webkit_start_thread(char *file,int width, int height, void (*load_fin
   iptvx_webkit_height = height;
   load_finished_callback = load_finished_callback_func;
   webkit_thread = SDL_CreateThread(iptvx_webkit_start,file);
+}
+
+/*
+  Sends a key up event to webkit
+  @param    keycode       the keycode for the key up event
+*/
+void iptvx_webkit_sendkey(int keycode){
+  GdkEventKey* gdk_key_event = (GdkEventKey*)gdk_event_new(GDK_KEY_PRESS);
+  gdk_key_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+  gdk_key_event->keyval = keycode;
+  gdk_key_event->string = "";
+  gdk_key_event->length = 0;
+  gdk_key_event->group = 0;
+  gdk_key_event->is_modifier = 0;
+
+  GdkWindow* gdk_win = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+  GdkDisplay* gdk_disp = gdk_window_get_display(gdk_win);
+  GdkSeat* gdk_seat = gdk_display_get_default_seat(gdk_disp);
+  GdkDevice* gdk_dev = gdk_seat_get_keyboard(gdk_seat);
+  gdk_event_set_device((GdkEvent*)gdk_key_event,gdk_dev);
+  gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_key_event);
+
+  /* force draw when key hit */
+  webkit_web_view_get_snapshot(WEBKIT_WEB_VIEW(iptvx_gtk_webview),
+      WEBKIT_SNAPSHOT_REGION_VISIBLE,
+       WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
+       (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,"");
 }

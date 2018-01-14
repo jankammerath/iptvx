@@ -41,7 +41,7 @@ body{
   opacity:0.9;
   padding:5px;
   z-index:0;
-  display:none;
+  /* display:none; */
 }
 
 #status{
