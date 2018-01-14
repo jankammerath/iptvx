@@ -675,8 +675,6 @@ void iptvx_daemon_run(){
       /* start recording if necessary */
       iptvx_daemon_check_recording();
 
-      printf("Daemon alive! (%d)\n",(long)time(NULL));
-
       /* wait */
       sleep(5);
    }
