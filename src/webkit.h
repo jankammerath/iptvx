@@ -45,6 +45,12 @@ bool* iptvx_get_overlay_rendering_ptr();
 */
 extern void* iptvx_get_overlay_ready_ptr();
 
+/*
+  Sends a key up event to webkit
+  @param    keycode       the keycode for the key up event
+*/
+void iptvx_webkit_sendkey(int keycode);
+
 /* 
   handles any mouse move, scroll or click event
   @param    mouse_args    mouse event arguments in GArray  

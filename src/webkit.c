@@ -87,6 +87,21 @@ bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
 }
 
+/*
+  Sends a key up event to webkit
+  @param    keycode       the keycode for the key up event
+*/
+void iptvx_webkit_sendkey(int keycode){
+  GdkEventKey* gdk_key_event = (GdkEventKey*)gdk_event_new(GDK_KEY_PRESS);
+  gdk_key_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+  gdk_key_event->keyval = keycode;
+  gdk_key_event->string = "";
+  gdk_key_event->length = 0;
+  gdk_key_event->group = 0;
+  gdk_key_event->is_modifier = 0;
+  gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_key_event);
+}
+
 /* 
   handles any mouse move, scroll or click event
   @param    mouse_args    mouse event arguments in GArray  
@@ -111,6 +126,7 @@ void iptvx_webkit_sendmouse(GArray* mouse_args){
     gdk_mouse_event->axes = NULL;
     gdk_mouse_event->x = mouse_x;
     gdk_mouse_event->y = mouse_y;
+    gdk_mouse_event->device = NULL;
 
     switch(mouse_button){
       case 0:
@@ -126,17 +142,34 @@ void iptvx_webkit_sendmouse(GArray* mouse_args){
 
     /* send event to the widget */
     gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_mouse_event);
-  }if(mouse_event_type == 1){
-    /* this is a mouse button click */
+  }if(mouse_event_type == 1 && mouse_button != 4 && mouse_button != 5){
+    /* this is a mouse button click (ignore 4 and 5 button as they need scroll event) */
     GdkEventButton* gdk_mouse_event = (GdkEventButton*)gdk_event_new(GDK_BUTTON_RELEASE);
     gdk_mouse_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
     gdk_mouse_event->axes = NULL;
     gdk_mouse_event->x = mouse_x;
     gdk_mouse_event->y = mouse_y;
-    gdk_mouse_event->button = mouse_button+1;
+    gdk_mouse_event->button = mouse_button;
+    gdk_mouse_event->device = NULL;
 
     /* send event to the widget */
     gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_mouse_event);
+  }if(mouse_event_type == 1 && (mouse_button == 4 || mouse_button == 5)){
+    /* this is a scroll wheel command */
+      GdkEventScroll* gdk_mouse_event = (GdkEventScroll*)gdk_event_new(GDK_SCROLL);
+      gdk_mouse_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+      gdk_mouse_event->x = mouse_x;
+      gdk_mouse_event->y = mouse_y;
+      gdk_mouse_event->device = NULL;
+
+      /* button 4 is scrolling up and 5 is down */
+      gdk_mouse_event->direction = GDK_SCROLL_DOWN;
+      if(mouse_button == 4){
+        gdk_mouse_event->direction = GDK_SCROLL_UP;
+      }
+
+      /* send event to the widget */
+      gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_mouse_event);  
   }
 }
 

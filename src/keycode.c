@@ -17,15 +17,16 @@
 */
 
 /*
-	Translates an SDL keycode to a JavaScript keycode
+	Translates an SDL keycode to a GDK_KEY keycode
 	@param			sdl_keycode			The SDL keycode
 	@return								The JavaScript keycode
-*/
-int keycode_convert_sdl_to_js(int sdl_keycode){
-	int result;
 
-	/* SDL key is default */
-	result = sdl_keycode;
+	GDK Keysym: 	https://git.gnome.org/browse/gtk+/plain/gdk/gdkkeysyms.h
+	SDL Keysym:		https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlkey.html
+					Also check the SDL_keysym.h file for numbers
+*/
+int keycode_convert_sdl_to_gtk(int sdl_keycode){
+	int result = -1;
 
 	/* calculate the characters A-Z */
 	if(sdl_keycode >= 97 && sdl_keycode <= 122){
@@ -34,35 +35,61 @@ int keycode_convert_sdl_to_js(int sdl_keycode){
 
 	/* calculate function keys */
 	if(sdl_keycode >= 282 && sdl_keycode <= 293){
-		result = sdl_keycode - 170;
+		result = sdl_keycode + 65188;
 	}	
 
 	/* calculate the keypad numbers */
 	if(sdl_keycode >= 256 && sdl_keycode <= 265){
-		result = sdl_keycode - 208;
+		result = sdl_keycode + 65200;
 	}
 
-	/* define delete key */
-	if(sdl_keycode == 127){result=46;}
+	/* DELETE */
+	if(sdl_keycode == 8){result=65535;}
 
-	/* define up, down, pgup, pgdown, home etc. */
-	if(sdl_keycode == 271){result=13;}
-	if(sdl_keycode == 273){result=38;}
-	if(sdl_keycode == 274){result=40;}
-	if(sdl_keycode == 275){result=39;}
-	if(sdl_keycode == 276){result=37;}
-	if(sdl_keycode == 277){result=45;}
-	if(sdl_keycode == 278){result=36;}
-	if(sdl_keycode == 279){result=35;}
-	if(sdl_keycode == 280){result=33;}
-	if(sdl_keycode == 281){result=34;}
+	/* ENTER or RETURN */
+	if(sdl_keycode == 13){result=65293;}
 
-	/* define caps, shift, ctrl, alt, super */
-	if(sdl_keycode == 301){result=20;}
-	if(sdl_keycode == 303 || sdl_keycode == 304){result=16;}
-	if(sdl_keycode == 305 || sdl_keycode == 306){result=17;}
-	if(sdl_keycode == 307 || sdl_keycode == 308){result=18;}
-	if(sdl_keycode == 311 || sdl_keycode == 312){result=91;}
+	/* UP KEY */
+	if(sdl_keycode == 273){result=65362;}
+
+	/* DOWN KEY */
+	if(sdl_keycode == 274){result=65364;}
+
+	/* RIGHT KEY */
+	if(sdl_keycode == 275){result=65363;}
+
+	/* LEFT KEY */
+	if(sdl_keycode == 276){result=65361;}
+
+	/* INSERT KEY */
+	if(sdl_keycode == 277){result=65379;}
+
+	/* HOME KEY */
+	if(sdl_keycode == 278){result=65360;}
+
+	/* END KEY */
+	if(sdl_keycode == 279){result=65367;}
+
+	/* PAGE UP */
+	if(sdl_keycode == 280){result=65365;}
+
+	/* PAGE DOWN */
+	if(sdl_keycode == 281){result=65366;}
+
+	/* CAPS LOCK */
+	if(sdl_keycode == 301){result=65509;}
+
+	/* SHIFT */
+	if(sdl_keycode == 303 || sdl_keycode == 304){result=65505;}
+
+	/* CTRL */
+	if(sdl_keycode == 305 || sdl_keycode == 306){result=65507;}
+
+	/* ALT */
+	if(sdl_keycode == 307 || sdl_keycode == 308){result=65513;}
+
+	/* SUPER */
+	if(sdl_keycode == 311 || sdl_keycode == 312){result=65515;}
 
 	return result;
 }

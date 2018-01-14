@@ -205,7 +205,7 @@ int iptvx_create_window(int width, int height, char* render_support,
                     mouseevent_func(0,event.motion.x,event.motion.y,
                                     event.motion.state);
                     break;
-                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
                     /* call the handler for clicks (same as motion above) */
                     mouseevent_func(1,event.motion.x,event.motion.y,
                                     event.motion.state);

@@ -81,9 +81,10 @@ void keydown(int keyCode){
 		/* forward key after converting from SDL to JS */
 		if(main_js_ready){
 			/* only when JS API alive */
-			int convertedKeyCode = keycode_convert_sdl_to_js(keyCode);
-			g_idle_add((GSourceFunc)iptvx_js_sendkey,
-					GINT_TO_POINTER(convertedKeyCode));
+			int convertedKeyCode = keycode_convert_sdl_to_gtk(keyCode);
+			if(convertedKeyCode != -1){
+				iptvx_webkit_sendkey(convertedKeyCode);
+			}
 		}		
 	}
 }

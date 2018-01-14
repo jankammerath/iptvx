@@ -24,6 +24,6 @@
    @param      sdl_keycode    The SDL keycode
    @return                    Returns the JS keycode value
 */
-int keycode_convert_sdl_to_js(int sdl_keycode);
+int keycode_convert_sdl_to_gtk(int sdl_keycode);
 
 #endif
