@@ -24,8 +24,8 @@
 
 SDL_Thread *webkit_thread;
 
-static GtkWidget *iptvx_gtk_window;
-static GtkWidget *iptvx_gtk_webview;
+static GtkWidget* iptvx_gtk_window;
+static GtkWidget* iptvx_gtk_webview;
 static WebKitUserContentManager* user_content_mgr;
 static bool iptvx_webkit_ready;
 static bool iptvx_overlay_rendering;
@@ -85,6 +85,48 @@ bool* iptvx_get_overlay_rendering_ptr(){
 */
 bool* iptvx_get_overlay_ready_ptr(){
   return &iptvx_webkit_ready;
+}
+
+/* 
+  handles any mouse move, scroll or click event
+  @param    mouse_args    mouse event arguments in GArray  
+*/
+void iptvx_webkit_sendmouse(GArray* mouse_args){
+  /*
+    mouse_event_type  0 = move, 1 = button 
+    mouse_x           x pos of the cursor
+    mouse_y           y pos of the cursor
+    mouse_button      0 = left, 1 = middle, 2 = right
+  */
+  int mouse_event_type = g_array_index(mouse_args,int,0);
+  int mouse_x = g_array_index(mouse_args,int,1);
+  int mouse_y = g_array_index(mouse_args,int,2);
+  int mouse_button = g_array_index(mouse_args,int,3);
+
+  /* check which mouse event occured */
+  if(mouse_event_type == 0){
+    /* this is a mouse motion or move event */
+    GdkEventMotion* gdk_mouse_event = (GdkEventMotion*)gdk_event_new(GDK_MOTION_NOTIFY);
+    gdk_mouse_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+    gdk_mouse_event->axes = NULL;
+    gdk_mouse_event->x = mouse_x;
+    gdk_mouse_event->y = mouse_y;
+
+    switch(mouse_button){
+      case 0:
+        gdk_mouse_event->state = GDK_BUTTON1_MASK;
+        break;
+      case 1:
+        gdk_mouse_event->state = GDK_BUTTON2_MASK;
+        break;
+      case 2:
+        gdk_mouse_event->state = GDK_BUTTON3_MASK;
+        break;
+    }
+
+    /* send event to the widget */
+    gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_mouse_event);
+  }
 }
 
 /*

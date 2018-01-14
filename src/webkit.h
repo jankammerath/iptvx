@@ -45,6 +45,12 @@ bool* iptvx_get_overlay_rendering_ptr();
 */
 extern void* iptvx_get_overlay_ready_ptr();
 
+/* 
+  handles any mouse move, scroll or click event
+  @param    mouse_args    mouse event arguments in GArray  
+*/
+void iptvx_webkit_sendmouse(GArray* mouse_args);
+
 /*
   starts webkit thread
   @param    file                          char ptr with the file path to the html app
