@@ -78,6 +78,7 @@ var app = {
 					app.list.toggle(true);
 					app.find.toggle(true);
 					app.streamconfig.toggle(true);
+					app.record.toggle(true);
 					app.control.toggle();
 				}
 
@@ -87,6 +88,7 @@ var app = {
 					app.control.toggle(true);
 					app.find.toggle(true);
 					app.streamconfig.toggle(true);
+					app.record.toggle(true);
 					app.list.toggle();
 				}
 
@@ -96,6 +98,7 @@ var app = {
 					app.control.toggle(true);
 					app.find.toggle(true);
 					app.streamconfig.toggle(true);
+					app.record.toggle(true);
 					app.epg.toggle();
 				}
 
@@ -105,7 +108,18 @@ var app = {
 					app.control.toggle(true);
 					app.epg.toggle(true);
 					app.find.toggle(true);
+					app.record.toggle(true);
 					app.streamconfig.toggle();
+				}
+
+				/* toggle recording with F3 (114) */
+				if(keyCode == 114){
+					app.list.toggle(true);
+					app.control.toggle(true);
+					app.epg.toggle(true);
+					app.find.toggle(true);
+					app.streamconfig.toggle(true);
+					app.record.toggle(false);
 				}
 
 				/* search ui toggle with ctl (17) */
@@ -114,15 +128,16 @@ var app = {
 					app.control.toggle(true);
 					app.epg.toggle(true);
 					app.streamconfig.toggle(true);
+					app.record.toggle(true);
 					app.find.toggle();
 				}
-
 
 				/* only handle keys when no ui is present to handle */
 				if(app.list.visible == false 
 					&& app.epg.visible == false
 					&& app.find.visible == false
-					&& app.streamconfig.visible == false){
+					&& app.streamconfig.visible == false
+					&& app.record.visible == false){
 					/* switch channel with up (38) and down (40) */
 					if(keyCode == 38){app.epg.zapChannel(false);}
 					if(keyCode == 40){app.epg.zapChannel(true);}
@@ -157,6 +172,7 @@ var app = {
 		app.epg.init();
 		app.control.init();
 		app.list.init();
+		app.record.init();
 	},
 
 	/* adjusts playback volume and shows ui for it */

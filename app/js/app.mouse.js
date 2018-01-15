@@ -44,6 +44,7 @@ app.mouse = {
 					app.find.toggle(true);
 					app.control.toggle(true);
 					app.streamconfig.toggle(true);
+					app.record.toggle(true);
 					app.epg.toggle();
 				}
 

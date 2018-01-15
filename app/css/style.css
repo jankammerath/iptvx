@@ -41,7 +41,7 @@ body{
   opacity:0.9;
   padding:5px;
   z-index:0;
-  /* display:none; */
+  display:none;
 }
 
 #status{
@@ -310,6 +310,125 @@ body{
   font-weight:bold;
   margin-right: 20px;
   width: 50px;
+}
+
+#record{
+  margin-top:30px;
+  position:relative;
+  width:800px;
+  max-width:90%;
+  margin-left:auto;
+  margin-right:auto;
+  opacity:0;
+}
+
+#recordhead{
+  padding:5px 10px 5px 10px;
+  height: 35px;
+  background-color: #131152;
+  font-size:15px;
+  box-sizing:border-box;
+  background: linear-gradient(to right, #15135a 0%,#0c0b35 100%);
+}
+
+#recordlist{
+  padding:5px 10px 5px 10px;
+  font-size:15px;
+}
+
+#recordlistempty{
+  padding:10px;
+  display:none;
+}
+
+#recordlisttable{
+  width:100%;
+  border-spacing: 0px;
+  border-collapse: separate;
+  margin:10px 0px 10px 0px;
+  font-size:13px;
+}
+
+#recordlisttable td{
+  padding:5px 5px 5px 5px;
+}
+
+#recordlisttable th{
+  border-bottom:2px solid #fff3;
+  padding:0px 5px 5px 5px;
+}
+
+.recordheadleft{
+  text-align:left;
+}
+
+.recordheadright{
+  text-align:right;
+}
+
+#recordlisttable tfoot td{
+  border-top:2px solid #fff3;
+  text-align:right;
+}
+
+.recorditemselected td{
+  background-color:#f5f5f533;
+}
+
+.recorditemchannel{
+  max-width:100px;
+  overflow:hidden;
+  height:20px;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.recorditemtitle{
+  max-width:200px;
+  overflow:hidden;
+  height:20px;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.recorditemstatus{
+  text-align:center;
+  font-size:11px;
+}
+
+.recordstatus{
+  border-radius:2px;
+  padding:1px;
+  width:78px;
+  display:inline-block;
+}
+
+.recordstatusscheduled{
+  background-color:#6b6b6b;
+}
+
+.recordstatusactive{
+  background-color:#f00;
+}
+
+.recordstatusfinished{
+  background-color:#4aaa10;
+}
+
+.recordstatusfailed{
+  background-color:#000;
+}
+
+.recorditemday, .recorditemtime{
+  text-align:center;
+}
+
+.recorditemduration{
+  text-align:right;
+}
+
+.recorditemsize{
+  text-align:right;
 }
 
 #epg{
