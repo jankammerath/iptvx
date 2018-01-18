@@ -1,18 +1,18 @@
 <!--
 
-   Copyright 2017   Jan Kammerath
+ Copyright 2018   Jan Kammerath
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+     http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 -->
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -21,152 +21,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
 <head>
     <title>iptvx</title>
+    <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css" media="all" href="css/style.css" />
 </head>
 <body>
-  <div id="ui">
-    <div id="epg" class="windowbox">
-      <div id="epghead">
-        <div id="epgdate">Mo, Feb 1st 2017</div>
-        <div id="epgtitle">TV Guide</div>
-      </div>
-      <div id="epgcal"></div>
-    </div>
+  <div id="list" class="component">list</div>
+  <div id="epg" class="component">epg</div>
+  <div id="control" class="component">control</div>
 
-    <div id="record" class="windowbox">
-      <div id="recordhead">
-        Recordings
-      </div>
-      <div id="recordlist">
-        <div id="recordlistempty">
-          There are currently no recordings in your list.<br />
-          Use the search or the epg to schedule recordings.
-        </div>
-        <table id="recordlisttable">
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Day</th>
-              <th>Time</th>
-              <th class="recordheadleft">Channel</th>
-              <th class="recordheadleft">Title</th>
-              <th class="recordheadright">Duration</th>
-              <th class="recordheadright">Size</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="recorditem" data-recordid="0">
-              <td class="recorditemstatus">
-                <div class="recordstatus recordstatusfinished">FINISHED</div>
-              </td>
-              <td class="recorditemday">14 Jan 2018</td>
-              <td class="recorditemtime">22:30</td>
-              <td><div class="recorditemchannel">BBC One</div></td>
-              <td><div class="recorditemtitle">Match of the Day 2</div></td>
-              <td class="recorditemduration">64 Min.</td>
-              <td class="recorditemsize">2.9 GB</td>
-            </tr>
-            <tr class="recorditem recorditemselected" data-recordid="1">
-              <td class="recorditemstatus">
-                <div class="recordstatus recordstatusactive">RECORDING</div>
-              </td>
-              <td class="recorditemday">15 Jan 2018</td>
-              <td class="recorditemtime">09:00</td>
-              <td>
-                <div class="recorditemchannel">
-                  NFL Network FHD US
-                </div>
-              </td>
-              <td>
-                <div class="recorditemtitle">
-                  Super Bowl XXXLI Live Coverage On Fox
-                </div>
-              </td>
-              <td class="recorditemduration">280 Min.</td>
-              <td class="recorditemsize">16.45 GB</td>
-            </tr>
-            <tr class="recorditem" data-recordid="2">
-              <td class="recorditemstatus">
-                <div class="recordstatus recordstatusfailed">FAILED</div>
-              </td>
-              <td class="recorditemday">16 Jan 2018</td>
-              <td class="recorditemtime">02:00</td>
-              <td>
-                <div class="recorditemchannel">
-                  CBS HD US
-                </div>
-              </td>
-              <td>
-                <div class="recorditemtitle">
-                  Bull
-                </div>
-              </td>
-              <td class="recorditemduration">93 Min.</td>
-              <td class="recorditemsize">-- GB</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>326 Min.</td>
-              <td>158.91 GB</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-
-    <div id="find" class="windowbox">
-      <div id="findinput">
-        <div id="findinputtext"></div>
-      </div>
-      <div id="findresult"></div>
-    </div>
-
-    <div id="volume" class="volumenormal">
-      <div id="volumebar">
-        <div id="volumevalue"></div>
-      </div>
-    </div>
-
-    <div id="status" class="statusloading"></div>
-
-    <div id="streamconfig" class="windowbox"></div>
-
-    <div id="list" class="windowbox"></div>
-
-    <div id="control" class="windowbox">
-      <div id="progress">
-          <div id="progressbar">
-              <div id="progressbarvalue"></div>
-          </div>
-          
-          <div id="showstart">00:00</div>
-          <div id="showend">00:00</div>
-          <div id="progresstime">00:00</div>
-      </div>
-      <div id="info">
-          <div id="channelname"></div>
-          <div id="showtitle">EPG not initialised</div>
-          <div id="showinfo">Channel information unavailable</div>
-          <div id="shownext"></div>
-      </div>
-    </div>   
-  </div>
-
-  <div id="debuginfo">Debug info</div>
   <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
   <script type="text/javascript" src="js/app.js"></script>
-  <script type="text/javascript" src="js/app.epg.js"></script>
-  <script type="text/javascript" src="js/app.control.js"></script>
-  <script type="text/javascript" src="js/app.streamconfig.js"></script>
-  <script type="text/javascript" src="js/app.list.js"></script>
-  <script type="text/javascript" src="js/app.find.js"></script>
-  <script type="text/javascript" src="js/app.mouse.js"></script>
-  <script type="text/javascript" src="js/app.record.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      app.init(["epg", "list", "control", "player"]);
+    });
+  </script>
 </body>
 </html>
