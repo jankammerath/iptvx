@@ -17,9 +17,5 @@
 */
 
 var epg = {
-   toggleKey: 9, /* TAB */
-
-   toggle: function(){
-      $("#epg").toggle();
-   }
+   toggleKey: 9 /* TAB */
 }

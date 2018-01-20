@@ -17,11 +17,8 @@
 */
 
 var list = {
+   defaultStarted: false,
    toggleKey: 16, /* SHIFT */
-
-   toggle: function(){
-      $("#list").toggle();
-   },
 
    /*
       Returns the name of the current programme for a channel
@@ -105,17 +102,36 @@ var list = {
       $("#list").scrollTop(elementTop);
    },
 
+   /*
+      Updates current programme for each channel
+   */
+   update: function(){
+      $.getJSON("/epg.json",function(data){
+         for(var c=0; c<data.length; c++){
+            var chan = data[c];
+            var prog = list.getCurrentProgrammeName(chan.programmeList);
+            $(".listchannel[data-channelid='" + c + "'] "
+               + ".listchannelprogramme").text(prog);
+         }
+      });
+   },
+
    load: function(){
       $.getJSON("/epg.json",function(data){
          var html = "";
 
          /* get the currently active channel */
          var activeChannelId = player.getCurrentChannelId();
+         var defaultChannelId = -1;
 
          /* create html for the channel list */
          for(var c=0; c<data.length; c++){
             var chan = data[c];
             var currentProgramme = list.getCurrentProgrammeName(chan.programmeList);
+
+            if(chan.default){
+               defaultChannelId = c;
+            }
 
             var activeClass = "";
             if(c == activeChannelId){
@@ -138,9 +154,19 @@ var list = {
          list.resize();
 
          /* attach click handler */
-         $(".listchannel").click(function(){
-            
+         $(".listchannel").mouseup(function(){
+            $(".listchannel").removeClass("listchannelselected");
+            $(this).addClass("listchannelselected");
+
+            var activeChannel = parseInt($(this).attr("data-channelid"));
+            player.selectChannelId(activeChannel);
          });
+
+         /* start default channel if not done initially */
+         if(list.defaultStarted == false && defaultChannelId >= 0){
+            player.selectChannelId(defaultChannelId);
+            list.defaultStarted = true;
+         }
       });
    },
 
@@ -151,5 +177,8 @@ var list = {
 
    init: function(){
       list.load();
+
+      /* update regularly */
+      setInterval(list.update,30000);
    }
 }

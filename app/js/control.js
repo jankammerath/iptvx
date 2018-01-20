@@ -19,10 +19,6 @@
 var control = {
    toggleKey: 18, /* ALT */
 
-   toggle: function(){
-      $("#control").toggle();
-   },
-
    init: function(){
       
    }

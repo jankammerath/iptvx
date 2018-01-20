@@ -101,6 +101,12 @@ var player = {
       Returns the channel id of the current channel
    */
    getCurrentChannelId: function(){
-      return 0;
+      var result = 0;
+
+      if(player.isReady()){
+         result = iptvx.channel;
+      }
+
+      return result;
    }
 }

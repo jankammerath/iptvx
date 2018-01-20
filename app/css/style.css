@@ -82,6 +82,10 @@ body{
   opacity:0.9;
 }
 
+.listchannel:hover{
+  background-color:#35336c;
+}
+
 .listchannelselected{
   background-color:#434177;
   opacity:1;

@@ -42,6 +42,31 @@ var app = {
 	},
 
 	/*
+		Toggles a specific component
+	*/
+	toggle: function(component){
+		/* hide all components except the requested one */
+		for(var c=0; c<app.componentList.length; c++){
+			var elementId = "#"+app.componentList[c];
+
+			if($(elementId).length){
+				if(app.componentList[c] == component){
+					if($(elementId).is(":visible")){
+						/* hide requested element */
+						$(elementId).fadeOut();
+					}else{
+						/* show requested element */
+						$(elementId).fadeIn();
+					}
+				}else{
+					/* hide this element */
+					$(elementId).fadeOut();
+				}
+			}
+		}
+	},
+
+	/*
 		Handles keyboard key down events
 	*/
 	handleKey: function(keyCode){
@@ -49,10 +74,7 @@ var app = {
 		var toggleComponent = app.getComponentByToggleKey(keyCode);
 		if(toggleComponent != null){
 			/* toggle this component */
-			if(app.isFunction(toggleComponent.toggle)){
-				/* this component supports toggle */
-				toggleComponent.toggle();
-			}
+			app.toggle(toggleComponent);
 		}
 
 		/* check if any element is active 
@@ -94,7 +116,7 @@ var app = {
 			if('toggleKey' in componentObject){
 				if(componentObject.toggleKey == keyCode){
 					/* this component matches the key code */
-					result = componentObject;
+					result = app.componentList[c];
 				}
 			}
 		}
