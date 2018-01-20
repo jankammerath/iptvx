@@ -64,6 +64,6 @@ extern void iptvx_webkit_start_thread(char *file,int width, int height,void (*lo
   Sends a key up event to webkit
   @param    keycode       the keycode for the key up event
 */
-void iptvx_webkit_sendkey(int keycode);
+void iptvx_webkit_sendkey(gpointer keycode);
 
 #endif

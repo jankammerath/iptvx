@@ -31,11 +31,13 @@ var app = {
 			app.loadComponent(app.componentList[c]);
 		}
 
-		/*
-			Attach generic key handler
-		*/
+		/* Attach generic key handler */
 		$(window).keydown(function(event){
 			app.handleKey(event.keyCode);
+		});
+
+		$(window).resize(function(event){
+			app.handleResize();
 		});
 	},
 
@@ -52,6 +54,31 @@ var app = {
 				toggleComponent.toggle();
 			}
 		}
+
+		/* check if any element is active 
+			and let it handle the key */
+		for(var c=0; c<app.componentList.length; c++){
+			var componentId = app.componentList[c];
+			var componentObject = window[app.componentList[c]];
+			if($("#"+componentId).is(":visible")){
+				/* check if it can handle keys */
+				if(app.isFunction(componentObject.handleKey)){
+					componentObject.handleKey(keyCode);
+				}
+			}
+		}
+	},
+
+	/*
+		Handles resize of the application window
+	*/
+	handleResize: function(){
+		for(var c=0; c<app.componentList.length; c++){
+			var componentObject = window[app.componentList[c]];
+			if(app.isFunction(componentObject.resize)){
+				componentObject.resize();
+			}
+		}		
 	},
 
 	/*

@@ -275,25 +275,27 @@ void iptvx_webkit_start_thread(char *file,int width, int height, void (*load_fin
   Sends a key up event to webkit
   @param    keycode       the keycode for the key up event
 */
-void iptvx_webkit_sendkey(int keycode){
-  GdkEventKey* gdk_key_event = (GdkEventKey*)gdk_event_new(GDK_KEY_PRESS);
-  gdk_key_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
-  gdk_key_event->keyval = keycode;
-  gdk_key_event->string = "";
-  gdk_key_event->length = 0;
-  gdk_key_event->group = 0;
-  gdk_key_event->is_modifier = 0;
+void iptvx_webkit_sendkey(gpointer keycode){
+  if(keycode != NULL){
+    GdkEventKey* gdk_key_event = (GdkEventKey*)gdk_event_new(GDK_KEY_PRESS);
+    gdk_key_event->window = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+    gdk_key_event->keyval = GPOINTER_TO_INT(keycode);
+    gdk_key_event->string = "";
+    gdk_key_event->length = 0;
+    gdk_key_event->group = 0;
+    gdk_key_event->is_modifier = 0;
 
-  GdkWindow* gdk_win = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
-  GdkDisplay* gdk_disp = gdk_window_get_display(gdk_win);
-  GdkSeat* gdk_seat = gdk_display_get_default_seat(gdk_disp);
-  GdkDevice* gdk_dev = gdk_seat_get_keyboard(gdk_seat);
-  gdk_event_set_device((GdkEvent*)gdk_key_event,gdk_dev);
-  gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_key_event);
+    GdkWindow* gdk_win = gtk_widget_get_window(GTK_WIDGET(iptvx_gtk_window));
+    GdkDisplay* gdk_disp = gdk_window_get_display(gdk_win);
+    GdkSeat* gdk_seat = gdk_display_get_default_seat(gdk_disp);
+    GdkDevice* gdk_dev = gdk_seat_get_keyboard(gdk_seat);
+    gdk_event_set_device((GdkEvent*)gdk_key_event,gdk_dev);
+    gtk_widget_event(iptvx_gtk_webview,(GdkEvent*)gdk_key_event);
 
-  /* force draw when key hit */
-  webkit_web_view_get_snapshot(WEBKIT_WEB_VIEW(iptvx_gtk_webview),
-      WEBKIT_SNAPSHOT_REGION_VISIBLE,
-       WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
-       (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,"");
+    /* force draw when key hit */
+    webkit_web_view_get_snapshot(WEBKIT_WEB_VIEW(iptvx_gtk_webview),
+        WEBKIT_SNAPSHOT_REGION_VISIBLE,
+         WEBKIT_SNAPSHOT_OPTIONS_TRANSPARENT_BACKGROUND,NULL,
+         (GAsyncReadyCallback)iptvx_webkit_snapshotfinished_callback,"");
+  }
 }
