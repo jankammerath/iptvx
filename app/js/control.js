@@ -20,6 +20,13 @@ var control = {
    toggleKey: 18, /* ALT */
 
    init: function(){
-      
+
+      /* resize initially */
+      control.resize();
+   },
+
+   resize: function(){
+      $("#control").css("left",(($(window).width()/2)
+                     -$("#control").outerWidth()/2)+"px");
    }
 }

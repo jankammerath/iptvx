@@ -65,6 +65,117 @@ body{
   background-repeat: no-repeat;
 }
 
+/* control styles */
+#control{
+  width:500px;
+  bottom:20px;
+}
+
+#tvcontrol .progress{
+  height:32px;
+}
+
+#tvcontrol .progressbar{
+  background-color:#35336c;
+  border-radius:5px;
+  height:10px;
+  margin:5px;
+}
+
+#tvcontrol .progressbarvalue{
+  width:56%;
+  background-color:#a8a7c6;
+  height:10px;
+  border-radius:5px;
+  float:left;
+}
+
+#tvcontrol .progressbartext{
+  float: left;
+  font-size: 11px;
+  color: #a8a7c6;
+  margin-left: -15px;
+  margin-top: 15px;
+}
+
+#tvcontrol .programmestart{
+  position:absolute;
+  left:8px;
+  font-size:11px;
+  color:#a8a7c6;
+}
+
+#tvcontrol .programmestop{
+  position:absolute;
+  right:8px;
+  font-size:11px;  
+  color:#a8a7c6;
+}
+
+#tvcontrol .channelinfo{
+  margin: 10px 10px 10px 30px;
+  float: right;
+  font-size: 13px;
+  width: 100px;
+  line-height: 20px;
+  border-left: 2px solid #35336c;
+  padding-left: 20px;
+  height: 90px;
+}
+
+#tvcontrol .channelname{
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px; 
+}
+
+#tvcontrol .channelresolution,
+#tvcontrol .channelformat, 
+#tvcontrol .channeldatarate{
+  color:#a8a7c6;
+}
+
+#tvcontrol .programmetitle{
+  margin: 10px 0px 5px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#tvcontrol .programmetext{
+  font-size:13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
+  margin: 0px 10px 5px 10px;
+}
+
+#tvcontrol .nextprogrammelist{
+  margin: 5px 10px 10px 10px;  
+}
+
+#tvcontrol .nextprogramme{
+  height: 20px;
+  font-size: 13px;  
+}
+
+#tvcontrol .nextprogrammetime, #tvcontrol .nextprogrammetitle{
+  float:left;
+  color:#a8a7c6;
+}
+
+#tvcontrol .nextprogrammetime{
+  width:42px;
+}
+
+#tvcontrol .nextprogrammetitle{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;    
+}
+
 /* channel list styles */
 #list{
   width:230px;
