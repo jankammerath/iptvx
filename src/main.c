@@ -274,6 +274,10 @@ int update(void* nothing){
 			videosize sizeinfo = iptvx_video_get_size();
 			g_idle_add((GSourceFunc)iptvx_js_update_videosize,&sizeinfo);
 
+			/* send video bitrate to js api */
+			float video_bitrate = iptvx_video_get_bitrate();
+			g_idle_add((GSourceFunc)iptvx_js_update_bitrate,&video_bitrate);
+
 			/* get the audio track information and forward 
 				it to the frontend overlay app */
 			GArray* audioTrackList = iptvx_video_get_audiotracks();

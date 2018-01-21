@@ -41,6 +41,12 @@ void iptvx_js_update_volume(int percentage);
 void iptvx_js_update_epg_status(int percentage);
 
 /*
+  Updates the video bitrate
+  @param    bitrate       current bitrate as float
+*/
+void iptvx_js_update_bitrate(float* bitrate);
+
+/*
   Updates the video size
   @param      sizeinfo    videosize struct with size information
 */

@@ -227,6 +227,24 @@ GArray* iptvx_video_get_audiotracks(){
 }
 
 /*
+	Returns the input bitrate of the stream or media
+	@return 		input bitrate as float in kilobit per second
+*/
+float iptvx_video_get_bitrate(){
+	float result = -1;
+
+	/* only get media when actively playing */
+	int player_state = iptvx_video_get_state();
+	if(player_state == 3){
+		libvlc_media_stats_t m_stats;
+		libvlc_media_get_stats(libvlc_media_player_get_media(mp),&m_stats);
+		result = m_stats.f_demux_bitrate*1000;
+	}
+
+	return result;
+}
+
+/*
 	Returns the size of the currently played video
 	@return 		array with 0 = x and 1 = y as integer
 */

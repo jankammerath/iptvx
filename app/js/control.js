@@ -87,6 +87,7 @@ var control = {
 
       /* update video information */
       $("#tvcontrol .channelresolution").text(player.getVideoSize());
+      $("#tvcontrol .channeldatarate").text(player.getBitrate()+" Kbps");
    },
 
    resize: function(){

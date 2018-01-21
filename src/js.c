@@ -118,6 +118,17 @@ void iptvx_js_update_epg_status(int percentage){
 }
 
 /*
+  Updates the video bitrate
+  @param    bitrate       current bitrate as float
+*/
+void iptvx_js_update_bitrate(float* bitrate){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.videoinfo[\"bitrate\"] = %.0f;",*bitrate);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);  
+}
+
+/*
   Updates the video size
   @param      sizeinfo    videosize struct with size information
 */

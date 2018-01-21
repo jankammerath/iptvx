@@ -67,6 +67,23 @@ var player = {
       }
    },
 
+   /* 
+      Returns the bit rate of the current playback in Kbps as int
+   */
+   getBitrate: function(){
+      result = 0;
+
+      if(player.isReady()){
+         if("bitrate" in iptvx.videoinfo){
+            if(iptvx.videoinfo["bitrate"] > 0){
+               result = iptvx.videoinfo["bitrate"];
+            }
+         }
+      }
+
+      return result;
+   },
+
    /*
       Returns the size of the video as text (e.g. 1280x720)
    */

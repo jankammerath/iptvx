@@ -105,6 +105,12 @@ void iptvx_video_free();
 GArray* iptvx_video_get_audiotracks();
 
 /*
+   Returns the input bitrate of the stream or media
+   @return     input bitrate as float
+*/
+float iptvx_video_get_bitrate();
+
+/*
    Returns the size of the currently played video
    @return     array with 0 = x and 1 = y as integer
 */
