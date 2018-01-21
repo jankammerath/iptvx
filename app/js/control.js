@@ -89,15 +89,26 @@ var control = {
       $("#tvcontrol .channelresolution").text(player.getVideoSize());
       $("#tvcontrol .channeldatarate").text(player.getBitrate()+" Kbps");
 
-      /* attach the progress text properly to the progress bar value */
-      var textLeft = $("#tvcontrol .progressbarvalue").outerWidth()
-                     + $("#tvcontrol .progressbarvalue").position().left
-                     - ($("#tvcontrol .progressbartext").outerWidth()/2);
-      $("#tvcontrol .progressbartext").css("left",textLeft+"px");
+      /* attach text to progress bar */
+      control.adjustProgressText();
+   },
+
+   /* 
+      Attach the progress text properly to the progress bar value 
+   */
+   adjustProgressText: function(){
+      if($("#control").is(":visible")){
+         var textLeft = $("#tvcontrol .progressbarvalue").outerWidth()
+                        + $("#tvcontrol .progressbarvalue").position().left
+                        - ($("#tvcontrol .progressbartext").outerWidth()/2);
+         $("#tvcontrol .progressbartext").css("left",textLeft+"px");
+      }
    },
 
    resize: function(){
       $("#control").css("left",(($(window).width()/2)
                      -$("#control").outerWidth()/2)+"px");
+
+      control.adjustProgressText();
    }
 }
