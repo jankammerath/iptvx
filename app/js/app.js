@@ -94,15 +94,25 @@ var app = {
 			app.toggle(toggleComponent);
 		}
 
-		/* check if any element is active 
-			and let it handle the key */
-		for(var c=0; c<app.componentList.length; c++){
-			var componentId = app.componentList[c];
-			var componentObject = window[app.componentList[c]];
-			if($("#"+componentId).is(":visible")){
-				/* check if it can handle keys */
-				if(app.isFunction(componentObject.handleKey)){
-					componentObject.handleKey(keyCode);
+		if(keyCode == 27){
+			/* ESC key hides all elements */
+			for(var c=0; c<app.componentList.length; c++){
+				var componentId = app.componentList[c];
+				if($("#"+componentId).is(":visible")){
+					$("#"+componentId).fadeOut();
+				}
+			}
+		}else{
+			/* check if any element is active 
+				and let it handle the key */
+			for(var c=0; c<app.componentList.length; c++){
+				var componentId = app.componentList[c];
+				var componentObject = window[app.componentList[c]];
+				if($("#"+componentId).is(":visible")){
+					/* check if it can handle keys */
+					if(app.isFunction(componentObject.handleKey)){
+						componentObject.handleKey(keyCode);
+					}
 				}
 			}
 		}

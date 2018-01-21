@@ -89,6 +89,18 @@ var streamconfig = {
 
       /* flush html to component */
       $("#streamconfig").html(html);
+
+      /* attach mouse handler */
+      $(".track").mousemove(function(){
+         $(".track").attr("data-selected","false");
+         $(this).attr("data-selected","true");
+      });
+
+      $(".track").mouseup(function(){
+         $(".track").attr("data-selected","false");
+         $(this).attr("data-selected","true");
+         streamconfig.handleKey(13);
+      });
    },
 
    handleKey: function(keyCode){

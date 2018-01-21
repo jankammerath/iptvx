@@ -43,6 +43,9 @@ int keycode_convert_sdl_to_gtk(int sdl_keycode){
 		result = sdl_keycode + 65200;
 	}
 
+	/* ESCAPE */
+	if(sdl_keycode == 27){result=65307;}
+
 	/* BACKSPACE */
 	if(sdl_keycode == 8){result=65288;}
 
