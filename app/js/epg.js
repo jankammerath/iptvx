@@ -17,5 +17,5 @@
 */
 
 var epg = {
-   toggleKey: 9 /* TAB */
+   toggleKey: 113 /* F2 */
 }

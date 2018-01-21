@@ -31,6 +31,7 @@
   <!-- standard components -->
   <div id="list" class="component"></div>
   <div id="epg" class="component"></div>
+  <div id="streamconfig" class="component"></div>
 
   <!-- control component -->
   <div id="control" class="component">
@@ -46,9 +47,9 @@
       
       <div class="channelinfo">
         <div class="channelname"></div>
-        <div class="channelformat"></div>
         <div class="channelresolution"></div>
         <div class="channeldatarate"></div>
+        <div class="channelformat"></div>
       </div>
 
       <div class="programmetitle"></div>
@@ -71,7 +72,7 @@
   <script type="text/javascript" src="js/app.js"></script>
   <script type="text/javascript">
     $(document).ready(function(){
-      app.init(["player", "epg", "list", "control"]);
+      app.init(["player", "epg", "list", "control", "streamconfig"]);
     });
   </script>
 </body>

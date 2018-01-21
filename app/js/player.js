@@ -118,6 +118,36 @@ var player = {
       return result;
    },
 
+   getSubtitleList: function(){
+      if(player.isReady()){
+         return iptvx.subtitleList;
+      }else{
+         return [];
+      }
+   },
+
+   getAudioList: function(){
+      if(player.isReady()){
+         return iptvx.trackList;
+      }else{
+         return [];
+      }
+   },
+
+   /*
+      Sets the audio track by its id
+   */
+   setAudioTrack: function(trackId){
+      player.execute("set-audiotrack " + trackId);
+   },
+
+   /*
+      Sets the subtitle track by its id
+   */
+   setSubtitleTrack: function(trackId){
+      player.execute("set-subtitle " + trackId);
+   },
+
    /*
       Checks if the player instance is ready
    */
