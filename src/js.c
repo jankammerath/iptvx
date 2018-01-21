@@ -20,12 +20,7 @@
 #include <json-c/json.h>
 #include <webkit2/webkit2.h>
 #include <JavaScriptCore/JavaScript.h>
-
-struct audiotrack{
-  int       id;
-  GString*  name;
-  bool      active;
-} typedef audiotrack;
+#include "videoinfo.h"
 
 WebKitWebView* js_view;
 void (*control_message_callback)(void*);
@@ -86,7 +81,7 @@ void iptvx_js_init(WebKitWebView* webView,void (*control_message_callback_func)(
 
    /* define the basic js object */
    char* jsObject =  " var iptvx = { epgLoaded: 0, epg: [], "
-                     " trackList: [], subtitleList: [], "
+                     " trackList: [], subtitleList: [], videoinfo: {}, "
                      " channel: 0, state: 0, volume: 100, "
                      " exec: function(cmd){ "
                      " window.webkit.messageHandlers.iptvxexec.postMessage(cmd); "
@@ -120,6 +115,19 @@ void iptvx_js_update_epg_status(int percentage){
 
   sprintf(jsCode,"iptvx.epgLoaded = %d;",percentage);
   webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);
+}
+
+/*
+  Updates the video size
+  @param      sizeinfo    videosize struct with size information
+*/
+void iptvx_js_update_videosize(videosize* sizeinfo){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.videoinfo[\"width\"] = %d;"
+                  "iptvx.videoinfo[\"height\"] = %d;",
+                  sizeinfo->width, sizeinfo->height);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);  
 }
 
 /*

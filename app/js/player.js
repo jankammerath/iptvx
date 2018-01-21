@@ -68,6 +68,23 @@ var player = {
    },
 
    /*
+      Returns the size of the video as text (e.g. 1280x720)
+   */
+   getVideoSize: function(){
+      result = "0x0";
+
+      if(player.isReady()){
+         if("width" in iptvx.videoinfo
+            && "height" in iptvx.videoinfo){
+            result = iptvx.videoinfo["width"]
+                  + "x" + iptvx.videoinfo["height"];
+         }
+      }
+
+      return result;
+   },
+
+   /*
       Checks if the player instance is ready
    */
    isReady: function(){

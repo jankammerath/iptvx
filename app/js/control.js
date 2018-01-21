@@ -84,6 +84,9 @@ var control = {
       /* update programme title and text */
       $("#tvcontrol .programmetitle").text(prog.title);
       $("#tvcontrol .programmetext").text(prog.description);
+
+      /* update video information */
+      $("#tvcontrol .channelresolution").text(player.getVideoSize());
    },
 
    resize: function(){

@@ -19,6 +19,7 @@
 #define JS_H
 
 #include <webkit2/webkit2.h>
+#include "videoinfo.h"
 
 /*
    Initialises the JavaScript API interface
@@ -38,6 +39,12 @@ void iptvx_js_update_volume(int percentage);
   @param      percentage        int percentage value of progress
 */
 void iptvx_js_update_epg_status(int percentage);
+
+/*
+  Updates the video size
+  @param      sizeinfo    videosize struct with size information
+*/
+void iptvx_js_update_videosize(videosize* sizeinfo);
 
 /*
   Signals media state to the js api

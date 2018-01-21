@@ -19,6 +19,7 @@
 #include <vlc/vlc.h>
 #include <unistd.h>
 #include <glib.h>
+#include "videoinfo.h"
 
 libvlc_instance_t * inst;
 libvlc_media_player_t *mp;
@@ -27,12 +28,6 @@ libvlc_media_t *m;
 int video_width;
 int video_height;
 bool video_log_output;
-
-struct audiotrack{
-	int 		id;
-	GString*	name;
-	bool		active;
-} typedef audiotrack;
 
 /*
 	defines whether log data should be written
@@ -226,6 +221,27 @@ GArray* iptvx_video_get_audiotracks(){
 				g_array_append_val(result,track[i]);
 			}
 		}
+	}
+
+	return result;
+}
+
+/*
+	Returns the size of the currently played video
+	@return 		array with 0 = x and 1 = y as integer
+*/
+videosize iptvx_video_get_size(){
+	videosize result;
+
+	/* set default return values */
+	result.width = -1;
+	result.height = -1;
+
+	/* check if the player can get the info */
+	int player_state = iptvx_video_get_state();
+	/* only get data when playing or paused */
+	if(player_state == 3 || player_state == 4){
+		libvlc_video_get_size(mp,0,&result.width,&result.height);
 	}
 
 	return result;

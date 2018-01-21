@@ -270,6 +270,10 @@ int update(void* nothing){
 				and update our actual window rendered */
 			iptvx_window_set_title(iptvx_get_overlay_title());
 
+			/* send video size to the js api */
+			videosize sizeinfo = iptvx_video_get_size();
+			g_idle_add((GSourceFunc)iptvx_js_update_videosize,&sizeinfo);
+
 			/* get the audio track information and forward 
 				it to the frontend overlay app */
 			GArray* audioTrackList = iptvx_video_get_audiotracks();

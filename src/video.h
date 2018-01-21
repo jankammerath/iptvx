@@ -20,6 +20,7 @@
 #define VIDEO_H
 
 #include <vlc/vlc.h>
+#include "videoinfo.h"
 
 /*
    defines whether log data should be written
@@ -102,6 +103,12 @@ void iptvx_video_free();
    @return  GArray containing audio tracks
 */
 GArray* iptvx_video_get_audiotracks();
+
+/*
+   Returns the size of the currently played video
+   @return     array with 0 = x and 1 = y as integer
+*/
+videosize iptvx_video_get_size();
 
 /*
    Gets the available subtitle tracks
