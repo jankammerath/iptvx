@@ -28,6 +28,13 @@
 #define UTIL_H
 
 /*
+  Converts FOURCC UInt32 into a char buffer (string)
+  @param        fourcc     FOURCC as UInt32
+  @param        result     char buf with FOURCC value as string
+*/
+void util_get_fourcc_string(int fourcc, char* result);
+
+/*
   Gets the current time in milliseconds
   @returns      the current time in milliseconds as long
 */

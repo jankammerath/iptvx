@@ -86,6 +86,7 @@ var control = {
       $("#tvcontrol .programmetext").text(prog.description);
 
       /* update video information */
+      $("#tvcontrol .channelformat").text(player.getCodecId().toUpperCase());
       $("#tvcontrol .channelresolution").text(player.getVideoSize());
       $("#tvcontrol .channeldatarate").text(player.getBitrate()+" Kbps");
    },

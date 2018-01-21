@@ -278,6 +278,11 @@ int update(void* nothing){
 			float video_bitrate = iptvx_video_get_bitrate();
 			g_idle_add((GSourceFunc)iptvx_js_update_bitrate,&video_bitrate);
 
+			/* get video track info */
+			char codec_fourcc[5];
+			iptvx_video_get_codec(codec_fourcc);
+			g_idle_add((GSourceFunc)iptvx_js_update_codec,codec_fourcc);
+
 			/* get the audio track information and forward 
 				it to the frontend overlay app */
 			GArray* audioTrackList = iptvx_video_get_audiotracks();

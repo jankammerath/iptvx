@@ -36,6 +36,17 @@
 #include <time.h>
 
 /*
+  Converts FOURCC UInt32 into a char buffer (string)
+  @param        fourcc     FOURCC as UInt32
+  @param        result     char buf with FOURCC value as string
+*/
+void util_get_fourcc_string(int fourcc, char* result){
+  sprintf(result, "%c%c%c%c",
+      fourcc & 0xFF, (fourcc >> 8) & 0xFF,
+      (fourcc >> 16) & 0xFF, (fourcc >> 24) & 0xFF);
+}
+
+/*
   Gets the current time in milliseconds
   @returns      the current time in milliseconds as long
 */

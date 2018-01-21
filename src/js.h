@@ -41,6 +41,12 @@ void iptvx_js_update_volume(int percentage);
 void iptvx_js_update_epg_status(int percentage);
 
 /*
+  Updates the video codec
+  @param    codec       current codec as char buf
+*/
+void iptvx_js_update_codec(char* codec);
+
+/*
   Updates the video bitrate
   @param    bitrate       current bitrate as float
 */

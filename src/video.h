@@ -105,6 +105,12 @@ void iptvx_video_free();
 GArray* iptvx_video_get_audiotracks();
 
 /*
+   Returns codec description as string
+   @return     char ptr for codec info string
+*/
+void iptvx_video_get_codec(char* result);
+
+/*
    Returns the input bitrate of the stream or media
    @return     input bitrate as float
 */

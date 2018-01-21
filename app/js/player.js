@@ -67,6 +67,23 @@ var player = {
       }
    },
 
+   /*
+      Returns the FourCC id of the codec
+   */
+   getCodecId: function(){
+      result = "UNKNOWN";
+
+      if(player.isReady()){
+         if("codec" in iptvx.videoinfo){
+            if(iptvx.videoinfo["codec"] != ""){
+               result = iptvx.videoinfo["codec"];
+            }
+         }
+      }      
+
+      return result;
+   },
+
    /* 
       Returns the bit rate of the current playback in Kbps as int
    */

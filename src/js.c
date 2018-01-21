@@ -118,6 +118,17 @@ void iptvx_js_update_epg_status(int percentage){
 }
 
 /*
+  Updates the video codec
+  @param    codec       current codec as char buf
+*/
+void iptvx_js_update_codec(char* codec){
+  char jsCode[100];
+
+  sprintf(jsCode,"iptvx.videoinfo[\"codec\"] = \"%s\";",codec);
+  webkit_web_view_run_javascript(js_view,jsCode,NULL,NULL,NULL);  
+}
+
+/*
   Updates the video bitrate
   @param    bitrate       current bitrate as float
 */

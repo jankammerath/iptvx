@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <glib.h>
 #include "videoinfo.h"
+#include "util.h"
 
 libvlc_instance_t * inst;
 libvlc_media_player_t *mp;
@@ -227,6 +228,29 @@ GArray* iptvx_video_get_audiotracks(){
 }
 
 /*
+	Returns codec description as string
+	@return 		char ptr for codec info string
+*/
+void iptvx_video_get_codec(char* result){
+	if(iptvx_video_get_state() == 3){
+		libvlc_media_track_t **tracks;
+    	unsigned tracksCount;
+		tracksCount = libvlc_media_tracks_get
+				(libvlc_media_player_get_media(mp),&tracks);
+
+	    if( tracksCount > 0 ){
+	        for(unsigned i = 0; i < tracksCount; i++){
+	            libvlc_media_track_t *track = tracks[i];
+	            if(track->i_type == libvlc_track_video){
+	            	util_get_fourcc_string(track->i_original_fourcc,result);
+	            }
+	        }
+	        libvlc_media_tracks_release( tracks, tracksCount );
+	    }		
+	}
+}
+
+/*
 	Returns the input bitrate of the stream or media
 	@return 		input bitrate as float in kilobit per second
 */
@@ -238,7 +262,7 @@ float iptvx_video_get_bitrate(){
 	if(player_state == 3){
 		libvlc_media_stats_t m_stats;
 		libvlc_media_get_stats(libvlc_media_player_get_media(mp),&m_stats);
-		result = m_stats.f_demux_bitrate*1000;
+		result = m_stats.f_demux_bitrate * 1000;
 	}
 
 	return result;
