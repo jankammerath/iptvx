@@ -160,6 +160,27 @@ GArray* iptvx_epg_get_data(){
 }
 
 /*
+	Sorts a programme list by start time ascending
+	Please have a look into the documentation:
+	https://developer.gnome.org/glib/stable/glib-Arrays.html#g-array-sort
+	https://developer.gnome.org/glib/stable/glib-Doubly-Linked-Lists.html#GCompareFunc
+*/
+int iptvx_epg_sort_programmelist(const void* a, const void* b){
+	int result = 0;
+
+	programme* prog_a = (programme*)a;
+	programme* prog_b = (programme*)b;
+
+	if(prog_a->start > prog_b->start){
+		result = 1;
+	}if(prog_a->start < prog_b->start){
+		result = -1;
+	}
+
+	return result;
+}
+
+/*
 	Returns all channel and epg info as JSON string
 	@return 		JSON string with all EPG info
 */
@@ -171,6 +192,9 @@ GString* iptvx_epg_get_json(){
 	for(c = 0; c < list->len; c++){
 		/* get the channel */
 		channel* chan = &g_array_index(list,channel,c);
+
+		/* sort the programme list before using it */
+		g_array_sort(chan->programmeList,iptvx_epg_sort_programmelist);
 
 		/* create the channel js object */
 		json_object* j_chan = json_object_new_object();
