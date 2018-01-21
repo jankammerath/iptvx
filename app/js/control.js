@@ -79,7 +79,6 @@ var control = {
       var expired = app.now() - prog.start;
       var percentage = Math.round((expired / runtime) * 100);
       $("#tvcontrol .progressbarvalue").css("width",percentage+"%");
-      $("#tvcontrol .progressbartext").css("left",(percentage-2)+"%");
 
       /* update programme title and text */
       $("#tvcontrol .programmetitle").text(prog.title);
@@ -89,6 +88,12 @@ var control = {
       $("#tvcontrol .channelformat").text(player.getCodecId().toUpperCase());
       $("#tvcontrol .channelresolution").text(player.getVideoSize());
       $("#tvcontrol .channeldatarate").text(player.getBitrate()+" Kbps");
+
+      /* attach the progress text properly to the progress bar value */
+      var textLeft = $("#tvcontrol .progressbarvalue").outerWidth()
+                     + $("#tvcontrol .progressbarvalue").position().left
+                     - ($("#tvcontrol .progressbartext").outerWidth()/2);
+      $("#tvcontrol .progressbartext").css("left",textLeft+"px");
    },
 
    resize: function(){

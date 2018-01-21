@@ -365,7 +365,8 @@ GArray* iptvx_db_get_channel_programme(GString* channelname){
                "FROM programme prog, channel chan "
                "WHERE chan.channelname = '%q' "
                "AND prog.programmestart > %lld "
-               "AND chan.channelid = prog.programmechannelid",
+               "AND chan.channelid = prog.programmechannelid "
+               "ORDER BY prog.programmestart ASC",
                channelname->str,starttime);
 
    sqlite3_stmt *getprog_stmt;
