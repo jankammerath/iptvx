@@ -112,6 +112,19 @@ var streamconfig = {
          streamconfig.update();
       }if(keyCode == 13){
          /* RETURN KEY */
+         if($(".track[data-selected='true']").length){
+            var element = $(".track[data-selected='true']");
+            var trackId = parseInt($(element).attr("data-trackid"));
+            var type = $(element).attr("data-tracktype");
+
+            if(type == "audio"){
+               player.setAudioTrack(trackId);
+            }if(type == "subtitle"){
+               player.setSubtitleTrack(trackId);
+            }
+
+            setTimeout(streamconfig.update,1000);
+         }
       }
    }
 }
