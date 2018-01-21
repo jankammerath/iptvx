@@ -69,6 +69,7 @@ body{
 #control{
   width:500px;
   bottom:20px;
+  overflow:hidden;
 }
 
 #tvcontrol .progress{
@@ -91,11 +92,25 @@ body{
 }
 
 #tvcontrol .progressbartext{
-  float: left;
   font-size: 11px;
-  color: #a8a7c6;
+  color: #d1d0e7;
   margin-left: -15px;
   margin-top: 15px;
+  background-color: #4c4a7e;
+  padding: 2px 5px;
+  border-radius: 2px;
+  position: absolute;
+  z-index:2;
+}
+
+#tvcontrol .progressbartext:before{
+  content: "\A";
+  border-style: solid;
+  border-width: 0 5px 5px 5px;
+  border-color: transparent transparent #4c4a7e transparent;
+  position: absolute;
+  left: 19px;
+  top: -4px;
 }
 
 #tvcontrol .programmestart{
@@ -103,6 +118,7 @@ body{
   left:8px;
   font-size:11px;
   color:#a8a7c6;
+  z-index:1;
 }
 
 #tvcontrol .programmestop{
@@ -110,6 +126,7 @@ body{
   right:8px;
   font-size:11px;  
   color:#a8a7c6;
+  z-index:1;
 }
 
 #tvcontrol .channelinfo{

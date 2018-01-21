@@ -67,6 +67,23 @@ var app = {
 	},
 
 	/*
+		Returns the current Unix timestamp
+	*/
+	now: function(){
+		return Date.now() / 1000 | 0;
+	},
+
+	/*
+		Formats a timestamp to HH:MM
+	*/
+	formatTime: function(timestamp){
+		var date = new Date(timestamp*1000);
+		var hours = date.getHours();
+		var minutes = "0" + date.getMinutes();
+		return hours + ':' + minutes.substr(-2);
+	},
+
+	/*
 		Handles keyboard key down events
 	*/
 	handleKey: function(keyCode){
