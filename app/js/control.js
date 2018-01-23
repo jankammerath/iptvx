@@ -17,6 +17,7 @@
 */
 
 var control = {
+   epg: [],
    toggleKey: 18, /* ALT */
 
    init: function(){
@@ -34,35 +35,45 @@ var control = {
       Updates the control with information
    */
    update: function(){
-      $.getJSON("/epg.json",function(data){
-         var channelId = player.getCurrentChannelId();
-         if(data[channelId] !== void 0){
-            var chan = data[channelId];
+      if(control.epg.length == 0){
+         $.getJSON("/epg.json",function(data){
+            control.epg = data;
+            control.updateFromData(data);
+         });
+      }else{
+         control.updateFromData(control.epg);
+      }
 
-            /* set the channel name */
-            $("#tvcontrol .channelname").text(chan.name);
+   },
 
-            /* determine the current and the next programme */
-            var currentProg = -1;
-            var now = app.now();
-            for(var p=0; p<chan.programmeList.length; p++){
-               var prog = chan.programmeList[p];
+   updateFromData: function(data){
+      var channelId = player.getCurrentChannelId();
+      if(data[channelId] !== void 0){
+         var chan = data[channelId];
 
-               if(currentProg >= 0 && currentProg < 3){
-                  $("#nextprogrammetitle"+currentProg).text(prog.title);
-                  $("#nextprogrammetime"+currentProg).text
-                              (app.formatTime(prog.start));
-                  currentProg++;
-               }
+         /* set the channel name */
+         $("#tvcontrol .channelname").text(chan.name);
 
-               if(prog.start <= now && prog.stop >= now){
-                  /* this is the current programme */
-                  control.updateCurrentProgramme(prog);
-                  currentProg = 0;
-               }
+         /* determine the current and the next programme */
+         var currentProg = -1;
+         var now = app.now();
+         for(var p=0; p<chan.programmeList.length; p++){
+            var prog = chan.programmeList[p];
+
+            if(currentProg >= 0 && currentProg < 3){
+               $("#nextprogrammetitle"+currentProg).text(prog.title);
+               $("#nextprogrammetime"+currentProg).text
+                           (app.formatTime(prog.start));
+               currentProg++;
+            }
+
+            if(prog.start <= now && prog.stop >= now){
+               /* this is the current programme */
+               control.updateCurrentProgramme(prog);
+               currentProg = 0;
             }
          }
-      });
+      }
    },
 
    /*

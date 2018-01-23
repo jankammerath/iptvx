@@ -17,6 +17,7 @@
 */
 
 var list = {
+   epg: [],
    defaultStarted: false,
    toggleKey: 16, /* SHIFT */
 
@@ -106,14 +107,23 @@ var list = {
       Updates current programme for each channel
    */
    update: function(){
-      $.getJSON("/epg.json",function(data){
-         for(var c=0; c<data.length; c++){
-            var chan = data[c];
-            var prog = list.getCurrentProgrammeName(chan.programmeList);
-            $(".listchannel[data-channelid='" + c + "'] "
-               + ".listchannelprogramme").text(prog);
-         }
-      });
+      if(list.epg.length > 0){
+         list.updateFromData(list.epg);
+      }else{
+         $.getJSON("/epg.json",function(data){
+            list.epg = data;
+            list.updateFromData(data);
+         });
+      }
+   },
+
+   updateFromData: function(data){
+      for(var c=0; c<data.length; c++){
+         var chan = data[c];
+         var prog = list.getCurrentProgrammeName(chan.programmeList);
+         $(".listchannel[data-channelid='" + c + "'] "
+            + ".listchannelprogramme").text(prog);
+      }
    },
 
    load: function(){
