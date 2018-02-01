@@ -301,9 +301,11 @@ body{
 
 #epg .header{
   position: fixed;
-  left: 5px;
+  left: 55px;
   top: 5px;
   background-color:#0e0d40;
+  z-index:5;
+  height:42px;
 }
 
 #epg .header .channel{
@@ -337,8 +339,11 @@ body{
 #epg .body{
   position: absolute;
   top: 50px;
-  left: 5px;
+  left: 0px;
   vertical-align: top;
+  z-index:4;
+  overflow: hidden;
+  height: 100%;
 }
 
 #epg .body .channel{
@@ -347,11 +352,73 @@ body{
   box-sizing: border-box;
   vertical-align: top;
   margin-right:5px;
+  position:relative;
+}
+
+#epg .body .content{
+  position:relative;
+  left:55px;
+}
+
+#epg .body .timeline{
+  position:relative;
+  font-size: 13px;
+  left: 0px;
+  width: 50px; 
+}
+
+#epg .body .timeline .hour{
+  height:300px;
+  text-align:right;
+  border-top:2px solid #ada8b44d;
+  color:#ada8b44d;
+  padding-right:1px;
+  box-sizing:border-box;
 }
 
 #epg .body .channel .programme{
   background-color: #6050954d;  
   margin-bottom:3px;
+  overflow:hidden;
+  position:absolute;
+}
+
+#epg .body .channel .programme .programmeborder{
+  display:inline-block;
+  width: 40px;
+  font-size: 13px;
+  vertical-align:top;
+  background-color: #1000244d;
+  box-sizing:border-box;
+  padding: 0px 2px 0px 0px;
+  text-align:center;
+}
+
+#epg .body .channel .programme .programmebody{
+  display: inline-block;
+  width: 165px;
+  font-size: 13px;
+  vertical-align: top;
+  padding: 0px 5px 0px 5px;
+  box-sizing: border-box;
+}
+
+#epg .body .channel .programme .programmetitle{
+  font-weight:bold;
+  margin-bottom: 10px;
+}
+
+#epg .body .channel .programme .programmetext{
+  font-size:12px;
+  line-height:20px;
+}
+
+#epg .body .channel .programme[data-selected="true"]{
+  background-color: #fff3004d;
+}
+
+#epg .body .channel .programme[data-selected="true"] .programmeborder{
+  background-color: #ffe1001a;
 }
 
 /* custom webkit scrollbar */

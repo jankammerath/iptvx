@@ -67,6 +67,18 @@ var app = {
 	},
 
 	/*
+		Returns the unix timestamp for the
+		beginning of this hour
+	*/
+	getLastHour: function(){
+		var hour = new Date();
+		hour.setHours(hour.getHours()-1);
+		hour.setMinutes(0);
+		hour.setSeconds(0);
+		return hour / 1000 | 0;
+	},
+
+	/*
 		Returns the current Unix timestamp
 	*/
 	now: function(){
@@ -78,9 +90,9 @@ var app = {
 	*/
 	formatTime: function(timestamp){
 		var date = new Date(timestamp*1000);
-		var hours = date.getHours();
+		var hours = "0" + date.getHours();
 		var minutes = "0" + date.getMinutes();
-		return hours + ':' + minutes.substr(-2);
+		return hours.substr(-2) + ':' + minutes.substr(-2);
 	},
 
 	/*

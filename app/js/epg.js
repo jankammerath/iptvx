@@ -19,6 +19,12 @@
 var epg = {
    toggleKey: 113, /* F2 */
 
+   /*
+      Start and stop time of the epg content
+   */
+   start: 0,
+   stop: 0,
+
    init: function(){
       /* load the epg */
       epg.load();
@@ -36,13 +42,44 @@ var epg = {
       });
    },
 
+   handleKey: function(keyCode){
+      var pageBrowseHeight = 60*5;
+
+      switch(keyCode){
+         case 38: /* KEY UP */
+            /* select previous programme */
+            var selectedProg = "#epg .channel .programme[data-selected=\"true\"]";
+            if($(selectedProg).prev()){
+               var nextElement = $(selectedProg).prev();
+
+               $(selectedProg).removeAttr("data-selected");
+               $(nextElement).attr("data-selected", "true");
+            }            
+            break;
+         case 40: /* KEY DOWN */
+            /* select next programme */
+            var selectedProg = "#epg .channel .programme[data-selected=\"true\"]";
+            if($(selectedProg).next()){
+               var nextElement = $(selectedProg).next();
+
+               $(selectedProg).removeAttr("data-selected");
+               $(nextElement).attr("data-selected", "true");
+            }
+            break;
+      }
+   },
+
    /*
       Creates epg body html for all channels
       @return     html code for the body
    */
    getBodyHtml: function(data){
       var result = "<div class=\"body\" style=\"width:"
-                     + (data.length*210) + "px\">";
+                     + (data.length*210) + "px\">"
+                     + "<div class=\"content\">";
+
+      /* top is now minus 10 minutes (600 secs) */
+      epg.start = app.getLastHour();
 
       for(var c=0; c<data.length; c++){
          var channel = data[c];
@@ -50,25 +87,73 @@ var epg = {
          result += "<div class=\"channel\">";
 
          /* render channel programme html */
+         var progNumber = 0;
          for(var p=0; p<channel.programmeList.length; p++){
-            var prog = channel.programmeList[p];
+            var prog = channel.programmeList[p];           
 
-            result += "<div class=\"programme\">"
-                     + "<div class=\"programmeborder\">"
-                     + "<div class=\"programmetime\">" 
-                     + app.formatTime(prog.start) + "</div>"
-                     + "</div>"
-                     + "<div class=\"programmebody\">"
-                     + "<div class=\"programmetitle\">" 
-                     + prog.title + "</div>"
-                     + "<div class=\"programmetext\">" 
-                     + prog.description + "</div>"
-                     + "</div>"
-                     + "</div>";
+            if(prog.stop > epg.start){
+               var height = (Math.round((prog.stop - prog.start)/60)*5)-2;
+               var top = ((prog.start-epg.start)/60)*5;
+
+               if(prog.stop > epg.stop){
+                  epg.stop = prog.stop;
+               }
+
+               var selectedAttr = "";
+               if(c == 0 && progNumber == 0){
+                  selectedAttr = "data-selected=\"true\" ";
+               }
+
+               result += "<div class=\"programme\" "
+                        + selectedAttr
+                        + "style=\"top:" 
+                        + top + "px;height:" 
+                        + height + "px;\">"
+                        + "<div class=\"programmeborder\" style=\"height:" 
+                        + height + "px\">"
+                        + "<div class=\"programmetime\">" 
+                        + app.formatTime(prog.start) + "</div>"
+                        + "</div>"
+                        + "<div class=\"programmebody\">"
+                        + "<div class=\"programmetitle\">" 
+                        + prog.title + "</div>"
+                        + "<div class=\"programmetext\">" 
+                        + prog.description + "</div>"
+                        + "</div>"
+                        + "</div>";
+               
+               progNumber++;
+            }
          }
 
          result += "</div>";
       }
+
+      /* close content element */
+      result += "</div>";
+
+      /* render epg ruler */
+      result += epg.getTimelineHtml(epg.start,epg.stop);
+
+      result += "</div>";
+
+      return result;
+   },
+
+   /*
+      Returns html for the ruler on the left
+      @returns    rendered html code for the ruler
+   */
+   getTimelineHtml: function(start,stop){
+      result = "<div class=\"timeline\">";
+
+      var hour_ts = app.getLastHour();
+      for(var t = hour_ts; t < stop; t = t + 3600){
+         var timeObj = new Date((t)*1000);
+
+         result += "<div class=\"hour\">" + timeObj.getHours() + ":00</div>";
+      }
+
 
       result += "</div>";
 
@@ -97,12 +182,5 @@ var epg = {
       result += "</div>";
 
       return result;
-   },
-
-   /*
-      Returns the header html for the epg
-   */
-   getHeader: function(data){
-
    }
 }
