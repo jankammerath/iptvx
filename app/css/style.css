@@ -193,6 +193,48 @@ body{
   text-overflow: ellipsis;    
 }
 
+/* volume information styles */
+#volume{
+  position:fixed;
+  width:80px;
+  height:80px;
+  background-color:#0e0d40;
+  color:#ffffff;
+  opacity:0.8;  
+  border-radius: 5px;
+  background-size: 64px 64px;
+  background-repeat: no-repeat;
+  background-position: 8px 4px;
+  z-index:1;
+  display:none;
+}
+
+.volumenormal{
+  background-image:url('/app/img/speaker.svg');
+}
+
+.volumemute{
+  background-image:url('/app/img/mute.svg');
+}
+
+#volumebar{
+  position: absolute;
+  bottom: 5px;
+  width: 70px;
+  height: 5px;
+  background-color: #fff3;
+  left: 5px;
+  border-radius: 5px;
+  overflow:hidden;
+}
+
+#volumelevel{
+  height: 100%;
+  width: 50%;
+  background-color: #ffffff;
+  border-radius: 5px;  
+}
+
 /* channel list styles */
 #list{
   width:230px;

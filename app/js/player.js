@@ -17,6 +17,9 @@
 */
 
 var player = {
+   /* volume fadeout timeout */
+   volumeTimeout: null,
+
    /*
       Initialise the player and check its status
    */
@@ -37,6 +40,12 @@ var player = {
                      -$("#status").outerHeight()/2)+"px");
       $("#status").css("left",(($(window).width()/2)
                      -$("#status").outerWidth()/2)+"px");
+
+      /* adjust the volume indicator */
+      $("#volume").css("top",(($(window).height()/2)
+                     -$("#volume").outerHeight()/2)+"px");
+      $("#volume").css("left",(($(window).width()/2)
+                     -$("#volume").outerWidth()/2)+"px");
    },
 
    /* 
@@ -167,6 +176,51 @@ var player = {
    */
    selectChannelId: function(channelId){
       player.execute("switch-channel "+channelId);
+   },
+
+   /*
+      Adjusts the volume level of the current playback
+      @param      adjustmentLevel   percentage value of adjustment between -100 and 100
+   */
+   adjustVolume: function(adjustmentLevel){
+      /* calculate new volume level */
+      var newVolumeValue = player.getVolume()+adjustmentLevel;
+      
+      /* make sure volume does not exceed limits */
+      if(newVolumeValue > 150){newVolumeValue = 150;}
+      if(newVolumeValue < 0){newVolumeValue = 0;}
+
+      /* request player to switch to new volume */
+      player.execute("set-volume "+newVolumeValue);
+
+      /* change appearance based on volume level */
+      $("#volume").removeClass();
+      if(newVolumeValue == 0){
+         /* this is mute */
+         $("#volume").addClass("volumemute");
+      }else{
+         /* this is normal */
+         $("#volume").addClass("volumenormal");
+      }
+
+      /* update the volume information */
+      clearTimeout(player.volumeTimeout);
+      $("#volume").fadeIn();
+      $("#volumelevel").css("width",((newVolumeValue/150)*100)+"%");
+      player.volumeTimeout = setTimeout(function(){
+         $("#volume").fadeOut();
+      },2000);
+   },
+
+   /*
+      Returns the current volume value in percent
+   */
+   getVolume: function(){
+      if(typeof(iptvx) == 'object'){
+         return iptvx.volume;
+      }
+
+      return 0;
    },
 
    /*

@@ -115,6 +115,15 @@ var app = {
 				}
 			}
 		}else{
+			/* check if this is a volume adjustment */
+			if(keyCode == 33){ /* PAGE_UP is volume up */
+				/* switch the volume up */
+				player.adjustVolume(10);
+			}if(keyCode == 34){ /* PAGE_DOWN is volume down */
+				/* switch the volume down */
+				player.adjustVolume(-10);
+			}
+
 			/* check if any element is active 
 				and let it handle the key */
 			for(var c=0; c<app.componentList.length; c++){
